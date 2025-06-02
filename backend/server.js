@@ -16,7 +16,9 @@ mongoose.connect(process.env.MONGODB_URI, {
 }).catch((err) => {
     console.error("Error connecting to MongoDB:", err);
 });
-//middleware
+const contactRoute=require("./routes/contactRoutes")
+//use routes
+app.use('/api/v1', contactRoute);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 

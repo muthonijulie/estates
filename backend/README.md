@@ -580,7 +580,6 @@ GET    /api/v1/services/management     # Property management
 ```
 POST   /api/v1/contact                 # Submit contact form
 GET    /api/v1/contact                 # Get all contacts (admin)
-PUT    /api/v1/contact/:id/status      # Update contact status
 POST   /api/v1/whatsapp/send          # Send WhatsApp message
 ```
 
