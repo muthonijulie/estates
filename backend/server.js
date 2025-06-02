@@ -9,6 +9,7 @@ const viewRoutes = require('./routes/ViewRoutes');
 const propertyRoutes = require('./routes/propertyRoutes');
 const contactRoutes=require("./routes/contactRoutes")
 const rentalRoutes = require('./routes/rentalRoutes');
+const bookingRoutes = require('./routes/bookingRoutes');
 
 //connecting to the database
 mongoose.connect(process.env.MONGODB_URI, {
@@ -37,6 +38,9 @@ app.use('/api/v1', contactRoutes);
 
 //rental routes
 app.use('/api/v1', rentalRoutes);
+
+//booking routes
+app.use('/api/v1', bookingRoutes); 
 
 const port_number=process.env.PORT ||5000;
 
