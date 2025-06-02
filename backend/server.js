@@ -7,6 +7,7 @@ const cors=require('cors');
 const mongoose=require('mongoose');
 const viewRoutes = require('./routes/ViewRoutes');
 const propertyRoutes = require('./routes/propertyRoutes');
+const contactRoutes=require("./routes/contactRoutes")
 
 //connecting to the database
 mongoose.connect(process.env.MONGODB_URI, {
@@ -17,9 +18,9 @@ mongoose.connect(process.env.MONGODB_URI, {
 }).catch((err) => {
     console.error("Error connecting to MongoDB:", err);
 });
-const contactRoute=require("./routes/contactRoutes")
+
 //use routes
-app.use('/api/v1', contactRoute);
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -30,7 +31,8 @@ app.use('/api/v1/sales', viewRoutes);
 //property routes
 app.use('/api/v1/property', propertyRoutes);
 
-
+//contact routes
+app.use('/api/v1', contactRoutes);
 
 const port_number=process.env.PORT ||5000;
 
