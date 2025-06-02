@@ -27,10 +27,10 @@ app.use(express.urlencoded({ extended: true }));
 
 //importing routes
 //sales routes
-app.use('/api/v1/sales', viewRoutes);
+app.use('/api/v1', viewRoutes);
 
 //property routes
-app.use('/api/v1/property', propertyRoutes);
+app.use('/api/v1', propertyRoutes);
 
 //contact routes
 app.use('/api/v1', contactRoutes);

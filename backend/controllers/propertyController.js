@@ -61,3 +61,54 @@ exports.getPropertyById = async (req, res) => {
     }
 }
 
+exports.updateProperty = async (req, res) => {
+    try {
+        const property = await Property.findByIdAndUpdate(
+            req.params.id,
+            req.body,
+            { new: true, runValidators: true }
+        );
+        
+        if (!property) {
+            return res.status(404).json({
+                success: false,
+                error: 'Property not found'
+            });
+        }
+        
+        res.status(200).json({
+            success: true,
+            data: property
+        });
+        
+    } catch (error) {
+        res.status(400).json({
+            success: false,
+            error: error.message
+        });
+    }
+}
+
+exports.deleteProperty = async (req, res) => {
+    try {
+        const property = await Property.findByIdAndDelete(req.params.id);
+        
+        if (!property) {
+            return res.status(404).json({
+                success: false,
+                error: 'Property not found'
+            });
+        }
+        
+        res.status(200).json({
+            success: true,
+            message: 'Property deleted successfully'
+        });
+        
+    } catch (error) {
+        res.status(400).json({
+            success: false,
+            error: error.message
+        });
+    }
+}
