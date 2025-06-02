@@ -161,124 +161,372 @@ LOG_LEVEL=info
 LOG_FILE=logs/app.log
 ```
 
-## 🏗️ Database Models (Based on Document Requirements)
+## 🏗️ Database Models (JavaScript/MongoDB Schema)
 
 ### Property Model
 ```javascript
 // models/Property.js
-{
-  title: String (required),
-  description: String,
-  propertyType: ['rental', 'sale'] (required),
-  price: Number (required),
-  bedrooms: Number (required),
-  bathrooms: Number,
-  propertyCategory: ['villa', 'apartment', 'cottage', 'house'] (required),
+const mongoose = require('mongoose');
+
+const PropertySchema = new mongoose.Schema({
+  title: {
+    type: String,
+    required: [true, 'Property title is required'],
+    trim: true
+  },
+  description: {
+    type: String,
+    trim: true
+  },
+  propertyType: {
+    type: String,
+    required: [true, 'Property type is required'],
+    enum: ['rental', 'sale']
+  },
+  price: {
+    type: Number,
+    required: [true, 'Price is required'],
+    min: [0, 'Price cannot be negative']
+  },
+  bedrooms: {
+    type: Number,
+    required: [true, 'Number of bedrooms is required'],
+    min: [1, 'Must have at least 1 bedroom']
+  },
+  bathrooms: {
+    type: Number,
+    min: [1, 'Must have at least 1 bathroom']
+  },
+  propertyCategory: {
+    type: String,
+    required: [true, 'Property category is required'],
+    enum: ['villa', 'apartment', 'cottage', 'house']
+  },
   location: {
     address: String,
-    city: String (default: 'Watamu'),
-    county: String (default: 'Kilifi'),
-    coordinates: [Number] // [longitude, latitude]
+    city: {
+      type: String,
+      default: 'Watamu'
+    },
+    county: {
+      type: String,
+      default: 'Kilifi'
+    },
+    coordinates: {
+      type: [Number], // [longitude, latitude]
+      index: '2dsphere'
+    }
   },
-  images: [String], // Cloudinary URLs - multiple images for "View More"
-  amenities: [String], // WiFi, parking, pool, etc.
-  availableDates: [{
-    date: Date,
-    isAvailable: Boolean,
-    bookingType: String // 'rental' or 'viewing'
+  images: [{
+    type: String // Cloudinary URLs
   }],
-  status: ['active', 'inactive', 'rented', 'sold'],
-  owner: ObjectId (ref: 'User'),
-  createdAt: Date,
-  updatedAt: Date
-}
+  amenities: [{
+    type: String
+  }],
+  availableDates: [{
+    date: {
+      type: Date,
+      required: true
+    },
+    isAvailable: {
+      type: Boolean,
+      default: true
+    },
+    bookingType: {
+      type: String,
+      enum: ['rental', 'viewing']
+    }
+  }],
+  status: {
+    type: String,
+    enum: ['active', 'inactive', 'rented', 'sold'],
+    default: 'active'
+  },
+  owner: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
+  }
+}, {
+  timestamps: true
+});
+
+module.exports = mongoose.model('Property', PropertySchema);
 ```
 
 ### Booking Model (Rental Properties)
 ```javascript
-// models/Booking.js - Exactly matches document requirements
-{
-  property: ObjectId (ref: 'Property', required),
+// models/Booking.js - Matches document requirements exactly
+const mongoose = require('mongoose');
+
+const BookingSchema = new mongoose.Schema({
+  property: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Property',
+    required: [true, 'Property reference is required']
+  },
   
   // Booking Form Fields (as specified in document)
-  fullName: String (required),
-  contact: String (required), // Phone number
-  email: String (required),
-  checkInDate: Date (required),
-  checkOutDate: Date (required),
-  numberOfAdults: Number (required),
-  numberOfChildren: Number (default: 0),
-  numberOfBedrooms: Number (required),
-  specialRequests: String, // Additional notes
+  fullName: {
+    type: String,
+    required: [true, 'Full name is required'],
+    trim: true
+  },
+  contact: {
+    type: String,
+    required: [true, 'Contact number is required'],
+    trim: true
+  },
+  email: {
+    type: String,
+    required: [true, 'Email is required'],
+    lowercase: true,
+    trim: true
+  },
+  checkInDate: {
+    type: Date,
+    required: [true, 'Check-in date is required']
+  },
+  checkOutDate: {
+    type: Date,
+    required: [true, 'Check-out date is required']
+  },
+  numberOfAdults: {
+    type: Number,
+    required: [true, 'Number of adults is required'],
+    min: [1, 'Must have at least 1 adult']
+  },
+  numberOfChildren: {
+    type: Number,
+    default: 0,
+    min: [0, 'Cannot have negative children']
+  },
+  numberOfBedrooms: {
+    type: Number,
+    required: [true, 'Number of bedrooms is required'],
+    min: [1, 'Must select at least 1 bedroom']
+  },
+  specialRequests: {
+    type: String,
+    trim: true
+  },
   
   // System fields
-  totalPrice: Number,
-  status: ['pending', 'confirmed', 'cancelled', 'completed'],
-  paymentStatus: ['pending', 'paid', 'refunded'],
-  
-  // Timestamps
-  createdAt: Date,
-  updatedAt: Date
-}
+  totalPrice: {
+    type: Number,
+    min: [0, 'Total price cannot be negative']
+  },
+  status: {
+    type: String,
+    enum: ['pending', 'confirmed', 'cancelled', 'completed'],
+    default: 'pending'
+  },
+  paymentStatus: {
+    type: String,
+    enum: ['pending', 'paid', 'refunded'],
+    default: 'pending'
+  }
+}, {
+  timestamps: true
+});
+
+// Validation: Check-out date must be after check-in date
+BookingSchema.pre('save', function(next) {
+  if (this.checkOutDate <= this.checkInDate) {
+    return next(new Error('Check-out date must be after check-in date'));
+  }
+  next();
+});
+
+module.exports = mongoose.model('Booking', BookingSchema);
 ```
 
 ### Viewing Model (Sale Properties)
 ```javascript
-// models/Viewing.js - Exactly matches document requirements
-{
-  property: ObjectId (ref: 'Property', required),
+// models/Viewing.js - Matches document requirements exactly
+const mongoose = require('mongoose');
+
+const ViewingSchema = new mongoose.Schema({
+  property: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Property',
+    required: [true, 'Property reference is required']
+  },
   
   // Viewing Form Fields (as specified in document)
-  fullName: String (required),
-  contactInfo: String (required), // Phone number
-  email: String (required), // Added for completeness
-  preferredDate: Date (required),
-  preferredTime: String (required), // Time string like "10:00 AM"
-  comments: String, // Any comments
+  fullName: {
+    type: String,
+    required: [true, 'Full name is required'],
+    trim: true
+  },
+  contactInfo: {
+    type: String,
+    required: [true, 'Contact information is required'],
+    trim: true
+  },
+  email: {
+    type: String,
+    required: [true, 'Email is required'],
+    lowercase: true,
+    trim: true
+  },
+  preferredDate: {
+    type: Date,
+    required: [true, 'Preferred date is required']
+  },
+  preferredTime: {
+    type: String,
+    required: [true, 'Preferred time is required'],
+    trim: true
+  },
+  comments: {
+    type: String,
+    trim: true
+  },
   
   // System fields
-  actualDateTime: Date, // When viewing actually happened
-  status: ['pending', 'confirmed', 'completed', 'cancelled'],
-  agent: ObjectId (ref: 'User'),
-  
-  // Timestamps
-  createdAt: Date,
-  updatedAt: Date
-}
+  actualDateTime: {
+    type: Date
+  },
+  status: {
+    type: String,
+    enum: ['pending', 'confirmed', 'completed', 'cancelled'],
+    default: 'pending'
+  },
+  agent: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
+  }
+}, {
+  timestamps: true
+});
+
+module.exports = mongoose.model('Viewing', ViewingSchema);
 ```
 
 ### Contact Model
 ```javascript
 // models/Contact.js - For contact forms and service inquiries
-{
-  name: String (required),
-  email: String (required),
-  phone: String,
-  subject: String,
-  message: String (required),
-  serviceType: ['property_rentals', 'booking_assistance', 'airport_transfers', 
-               'housekeeping', 'safaris_excursions', 'property_management', 'general'],
-  status: ['new', 'read', 'replied', 'resolved'],
-  priority: ['low', 'medium', 'high'],
-  assignedTo: ObjectId (ref: 'User'),
-  createdAt: Date,
-  updatedAt: Date
-}
+const mongoose = require('mongoose');
+
+const ContactSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: [true, 'Name is required'],
+    trim: true
+  },
+  email: {
+    type: String,
+    required: [true, 'Email is required'],
+    lowercase: true,
+    trim: true
+  },
+  phone: {
+    type: String,
+    trim: true
+  },
+  subject: {
+    type: String,
+    trim: true
+  },
+  message: {
+    type: String,
+    required: [true, 'Message is required'],
+    trim: true
+  },
+  serviceType: {
+    type: String,
+    enum: [
+      'property_rentals', 
+      'booking_assistance', 
+      'airport_transfers', 
+      'housekeeping', 
+      'safaris_excursions', 
+      'property_management', 
+      'general'
+    ],
+    default: 'general'
+  },
+  status: {
+    type: String,
+    enum: ['new', 'read', 'replied', 'resolved'],
+    default: 'new'
+  },
+  priority: {
+    type: String,
+    enum: ['low', 'medium', 'high'],
+    default: 'medium'
+  },
+  assignedTo: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
+  }
+}, {
+  timestamps: true
+});
+
+module.exports = mongoose.model('Contact', ContactSchema);
 ```
 
 ### User Model
 ```javascript
 // models/User.js
-{
-  name: String (required),
-  email: String (required, unique),
-  phone: String,
-  password: String (required, hashed),
-  role: ['admin', 'agent', 'customer'],
-  isActive: Boolean (default: true),
-  createdAt: Date,
-  updatedAt: Date
-}
+const mongoose = require('mongoose');
+const bcrypt = require('bcryptjs');
+
+const UserSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: [true, 'Name is required'],
+    trim: true
+  },
+  email: {
+    type: String,
+    required: [true, 'Email is required'],
+    unique: true,
+    lowercase: true,
+    trim: true
+  },
+  phone: {
+    type: String,
+    trim: true
+  },
+  password: {
+    type: String,
+    required: [true, 'Password is required'],
+    minlength: [6, 'Password must be at least 6 characters']
+  },
+  role: {
+    type: String,
+    enum: ['admin', 'agent', 'customer'],
+    default: 'customer'
+  },
+  isActive: {
+    type: Boolean,
+    default: true
+  }
+}, {
+  timestamps: true
+});
+
+// Hash password before saving
+UserSchema.pre('save', async function(next) {
+  if (!this.isModified('password')) return next();
+  
+  try {
+    const salt = await bcrypt.genSalt(12);
+    this.password = await bcrypt.hash(this.password, salt);
+    next();
+  } catch (error) {
+    next(error);
+  }
+});
+
+// Compare password method
+UserSchema.methods.comparePassword = async function(candidatePassword) {
+  return await bcrypt.compare(candidatePassword, this.password);
+};
+
+module.exports = mongoose.model('User', UserSchema);
 ```
 
 ## 🛣️ API Endpoints (Matching Document Flow)
@@ -397,7 +645,7 @@ const services = {
     description: "We take care of your investment—from guest handling to maintenance.",
     icon: "🏠"
   }
-}
+};
 ```
 
 ## 📱 Frontend Integration Features
