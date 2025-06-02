@@ -5,7 +5,7 @@ const cors=require('cors');
 
 
 
-const port_number=process.env.PORT ||4000;
+const port_number=process.env.PORT ||5000;
 
 
 //using middleware globally
