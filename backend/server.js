@@ -5,6 +5,7 @@ require("dotenv").config();
 
 const cors=require('cors');
 const mongoose=require('mongoose');
+const viewRoutes = require('./routes/ViewRoutes');
 
 //connecting to the database
 mongoose.connect(process.env.MONGODB_URI, {
@@ -18,7 +19,9 @@ mongoose.connect(process.env.MONGODB_URI, {
 //middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
 //importing routes
+app.use('/api/v1/sales', viewRoutes);
 
 
 
