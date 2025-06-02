@@ -17,6 +17,7 @@ mongoose.connect(process.env.MONGODB_URI, {
 });
 //middleware
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 //importing routes
 
 
