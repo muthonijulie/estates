@@ -1,6 +1,8 @@
 const express=require('express');
 const app=express();
+
 require("dotenv").config();
+
 const cors=require('cors');
 const mongoose=require('mongoose');
 //connecting to the database
@@ -18,13 +20,16 @@ app.use(express.json());
 
 
 
-const port_number=process.env.PORT ||4000;
+const port_number=process.env.PORT ||5000;
 
 
-//using middleware globally
 app.use(cors());
 
 //routes
+
+app.get('/',(req,res)=>{
+    res.send("Server is Healthy 😂😂😂");
+})
 
 
 app.listen(port_number,()=>{
