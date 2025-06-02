@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Contact</title>
+  <link rel="stylesheet" href="assets/css/contact.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <!-- AOS CSS -->
+<link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Poppins:wght@500;700&display=swap" rel="stylesheet">
+
+</head>
+<body>
+
+  <!-- Navbar -->
+  <header class="navbar">
+    <div class="logo">
+      <img src="assets/images/logo.jpeg" alt="Logo">
+    </div>
+
+    <nav class="nav-links" id="navLinks">
+       <a href="index.php">Home</a>
+      <a href="listings.php">Property</a>
+      <a href="contact.html">Contact</a>
+        <a href="blog.html">Blog</a>
+      <a href="aboutus.html">AboutUs</a>
+    </nav>
+
+    <div class="menu-toggle" id="menuToggle">
+      <i class="fas fa-bars" id="openIcon"></i>
+      <i class="fas fa-times" id="closeIcon" style="display: none;"></i>
+    </div>
+  </header>
+<!-- contact.html -->
+<section class="intro-text">
+  <h2>Contact Us</h2>
+  <p>We’d love to hear from you. Whether you have a question about a property or want to schedule a visit, our team is here to help.</p>
+</section>
+
+<section class="contact-container">
+  <div class="contact-form fade-up">
+    <form id="contactForm">
+      <div class="form-group">
+        <label for="name">Your Name</label>
+        <input type="text" id="name" name="name" placeholder="John Doe" required />
+      </div>
+
+      <div class="form-group">
+        <label for="email">Your Email</label>
+        <input type="email" id="email" name="email" placeholder="example@email.com" required />
+      </div>
+
+      <div class="form-group">
+        <label for="subject">Subject</label>
+        <input type="text" id="subject" name="subject" placeholder="Inquiry" required />
+      </div>
+
+      <div class="form-group">
+        <label for="message">Your Message</label>
+        <textarea id="message" name="message" rows="5" placeholder="Write your message..." required></textarea>
+      </div>
+
+      <button type="submit" class="submit-button" id="submitBtn">Send Message</button>
+    </form>
+
+    <!-- Inline alert message -->
+    <div id="formAlert" 
+         style="display:none; margin-top: 20px; padding: 15px; border-radius: 5px; font-weight: 600;">
+      <span id="alertMessage"></span>
+      <button id="alertCloseBtn" 
+              style="margin-left: 20px; background: transparent; border: none; font-weight: bold; cursor: pointer;">
+        ✕
+      </button>
+    </div>
+  </div>
+
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('contactForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const alertBox = document.getElementById('formAlert');
+    const alertMessage = document.getElementById('alertMessage');
+    const alertCloseBtn = document.getElementById('alertCloseBtn');
+    let alertTimeout;
+
+    // Function to show alert with message and type (success or error)
+    function showAlert(message, type = 'success') {
+      alertMessage.textContent = message;
+      alertBox.style.display = 'block';
+
+      if (type === 'success') {
+        alertBox.style.backgroundColor = '#d4edda';
+        alertBox.style.color = '#155724';
+        alertBox.style.border = '1px solid #c3e6cb';
+      } else {
+        alertBox.style.backgroundColor = '#f8d7da';
+        alertBox.style.color = '#721c24';
+        alertBox.style.border = '1px solid #f5c6cb';
+      }
+
+      // Auto hide alert after 5 seconds
+      clearTimeout(alertTimeout);
+      alertTimeout = setTimeout(() => {
+        alertBox.style.display = 'none';
+      }, 5000);
+    }
+
+    // Close alert when close button clicked
+    alertCloseBtn.addEventListener('click', () => {
+      alertBox.style.display = 'none';
+      clearTimeout(alertTimeout);
+    });
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const formData = new FormData(form);
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Sending...';
+
+      try {
+        const response = await fetch('contact-handler.php', {
+          method: 'POST',
+          body: formData
+        });
+
+        const text = await response.text();
+        let data;
+
+        try {
+          data = JSON.parse(text);
+        } catch {
+          data = { status: 'error', message: 'Invalid response from server.' };
+        }
+
+        if (data.status === 'success') {
+          showAlert(data.message, 'success');
+          form.reset();
+        } else {
+          showAlert(data.message || 'Something went wrong.', 'error');
+        }
+
+      } catch (error) {
+        showAlert('❌ Network error: ' + error.message, 'error');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Send Message';
+      }
+    });
+  });
+</script>
+
+
+
+ <div class="contact-map fade-up">
+  <iframe 
+    src="https://www.google.com/maps/embed?pb=!1m17!1m12!1m3!1d3983.004257632695!2d40.01811967497209!3d-3.3490833966256486!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m2!1m1!2zM8KwMjAnNTYuNyJTIDQwwrAwMScxNC41IkU!5e0!3m2!1sen!2ske!4v1747988602341!5m2!1sen!2ske" 
+    width="100%" 
+    height="100%" 
+    style="border:0;" 
+    allowfullscreen="" 
+    loading="lazy" 
+    referrerpolicy="no-referrer-when-downgrade">
+  </iframe>
+</div>
+
+</section>
+
+
+
+  
+
+
+
+<footer class="new-footer">
+  <div class="footer-grid">
+    <!-- Brand -->
+    <div class="footer-brand">
+      <h2>WeRent</h2>
+      <p>Find the perfect property across Kenya with WeRent. Whether for rent or sale, we simplify your search experience.</p>
+    </div>
+
+    <!-- Navigation -->
+    <div class="footer-links">
+      <h4>Explore</h4>
+      <ul>
+        <li><a href="index.php">Home</a></li>
+        <li><a href="listings.php">Properties</a></li>
+        <li><a href="blog.html">Blog</a></li>
+        <li><a href="aboutus.html">About Us</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+    </div>
+
+    <!-- Contact Info -->
+    <div class="footer-contact">
+      <h4>Contact Us</h4>
+      <ul>
+        <li><i class="fas fa-map-marker-alt"></i>  <a href="https://www.google.com/maps/place/Mombasa,+Kenya" target="_blank" rel="noopener noreferrer" class="location-link">
+          Jacaranda road,Watamu
+        </a></li>
+        <li><i class="fas fa-phone"></i> <a href="tel:+254741257885">+254 741 257 885</a></li>
+        <li><i class="fas fa-envelope"></i> <a href="mailto:info@werent.co.ke">info@werent.co.ke</a></li>
+      </ul>
+    </div>
+
+    <!-- Social -->
+    <div class="footer-social">
+      <h4>Follow Us</h4>
+      <div class="social-icons">
+        <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+        <a href="#" aria-label="X"><i class="fab fa-x-twitter"></i></a>
+        <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+        <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+        <a href="" target="_blank" aria-label="X (Twitter)"><i class="fab fa-x-twitter"></i></a>
+        <a href="" target="_blank" aria-label="TikTok"><i class="fab fa-tiktok"></i></a>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer-bottom">
+    <p>&copy; <?= date('Y') ?> WeRent. All rights reserved.</p>
+  </div>
+</footer>
+
+
+  <!-- Toggle Menu Script -->
+  <script>
+   const menuToggle = document.getElementById('menuToggle');
+const navLinks = document.getElementById('navLinks');
+const openIcon = document.getElementById('openIcon');
+const closeIcon = document.getElementById('closeIcon');
+
+menuToggle.addEventListener('click', () => {
+  navLinks.classList.toggle('active');
+
+  if (navLinks.classList.contains('active')) {
+    openIcon.style.display = 'none';
+    closeIcon.style.display = 'block';
+  } else {
+    openIcon.style.display = 'block';
+    closeIcon.style.display = 'none';
+  }
+});
+  </script>
+
+   <!-- Book Button -->
+ <script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const modal = document.getElementById('bookingModal');
+    const openBtn = document.getElementById('openBookingForm');
+    const closeBtn = document.getElementById('closeBookingForm');
+    const propertyInput = document.querySelector('input[name="property"]');
+
+    // From hero section
+    openBtn.addEventListener('click', () => {
+      modal.classList.add('show');
+      propertyInput.value = '';
+    });
+
+    // From property cards
+    const bookButtons = document.querySelectorAll('.book-viewing-button');
+    bookButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        const propertyName = button.getAttribute('data-property');
+        propertyInput.value = propertyName;
+        modal.classList.add('show');
+      });
+    });
+
+    // Close modal
+    closeBtn.addEventListener('click', () => {
+      modal.classList.remove('show');
+    });
+
+    // Close if clicked outside
+    window.addEventListener('click', (e) => {
+      if (e.target === modal) {
+        modal.classList.remove('show');
+      }
+    });
+  });
+</script>
+
+<!-- AOS JS -->
+<script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+<script>
+  AOS.init({
+    duration: 800,
+    once: true
+  });
+</script>
+
+<!-- Animation for property cards -->
+ <script>
+  const cards = document.querySelectorAll('.property-card');
+
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('animate');
+        observer.unobserve(entry.target); // Remove this line if you want animation every time it enters
+      }
+    });
+  }, {
+    threshold: 0.2
+  });
+
+  cards.forEach(card => {
+    observer.observe(card);
+  });
+</script>
+
+
+<script>
+
+    document.addEventListener('DOMContentLoaded', () => {
+  const modal = document.getElementById('bookingModal'); // The modal
+  const closeBtn = document.getElementById('closeBookingForm'); // Close button
+  const propertyInput = document.querySelector('input[name="property"]'); // Property input field
+
+  // From property cards: Open modal with property info
+  const bookButtons = document.querySelectorAll('.book-viewing-button');
+  bookButtons.forEach(button => {
+    button.addEventListener('click', () => {
+      const propertyName = button.getAttribute('data-property'); // Get property name from button
+      propertyInput.value = propertyName; // Set property input value
+      modal.classList.add('show'); // Show modal
+    });
+  });
+
+  // Close modal when the close button is clicked
+  closeBtn.addEventListener('click', () => {
+    modal.classList.remove('show'); // Hide modal
+  });
+
+  // Close modal if clicked outside of it
+  window.addEventListener('click', (e) => {
+    if (e.target === modal) {
+      modal.classList.remove('show'); // Hide modal
+    }
+  });
+});
+
+</script>
+
+<!-- WhatsApp icon on the left -->
+<div class="contact-fixed-left">
+  <a href="https://wa.me/2547XXXXXXXX" target="_blank" aria-label="Chat on WhatsApp">
+    <img src="https://img.icons8.com/color/48/000000/whatsapp--v1.png" alt="WhatsApp">
+  </a>
+</div>
+
+<!-- Phone number on the right -->
+<div class="contact-fixed-right">
+  <a href="tel:+2547XXXXXXXX" class="phone-number">CALL:+254 7XX XXX XXX</a>
+</div>
+
+
+
+
+
+
+</body>
+</html>

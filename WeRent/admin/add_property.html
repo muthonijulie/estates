@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Add New Property</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f6f8;
+      margin: 0;
+      padding: 2rem;
+    }
+
+    .form-section {
+      max-width: 800px;
+      margin: 0 auto;
+      background: #fff;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+    }
+
+    .form-section h2 {
+      text-align: center;
+      margin-bottom: 1.5rem;
+      font-size: 1.8rem;
+      color: #333;
+    }
+
+    .property-form {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .form-group label {
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      padding: 0.75rem;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 1rem;
+    }
+
+    .form-row {
+      display: flex;
+      gap: 1rem;
+    }
+
+    button[type="submit"] {
+      padding: 0.9rem 1.5rem;
+      background: #2563eb;
+      color: white;
+      border: none;
+      font-weight: bold;
+      border-radius: 8px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    button[type="submit"]:hover {
+      background: #1e40af;
+    }
+
+    #form-message {
+    font-size: 1rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+  </style>
+</head>
+<body>
+
+  <form id="property-form" action="add_property.php" method="POST" enctype="multipart/form-data">
+    <div id="form-message" style="display: none;"></div>
+
+  <section class="form-section">
+    <h2>Add New Property</h2>
+    <form action="add_property.php" method="POST" enctype="multipart/form-data" class="property-form">
+
+      <div class="form-group">
+        <label>Title</label>
+        <input type="text" name="title" required />
+      </div>
+
+      <div class="form-group">
+        <label>Property Type</label>
+        <input type="text" name="property_type" required />
+      </div>
+
+      <div class="form-group">
+        <label>Listing Type</label>
+        <select name="listing_type" required>
+          <option value="rent">Rent</option>
+          <option value="sale">Sale</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Location</label>
+        <input type="text" name="location" />
+      </div>
+
+      <div class="form-group">
+        <label>Price</label>
+        <input type="number" step="0.01" name="price" />
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Bedrooms</label>
+          <input type="number" name="bedrooms" />
+        </div>
+        <div class="form-group">
+          <label>Bathrooms</label>
+          <input type="number" name="bathrooms" />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Main Image</label>
+        <input type="file" name="image_url" accept="image/*" required />
+      </div>
+
+      <div class="form-group">
+        <label>Gallery Images (Multiple)</label>
+       <input type="file" name="gallery_images[]" accept="image/*" multiple />
+
+      </div>
+
+      <div class="form-group">
+        <label>Description</label>
+        <textarea name="description" rows="4"></textarea>
+      </div>
+
+      <div class="form-group">
+        <label>Amenities (comma separated)</label>
+        <textarea name="amenities" rows="2"></textarea>
+      </div>
+
+      <button type="submit" name="submit">Add Property</button>
+    </form>
+  </section>
+
+</body>
+</html>
+
+
+<script>
+document.getElementById("property-form").addEventListener("submit", function(e) {
+    e.preventDefault(); // Prevent default form submission
+
+    const form = e.target;
+    const formData = new FormData(form);
+    const messageBox = document.getElementById("form-message");
+
+    fetch(form.action, {
+        method: "POST",
+        body: formData
+    })
+    .then(response => response.text())
+    .then(data => {
+        // Show the response inside the form
+        messageBox.innerHTML = data;
+        messageBox.style.display = "block";
+        messageBox.style.padding = "10px";
+        messageBox.style.marginTop = "10px";
+        messageBox.style.borderRadius = "6px";
+
+        // Style it based on response
+        if (data.toLowerCase().includes("success")) {
+            messageBox.style.color = "#155724";
+            messageBox.style.backgroundColor = "#d4edda";
+            messageBox.style.border = "1px solid #c3e6cb";
+            form.reset();
+        } else {
+            messageBox.style.color = "#721c24";
+            messageBox.style.backgroundColor = "#f8d7da";
+            messageBox.style.border = "1px solid #f5c6cb";
+        }
+    })
+    .catch(error => {
+        messageBox.innerHTML = "Something went wrong. Try again.";
+        messageBox.style.display = "block";
+        messageBox.style.color = "#721c24";
+        messageBox.style.backgroundColor = "#f8d7da";
+        messageBox.style.border = "1px solid #f5c6cb";
+    });
+});
+</script>
+
