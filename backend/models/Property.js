@@ -4,25 +4,20 @@ const propertySchema = new mongoose.Schema(
     {
       title: (required),
       description ,
-      propertyType: ['rental', 'sale'] (required),
+      propertyType,
+      listingType: ['rent', 'sale'](required),
       price:(required),
       bedrooms:(required),
       bathrooms,
-      propertyCategory: ['villa', 'apartment', 'cottage', 'house'] (required),
       location: {
         address,
         city,
-        county,
-        coordinates: []
+        county
       },
       images: [],
       amenities: [],
-      availableDates: [{
-        date: Date,
-        isAvailable: Boolean,
-        bookingType: String
-      }],
-      status: ['active', 'inactive', 'rented', 'sold'],
+      isFeatured:false,
+      status: ['booked', 'rented', 'sold'],
       createdAt: Date,
       updatedAt: Date
     })
