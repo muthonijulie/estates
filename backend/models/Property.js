@@ -42,7 +42,7 @@ const propertySchema = new mongoose.Schema(
       type: [String],
     },
     amenities: {
-      type: [String], 
+      type: [String],
     },
     isFeatured: {
       type: Boolean,
@@ -54,7 +54,7 @@ const propertySchema = new mongoose.Schema(
       default: null,
     }
   },
-  { timestamps: true } 
+  { timestamps: true }
 );
 
 module.exports = mongoose.model('Property', propertySchema);
