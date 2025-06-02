@@ -16,8 +16,341 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="assets/css/styles.css">
    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-  
+  <style>
+ .featured-section {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 50px 20px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
 
+        .featured-section h2 {
+            text-align: center;
+            font-size: 3rem;
+            margin-bottom: 50px;
+            color: #2c3e50;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            position: relative;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .featured-section h2::after {
+            content: '';
+            display: block;
+            width: 100px;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            margin: 20px auto;
+            border-radius: 2px;
+        }
+
+        .featured-section h3 {
+            font-size: 2.2rem;
+            margin: 50px 0 40px 0;
+            color: #34495e;
+            border-left: 6px solid #667eea;
+            padding-left: 20px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            position: relative;
+        }
+
+        .properties {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-bottom: 60px;
+        }
+
+        .rental-card, .sales-card {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            border: 2px solid transparent;
+        }
+
+        .rental-card:hover, .sales-card:hover {
+            transform: translateY(-15px) scale(1.02);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+            border-color: #667eea;
+        }
+
+        .rental-card img, .sales-card img {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            transition: transform 0.4s ease;
+        }
+
+        .rental-card:hover img, .sales-card:hover img {
+            transform: scale(1.1);
+        }
+
+        .content {
+            padding: 25px;
+        }
+
+        .content h3 {
+            font-size: 1.4rem;
+            margin-bottom: 10px;
+            color: #2c3e50;
+            border: none;
+            padding: 0;
+            text-transform: none;
+            letter-spacing: 0;
+        }
+
+        .content > p {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #27ae60;
+            margin-bottom: 20px;
+        }
+
+        .calendar {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+
+        .calendar span {
+            width: 35px;
+            height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            font-weight: bold;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .calendar .available {
+            background: linear-gradient(45deg, #2ecc71, #27ae60);
+            color: white;
+            box-shadow: 0 4px 15px rgba(46, 204, 113, 0.3);
+        }
+
+        .calendar .available:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(46, 204, 113, 0.4);
+        }
+
+        .calendar .booked {
+            background: linear-gradient(45deg, #e74c3c, #c0392b);
+            color: white;
+            box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
+        }
+
+        .calendar .booked:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(231, 76, 60, 0.4);
+        }
+
+        .buttons {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .book-btn, .view-btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 25px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .book-btn {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            flex: 1;
+            min-width: 120px;
+        }
+
+        .book-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .view-btn {
+            background: linear-gradient(45deg, #f39c12, #e67e22);
+            color: white;
+            flex: 1;
+            min-width: 120px;
+        }
+
+        .view-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(243, 156, 18, 0.4);
+        }
+
+        .details {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease, padding 0.4s ease;
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            border-radius: 15px;
+            margin-top: 15px;
+        }
+
+        .details.show {
+            max-height: 500px;
+            padding: 20px;
+        }
+
+        .details img {
+            width: 100%;
+            max-width: 150px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 10px;
+            margin: 5px 10px 10px 0;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .details img:hover {
+            transform: scale(1.05);
+        }
+
+        .details p {
+            margin-top: 15px;
+            color: #555;
+            font-style: italic;
+            line-height: 1.6;
+        }
+
+        /* Rental specific styling */
+        .rental-properties .rental-card {
+            border-top: 4px solid #3498db;
+        }
+
+        .rental-properties .content > p {
+            color: #3498db;
+        }
+
+        /* Sales specific styling */
+        .sale-properties .sales-card {
+            border-top: 4px solid #e74c3c;
+        }
+
+        .sale-properties .content > p {
+            color: #e74c3c;
+        }
+
+        /* Animation for card entrance */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .rental-card, .sales-card {
+            animation: fadeInUp 0.6s ease forwards;
+        }
+
+        .rental-card:nth-child(2) {
+            animation-delay: 0.1s;
+        }
+
+        .rental-card:nth-child(3) {
+            animation-delay: 0.2s;
+        }
+
+        .sales-card:nth-child(2) {
+            animation-delay: 0.1s;
+        }
+
+        .sales-card:nth-child(3) {
+            animation-delay: 0.2s;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .featured-section h2 {
+                font-size: 2.2rem;
+            }
+            
+            .featured-section h3 {
+                font-size: 1.8rem;
+            }
+            
+            .properties {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .buttons {
+                flex-direction: column;
+            }
+            
+            .calendar {
+                justify-content: center;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .featured-section {
+                padding: 30px 15px;
+                margin: 10px;
+            }
+            
+            .calendar span {
+                width: 30px;
+                height: 30px;
+                font-size: 0.8rem;
+            }
+            
+            .book-btn, .view-btn {
+                padding: 10px 20px;
+                font-size: 0.9rem;
+            }
+        }
+
+        /* Loading animation for images */
+        .rental-card img, .sales-card img {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+        }
+
+        @keyframes loading {
+            0% {
+                background-position: 200% 0;
+            }
+            100% {
+                background-position: -200% 0;
+            }
+        }
+    </style>
   
 </head>
 <body>
@@ -79,15 +412,163 @@
 
   <h3>Rentals</h3>
   <div class="properties rental-properties featured">
-    <!-- Insert the rental cards here, same as Rentals Page -->
+     <div class="rental-card">
+        <img src="assets/images/final.png" alt="Rental House">
+        <div class="content">
+          <h3>Modern 2-Bedroom Apartment</h3>
+          <p>Ksh 35,000/month</p>
+
+          <div class="calendar">
+            <span class="available">1</span>
+            <span class="booked">2</span>
+            <span class="available">3</span>
+            <span class="booked">4</span>
+            <span class="available">5</span>
+            <span class="available">6</span>
+            <span class="booked">7</span>
+          </div>
+
+          <div class="buttons">
+            <button class="book-btn" onclick="openBookingForm()">Book Now</button>
+            <button class="view-btn" onclick="toggleDetails(this)">View More</button>
+          </div>
+
+          <div class="details">
+            <img src="assets/images/rent.webp" alt="Interior">
+            <img src="assets/images/sale.webp" alt="Bedroom">
+            <p>Wi-Fi, parking, 24/7 security, near town.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- COPY RENTAL 1 AND CHANGE IMAGES, PRICES, TITLES FOR MORE RENTALS -->
+
+      <div class="rental-card">
+        <img src="assets/images/rent.webp" alt="Rental House">
+        <div class="content">
+          <h3>Cozy 1-Bedroom Studio</h3>
+          <p>Ksh 25,000/month</p>
+
+          <div class="calendar">
+            <span class="available">1</span>
+            <span class="available">2</span>
+            <span class="booked">3</span>
+            <span class="booked">4</span>
+            <span class="available">5</span>
+            <span class="booked">6</span>
+            <span class="available">7</span>
+          </div>
+
+          <div class="buttons">
+            <button class="book-btn" onclick="openBookingForm()">Book Now</button>
+            <button class="view-btn" onclick="toggleDetails(this)">View More</button>
+          </div>
+
+          <div class="details">
+            <img src="assets/images/rent.webp" alt="Interior">
+            <img src="assets/images/rent.webp" alt="Bedroom">
+            <p>Private balcony, smart TV, city views.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="rental-card">
+        <img src="assets/images/rent.webp" alt="Rental House">
+        <div class="content">
+          <h3>Spacious 3-Bedroom House</h3>
+          <p>Ksh 50,000/month</p>
+
+          <div class="calendar">
+            <span class="booked">1</span>
+            <span class="available">2</span>
+            <span class="available">3</span>
+            <span class="available">4</span>
+            <span class="booked">5</span>
+            <span class="booked">6</span>
+            <span class="available">7</span>
+          </div>
+
+          <div class="buttons">
+            <button class="book-btn" onclick="openBookingForm()">Book Now</button>
+            <button class="view-btn" onclick="toggleDetails(this)">View More</button>
+          </div>
+
+          <div class="details">
+            <img src="assets/images/rent.webp" alt="Interior">
+            <img src="assets/images/rent.webp" alt="Bedroom">
+            <p>Garden, garage, pet-friendly, near school.</p>
+          </div>
+        </div>
+      
+  </div>
   </div>
 
   <h3>For Sale</h3>
   <div class="properties sale-properties featured">
-    <!-- Insert the sales cards here, same as Sales Page -->
+     <div class="sales-card">
+    <img src="assets/images/final.png" alt="House for Sale">
+    <div class="content">
+      <h3>Elegant 4-Bedroom Villa</h3>
+      <p>Ksh 12,500,000</p>
+
+      <div class="calendar">
+        <span class="available">1</span>
+        <span class="booked">2</span>
+        <span class="available">3</span>
+        <span class="booked">4</span>
+        <span class="available">5</span>
+        <span class="available">6</span>
+        <span class="booked">7</span>
+      </div>
+
+      <div class="buttons">
+        <button class="book-btn" onclick="openViewingForm()">Book a Viewing</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Repeat cards as needed -->
+  <div class="sales-card">
+    <img src="assets/images/final.png" alt="House for Sale">
+    <div class="content">
+      <h3>Cozy 3-Bedroom Bungalow</h3>
+      <p>Ksh 9,800,000</p>
+      <div class="calendar">
+        <span class="available">8</span>
+        <span class="booked">9</span>
+        <span class="available">10</span>
+        <span class="booked">11</span>
+        <span class="available">12</span>
+        <span class="available">13</span>
+        <span class="booked">14</span>
+      </div>
+      <div class="buttons">
+        <button class="book-btn" onclick="openViewingForm()">Book a Viewing</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="sales-card">
+    <img src="assets/images/final.png" alt="House for Sale">
+    <div class="content">
+      <h3>Modern Apartment with Balcony</h3>
+      <p>Ksh 6,300,000</p>
+      <div class="calendar">
+        <span class="available">15</span>
+        <span class="booked">16</span>
+        <span class="available">17</span>
+        <span class="booked">18</span>
+        <span class="available">19</span>
+        <span class="available">20</span>
+        <span class="booked">21</span>
+      </div>
+      <div class="buttons">
+        <button class="book-btn" onclick="openViewingForm()">Book a Viewing</button>
+      </div>
+    </div>
   </div>
 </section>
-
+ 
 
   
 
@@ -255,6 +736,7 @@ menuToggle.addEventListener('click', () => {
     closeIcon.style.display = 'none';
   }
 });
+
   </script>
 
 
