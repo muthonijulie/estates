@@ -5,6 +5,8 @@ require("dotenv").config();
 
 const cors=require('cors');
 const mongoose=require('mongoose');
+const viewRoutes = require('./routes/ViewRoutes');
+const propertyRoutes = require('./routes/propertyRoutes');
 
 //connecting to the database
 mongoose.connect(process.env.MONGODB_URI, {
@@ -20,7 +22,13 @@ const contactRoute=require("./routes/contactRoutes")
 app.use('/api/v1', contactRoute);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
 //importing routes
+//sales routes
+app.use('/api/v1/sales', viewRoutes);
+
+//property routes
+app.use('/api/v1/property', propertyRoutes);
 
 
 
