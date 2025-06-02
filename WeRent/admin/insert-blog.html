@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Insert Blog</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f8f9fa;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 40px auto;
+      background: #ffffff;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+    }
+
+    h2 {
+      margin-bottom: 20px;
+      color: #333;
+      text-align: center;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #444;
+    }
+
+    input[type="text"],
+    textarea {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 16px;
+      resize: vertical;
+    }
+
+    input[type="file"] {
+      font-size: 16px;
+    }
+
+    .image-preview {
+      margin-top: 10px;
+      max-height: 200px;
+      object-fit: cover;
+      border-radius: 8px;
+    }
+
+    button {
+      display: inline-block;
+      padding: 12px 25px;
+      background-color: #28a745;
+      color: #fff;
+      font-size: 16px;
+      font-weight: 600;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #218838;
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        margin: 20px;
+        padding: 20px;
+      }
+
+      h2 {
+        font-size: 22px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h2>Insert Blog Post</h2>
+    <form id="blogForm">
+      <div class="form-group">
+        <label for="title">Blog Title</label>
+        <input type="text" id="title" name="title" placeholder="Enter blog title" required>
+      </div>
+
+      <div class="form-group">
+        <label for="image">Feature Image</label>
+        <input type="file" id="image" name="image" accept="image/*" required>
+        <img id="preview" class="image-preview" src="#" alt="Image Preview" style="display: none;">
+      </div>
+
+      <div class="form-group">
+        <label for="content">Blog Content</label>
+        <textarea id="content" name="content" rows="8" placeholder="Write your blog content here..." required></textarea>
+      </div>
+
+      <button type="submit">Publish Blog</button>
+    </form>
+  </div>
+
+  <script>
+    // Image preview
+    const imageInput = document.getElementById('image');
+    const preview = document.getElementById('preview');
+
+    imageInput.addEventListener('change', function () {
+      const file = this.files[0];
+      if (file) {
+        preview.src = URL.createObjectURL(file);
+        preview.style.display = 'block';
+      } else {
+        preview.src = '#';
+        preview.style.display = 'none';
+      }
+    });
+
+    // Submit handler 
+    document.getElementById('blogForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+      alert('Blog submitted!');
+    });
+  </script>
+</body>
+</html>

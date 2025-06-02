@@ -16,11 +16,14 @@
     <div class="logo">
       <img src="assets/images/logo.jpeg" alt="Logo">
     </div>
+   
     <nav class="nav-links" id="navLinks">
-      <a href="index.php">Home</a>
-      <a href="listings.php">Listings</a>
+       <a href="index.php">Home</a>
+      <a href="rentals.html">Rentals</a>
+       <a href="sales.html">Sales</a>
+        <a href="services.html">Services</a>
       <a href="contact.html">Contact</a>
-      <a href="blog.html">Blog</a>
+        <a href="blog.html">Blog</a>
       <a href="aboutus.html">AboutUs</a>
     </nav>
     <div class="menu-toggle" id="menuToggle">
@@ -30,18 +33,59 @@
   </header>
 
   <!-- Blog Section -->
-  <section class="blog-section">
-    <div class="container">
-      <h2 class="section-title">Latest from Our Blog</h2>
-      <div id="blogContainer" class="blog-cards">
-        <!-- Blog cards will be injected here dynamically -->
+<section class="blog-section">
+  <div class="container">
+    <h2 class="section-title">Latest from Our Blog</h2>
+
+    <div class="blog-cards">
+
+      <!-- Blog Card 1 -->
+      <div class="blog-card">
+        <img src="assets/images/final.png" alt="Watamu Villas">
+        <div class="blog-content">
+          <h3 class="blog-title">Top 5 Villas in Watamu for Families</h3>
+          <div class="blog-date">May 28, 2025</div>
+          <p class="blog-excerpt">Looking for a family-friendly escape in Watamu? Here are 5 stunning villas perfect for relaxation and privacy.</p>
+          <a href="#" class="read-more">Read more <span>&rarr;</span></a>
+        </div>
       </div>
-      <div class="pagination">
-        <button id="prevBtn" class="pagination-btn">Previous</button>
-        <button id="nextBtn" class="pagination-btn">Next</button>
+
+      <!-- Blog Card 2 -->
+      <div class="blog-card">
+        <img src="assets/images/final.png" alt="Mida Creek">
+        <div class="blog-content">
+          <h3 class="blog-title">Things to Do Near Mida Creek</h3>
+          <div class="blog-date">May 22, 2025</div>
+          <p class="blog-excerpt">Explore Mida Creek’s natural beauty—from kayaking to birdwatching. Here's your ultimate activity list!</p>
+          <a href="#" class="read-more">Read more <span>&rarr;</span></a>
+        </div>
       </div>
+
+      <!-- Blog Card 3 -->
+      <div class="blog-card">
+        <img src="assets/images/final.png" alt="Invest in Watamu">
+        <div class="blog-content">
+          <h3 class="blog-title">Why Invest in Watamu Real Estate</h3>
+          <div class="blog-date">May 18, 2025</div>
+          <p class="blog-excerpt">Watamu is growing fast. Discover why it's becoming a top investment spot for real estate buyers.</p>
+          <a href="#" class="read-more">Read more <span>&rarr;</span></a>
+        </div>
+      </div>
+
+
     </div>
-  </section>
+
+    <!-- Pagination -->
+    <div class="pagination">
+      <button class="pagination-btn">Previous</button>
+      <button class="pagination-btn">1</button>
+     
+      <button class="pagination-btn">Next</button>
+    </div>
+
+  </div>
+</section>
+
 
   <!-- WhatsApp and Call Buttons -->
   <div class="contact-fixed-left">
@@ -66,9 +110,11 @@
     <!-- Navigation -->
     <div class="footer-links">
       <h4>Explore</h4>
-      <ul>
+       <ul>
         <li><a href="index.php">Home</a></li>
-        <li><a href="listings.php">Properties</a></li>
+      <li><a href="rentals.html">Rentals</a></li> 
+       <li><a href="sales.html">Sales</a></li> 
+         <li><a href="services.html">Services</a></li>
         <li><a href="blog.html">Blog</a></li>
         <li><a href="aboutus.html">About Us</a></li>
         <li><a href="contact.html">Contact</a></li>
@@ -133,63 +179,6 @@ menuToggle.addEventListener('click', () => {
 });
   </script>
 
-  <!-- Load Blogs & Pagination -->
-  <script>
-    document.addEventListener("DOMContentLoaded", function () {
-      const blogContainer = document.getElementById("blogContainer");
-      const blogsPerPage = 6;
-      let currentPage = 1;
-      let blogData = [];
-
-      fetch("get_blogs.php")
-        .then(response => response.json())
-        .then(data => {
-          blogData = data;
-          showPage(currentPage);
-        })
-        .catch(error => {
-          blogContainer.innerHTML = "<p>Error loading blogs. Please try again later.</p>";
-          console.error("Fetch error:", error);
-        });
-
-      function showPage(page) {
-        blogContainer.innerHTML = '';
-        const start = (page - 1) * blogsPerPage;
-        const end = page * blogsPerPage;
-        const pageData = blogData.slice(start, end);
-
-        pageData.forEach(blog => {
-          const card = document.createElement("div");
-          card.classList.add("blog-card");
-          card.innerHTML = `
-            <img src="blogs/${blog.image}" alt="${blog.title}">
-            <h3>${blog.title}</h3>
-            <p>${blog.short_description}</p>
-           <a href="blog.php?slug=${blog.slug}" class="read-more">Read More →</a>
-
-          `;
-          blogContainer.appendChild(card);
-        });
-
-        document.getElementById('prevBtn').disabled = page === 1;
-        document.getElementById('nextBtn').disabled = end >= blogData.length;
-      }
-
-      document.getElementById('prevBtn').addEventListener('click', () => {
-        if (currentPage > 1) {
-          currentPage--;
-          showPage(currentPage);
-        }
-      });
-
-      document.getElementById('nextBtn').addEventListener('click', () => {
-        if (currentPage * blogsPerPage < blogData.length) {
-          currentPage++;
-          showPage(currentPage);
-        }
-      });
-    });
-  </script>
 
 </body>
 </html>
