@@ -810,31 +810,29 @@
     }
 
     function calculateQuickStats() {
-      // Available properties (assuming properties with status 'available')
-      const availableProps = dashboardData.properties.filter(p => 
-        p.status === 'available' || p.available === true
-      ).length;
-      
-      // Pending viewings (assuming viewings with status 'pending' or 'scheduled')
-      const pendingViews = dashboardData.viewings.filter(v => 
-        v.status === 'pending' || v.status === 'scheduled'
-      ).length;
-      
-      // Active bookings (assuming bookings with status 'active' or 'confirmed')
-      const activeBooks = dashboardData.bookings.filter(b => 
-        b.status === 'active' || b.status === 'confirmed'
-      ).length;
-      
-      // Unread messages (assuming messages with read: false)
-      const unreadMsgs = dashboardData.messages.filter(m => 
-        m.read === false || m.status === 'unread'
-      ).length;
+  // Available properties (status is null meaning they aren't booked)
+  const availableProps = dashboardData.properties.filter(p => 
+    p.status === null || p.status === 'null' || p.status === 'available'
+  ).length;
+  
+  // Pending viewings (assuming viewings with status 'pending' or 'scheduled')
+  const pendingViews = dashboardData.viewings.filter(v => 
+    v.status === 'pending' || v.status === 'scheduled'
+  ).length;
+  
+  // Active bookings - count properties with 'booked' status
+  const activeBooks = dashboardData.properties.filter(p => 
+    p.status === 'booked'
+  ).length;
+  
+  // For messages, since there's no unread option, show total messages
+  const totalMessages = dashboardData.messages.length;
 
-      document.getElementById('availableProperties').textContent = availableProps;
-      document.getElementById('pendingViewings').textContent = pendingViews;
-      document.getElementById('activeBookings').textContent = activeBooks;
-      document.getElementById('unreadMessages').textContent = unreadMsgs;
-    }
+  document.getElementById('availableProperties').textContent = availableProps;
+  document.getElementById('pendingViewings').textContent = pendingViews;
+  document.getElementById('activeBookings').textContent = activeBooks;
+  document.getElementById('unreadMessages').textContent = totalMessages;
+}
 
     function generateRecentActivity() {
       const activityContainer = document.getElementById('recentActivity');
