@@ -12,8 +12,9 @@ const rentalRoutes = require('./routes/rentalRoutes');
 const bookingRoutes = require('./routes/bookingRoutes');
 
 // CORS configuration - MUST come before routes
+app.use(cors());
 app.use(cors({
-    origin: ['http://127.0.0.1:5500', 'http://localhost:5500', 'http://localhost:3000'],
+    origin: ['http://127.0.0.1:5500', 'http://localhost:5500', 'http://localhost:3000','https://estates-eosin.vercel.app'],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true
