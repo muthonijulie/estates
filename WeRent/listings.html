@@ -264,8 +264,9 @@
                 return `
                     <div class="property-card" data-property-id="${property.id}">
                         <div class="property-image">
-                            ${property.image ? 
-                                `<img src="${property.image}" alt="${safeTitle}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+                            ${property.mainImage ? 
+                                `      <img src="${property.mainImage || 'assets/images/final.png'}" alt="${property.title}" onerror="this.src='assets/images/final.png'">
+
                                  <div class="placeholder" style="display:none;"><i class="fas fa-home"></i></div>` : 
                                 '<div class="placeholder"><i class="fas fa-home"></i></div>'
                             }
