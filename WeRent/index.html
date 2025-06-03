@@ -757,7 +757,7 @@
   
   async function fetchProperties() {
     try {
-      const response = await fetch('http://localhost:5000/api/v1/properties');
+      const response = await fetch('https://estates-zxvz.onrender.com/api/v1/properties');
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
@@ -790,7 +790,7 @@
     const card = document.createElement('div');
     card.className = 'rental-card';
     
-    const imageUrl = property.mainImage ? `http://localhost:5000/${property.mainImage}` : 'assets/images/final.png';
+    const imageUrl = property.mainImage ? `https://estates-zxvz.onrender.com/${property.mainImage}` : 'assets/images/final.png';
     
     const formattedPrice = new Intl.NumberFormat('en-KE').format(property.price || 35000);
     
@@ -830,7 +830,7 @@
     const card = document.createElement('div');
     card.className = 'sales-card';
     
-    const imageUrl = property.mainImage ? `http://localhost:5000/${property.mainImage}` : 'assets/images/final.png';
+    const imageUrl = property.mainImage ? `https://estates-zxvz.onrender.com/${property.mainImage}` : 'assets/images/final.png';
     
     const formattedPrice = new Intl.NumberFormat('en-KE').format(property.price || 12500000);
     
