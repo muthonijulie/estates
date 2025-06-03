@@ -1,5 +1,5 @@
 const express = require('express');
-const { 
+const {
   createBooking,
   getBookingById,
   getAllBookingsForProperty,
@@ -22,8 +22,8 @@ router.get('/bookings/:id', getBookingById);
 // Get all bookings for a specific property
 router.get('/properties/:id/bookings', getAllBookingsForProperty);
 
-// Update a booking
-router.put('/bookings/:id', updateBooking);
+// Update a booking by ID - USE THE CONTROLLER FUNCTION
+router.patch('/bookings/:id', updateBooking);
 
 // Cancel a booking
 router.delete('/bookings/:id', cancelBooking);

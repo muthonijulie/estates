@@ -72,6 +72,7 @@ const createBooking = async (req, res) => {
       data: newBooking
     });
   } catch (error) {
+    console.error('Create booking error:', error);
     res.status(400).json({ 
       success: false,
       error: "Bad request", 
@@ -95,6 +96,7 @@ const getBookingById = async (req, res) => {
       data: booking
     });
   } catch (error) {
+    console.error('Get booking by ID error:', error);
     res.status(500).json({ 
       success: false,
       message: "Server error", 
@@ -152,6 +154,7 @@ const getAllBookings = async (req, res) => {
       data: bookings
     });
   } catch (error) {
+    console.error('Get all bookings error:', error);
     res.status(500).json({ 
       success: false,
       message: "Server error", 
@@ -163,6 +166,11 @@ const getAllBookings = async (req, res) => {
 // Update a booking
 const updateBooking = async (req, res) => {
   try {
+    console.log('Update booking request:', {
+      id: req.params.id,
+      body: req.body
+    });
+
     const booking = await Booking.findById(req.params.id);
     if (!booking) {
       return res.status(404).json({ 
@@ -171,10 +179,29 @@ const updateBooking = async (req, res) => {
       });
     }
 
+    // Validate required fields
+    const requiredFields = ['fullName', 'email', 'contact', 'checkInDate', 'checkOutDate', 'numberOfAdults'];
+    for (const field of requiredFields) {
+      if (!req.body[field]) {
+        return res.status(400).json({
+          success: false,
+          error: `${field} is required`
+        });
+      }
+    }
+
     // If updating dates, validate them
     if (req.body.checkInDate || req.body.checkOutDate) {
       const checkIn = new Date(req.body.checkInDate || booking.checkInDate);
       const checkOut = new Date(req.body.checkOutDate || booking.checkOutDate);
+      
+      // Validate date format
+      if (isNaN(checkIn.getTime()) || isNaN(checkOut.getTime())) {
+        return res.status(400).json({ 
+          success: false,
+          error: "Invalid date format. Please use YYYY-MM-DD format" 
+        });
+      }
       
       if (checkOut <= checkIn) {
         return res.status(400).json({ 
@@ -203,20 +230,60 @@ const updateBooking = async (req, res) => {
       }
     }
 
+    // Validate adults and children numbers
+    if (req.body.numberOfAdults && (req.body.numberOfAdults < 1 || req.body.numberOfAdults > 20)) {
+      return res.status(400).json({
+        success: false,
+        error: "Number of adults must be between 1 and 20"
+      });
+    }
+
+    if (req.body.numberOfChildren && (req.body.numberOfChildren < 0 || req.body.numberOfChildren > 20)) {
+      return res.status(400).json({
+        success: false,
+        error: "Number of children must be between 0 and 20"
+      });
+    }
+
+    // Update the booking
     const updatedBooking = await Booking.findByIdAndUpdate(
       req.params.id, 
       req.body, 
       { new: true, runValidators: true }
     ).populate('propertyId');
 
+    console.log('Booking updated successfully:', updatedBooking._id);
+
     res.status(200).json({
       success: true,
-      data: updatedBooking
+      data: updatedBooking,
+      message: "Booking updated successfully"
     });
+
   } catch (error) {
+    console.error('Update booking error:', error);
+    
+    // Handle validation errors
+    if (error.name === 'ValidationError') {
+      const validationErrors = Object.values(error.errors).map(err => err.message);
+      return res.status(400).json({ 
+        success: false,
+        error: "Validation failed",
+        message: validationErrors.join(', ')
+      });
+    }
+
+    // Handle cast errors (invalid ObjectId)
+    if (error.name === 'CastError') {
+      return res.status(400).json({ 
+        success: false,
+        error: "Invalid booking ID format"
+      });
+    }
+
     res.status(500).json({ 
       success: false,
-      message: "Server error", 
+      message: "Server error while updating booking", 
       error: error.message 
     });
   }
@@ -225,6 +292,8 @@ const updateBooking = async (req, res) => {
 // Cancel a booking
 const cancelBooking = async (req, res) => {
   try {
+    console.log('Cancel booking request:', req.params.id);
+
     const booking = await Booking.findById(req.params.id);
     if (!booking) {
       return res.status(404).json({ 
@@ -239,14 +308,26 @@ const cancelBooking = async (req, res) => {
     // Delete the booking
     await Booking.findByIdAndDelete(req.params.id);
 
+    console.log('Booking cancelled successfully:', req.params.id);
+
     res.status(200).json({
       success: true,
       message: "Booking cancelled successfully"
     });
   } catch (error) {
+    console.error('Cancel booking error:', error);
+    
+    // Handle cast errors (invalid ObjectId)
+    if (error.name === 'CastError') {
+      return res.status(400).json({ 
+        success: false,
+        error: "Invalid booking ID format"
+      });
+    }
+
     res.status(500).json({ 
       success: false,
-      message: "Server error", 
+      message: "Server error while cancelling booking", 
       error: error.message 
     });
   }
