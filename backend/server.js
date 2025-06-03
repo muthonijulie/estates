@@ -10,6 +10,7 @@ const propertyRoutes = require('./routes/propertyRoutes');
 const contactRoutes = require("./routes/contactRoutes");
 const rentalRoutes = require('./routes/rentalRoutes');
 const bookingRoutes = require('./routes/bookingRoutes');
+const blogRoutes = require('./routes/blogRoutes');
 
 // CORS configuration - MUST come before routes
 app.use(cors());
@@ -40,6 +41,7 @@ app.use('/api/v1', propertyRoutes);
 app.use('/api/v1', contactRoutes);
 app.use('/api/v1', rentalRoutes);
 app.use('/api/v1', bookingRoutes);
+app.use('/api/v1', blogRoutes); 
 
 const port_number = process.env.PORT || 5000;
 
