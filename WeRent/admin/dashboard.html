@@ -129,6 +129,7 @@
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
       gap: 1.5rem;
+      margin-bottom: 2rem;
     }
 
     .card {
@@ -245,6 +246,112 @@
       font-size: 0.75rem;
     }
 
+    .loading-spinner {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid #f3f3f3;
+      border-top: 2px solid #3498db;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .error-text {
+      color: #ef4444;
+      font-size: 0.875rem;
+    }
+
+    .refresh-btn {
+      background-color: #3b82f6;
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-weight: 500;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .refresh-btn:hover {
+      background-color: #2563eb;
+    }
+
+    .refresh-btn:disabled {
+      background-color: #94a3b8;
+      cursor: not-allowed;
+    }
+
+    .status-indicator {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.875rem;
+      color: #64748b;
+      margin-bottom: 1rem;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: #10b981;
+    }
+
+    .status-dot.error {
+      background-color: #ef4444;
+    }
+
+    .stats-section {
+      background: #fff;
+      border-radius: 12px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      border: 1px solid #e2e8f0;
+    }
+
+    .stats-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: #1e293b;
+      margin-bottom: 1rem;
+    }
+
+    .quick-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+    }
+
+    .stat-item {
+      padding: 1rem;
+      background-color: #f8fafc;
+      border-radius: 8px;
+      border: 1px solid #e2e8f0;
+    }
+
+    .stat-label {
+      font-size: 0.875rem;
+      color: #64748b;
+      margin-bottom: 0.25rem;
+    }
+
+    .stat-value {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: #1e293b;
+    }
+
     @media (max-width: 768px) {
       .sidebar {
         width: 100%;
@@ -268,6 +375,10 @@
       .header h1 {
         font-size: 1.5rem;
       }
+
+      .quick-stats {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
@@ -277,7 +388,7 @@
     <div class="nav-links">
       <a href="dashboard.html" class="active"><i class="fas fa-home"></i> Dashboard</a>
       <a href="manage_properties.html"><i class="fas fa-building"></i> Manage Properties</a>
-      <a href=""><i class="fas fa-calendar-check"></i> View Bookings</a>
+      <a href="bookings.html"><i class="fas fa-calendar-check"></i> View Bookings</a>
       <a href=""><i class="fas fa-envelope"></i> Contact Messages</a>
       <a href=""><i class="fas fa-pen-nib"></i> Manage Blogs</a>
     </div>
@@ -291,6 +402,16 @@
       <h1>Welcome, Admin</h1>
       <p>Here's an overview of your dashboard</p>
     </div>
+
+    <div class="status-indicator">
+      <div class="status-dot" id="statusDot"></div>
+      <span id="statusText">Checking connection...</span>
+    </div>
+
+    <button class="refresh-btn" id="refreshBtn" onclick="loadDashboardData()">
+      <i class="fas fa-sync-alt"></i>
+      Refresh Data
+    </button>
     
     <div class="cards">
       <div class="card">
@@ -301,7 +422,9 @@
           <h3>Properties</h3>
         </div>
         <div class="card-content">
-          <div class="card-number">24</div>
+          <div class="card-number" id="propertiesCount">
+            <div class="loading-spinner"></div>
+          </div>
           <div class="card-description">Total active properties</div>
           <a href="manage_properties.html" class="card-action">
             View Details <i class="fas fa-arrow-right"></i>
@@ -314,12 +437,32 @@
           <div class="card-icon">
             <i class="fas fa-calendar-check"></i>
           </div>
+          <h3>Viewings</h3>
+        </div>
+        <div class="card-content">
+          <div class="card-number" id="viewingsCount">
+            <div class="loading-spinner"></div>
+          </div>
+          <div class="card-description">Scheduled viewings</div>
+          <a href="" class="card-action">
+            View Details <i class="fas fa-arrow-right"></i>
+          </a>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon">
+            <i class="fas fa-calendar-alt"></i>
+          </div>
           <h3>Bookings</h3>
         </div>
         <div class="card-content">
-          <div class="card-number">12</div>
-          <div class="card-description">Recent bookings</div>
-          <a href="" class="card-action">
+          <div class="card-number" id="bookingsCount">
+            <div class="loading-spinner"></div>
+          </div>
+          <div class="card-description">Total bookings</div>
+          <a href="bookings.html" class="card-action">
             View Details <i class="fas fa-arrow-right"></i>
           </a>
         </div>
@@ -333,30 +476,284 @@
           <h3>Messages</h3>
         </div>
         <div class="card-content">
-          <div class="card-number">8</div>
-          <div class="card-description">Unread messages</div>
-          <a href="" class="card-action">
-            View Details <i class="fas fa-arrow-right"></i>
-          </a>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="card-header">
-          <div class="card-icon">
-            <i class="fas fa-pen-nib"></i>
+          <div class="card-number" id="messagesCount">
+            <div class="loading-spinner"></div>
           </div>
-          <h3>Blogs</h3>
-        </div>
-        <div class="card-content">
-          <div class="card-number">5</div>
-          <div class="card-description">Published posts</div>
+          <div class="card-description">Contact messages</div>
           <a href="" class="card-action">
             View Details <i class="fas fa-arrow-right"></i>
           </a>
         </div>
       </div>
     </div>
+
+    <div class="stats-section">
+      <h2 class="stats-title">Quick Statistics</h2>
+      <div class="quick-stats">
+        <div class="stat-item">
+          <div class="stat-label">Available Properties</div>
+          <div class="stat-value" id="availableProperties">-</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-label">Pending Viewings</div>
+          <div class="stat-value" id="pendingViewings">-</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-label">Active Bookings</div>
+          <div class="stat-value" id="activeBookings">-</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-label">Unread Messages</div>
+          <div class="stat-value" id="unreadMessages">-</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="stats-section">
+      <h2 class="stats-title">Recent Activity</h2>
+      <div id="recentActivity">
+        <div class="loading-spinner"></div>
+        <span style="margin-left: 1rem;">Loading recent activity...</span>
+      </div>
+    </div>
   </div>
+
+  <script>
+    const API_BASE_URL = 'http://localhost:5000/api/v1';
+    
+    let dashboardData = {
+      properties: [],
+      viewings: [],
+      bookings: [],
+      messages: []
+    };
+
+    async function fetchData(endpoint) {
+      try {
+        const response = await fetch(`${API_BASE_URL}${endpoint}`);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        return data;
+      } catch (error) {
+        console.error(`Error fetching ${endpoint}:`, error);
+        throw error;
+      }
+    }
+
+    function updateStatusIndicator(isOnline, message) {
+      const statusDot = document.getElementById('statusDot');
+      const statusText = document.getElementById('statusText');
+      
+      if (isOnline) {
+        statusDot.classList.remove('error');
+        statusText.textContent = message || 'Connected to server';
+      } else {
+        statusDot.classList.add('error');
+        statusText.textContent = message || 'Connection error';
+      }
+    }
+
+    function updateCardCount(cardId, count, error = false) {
+      const element = document.getElementById(cardId);
+      if (error) {
+        element.innerHTML = '<span class="error-text">Error</span>';
+      } else {
+        element.textContent = count;
+      }
+    }
+
+    function calculateQuickStats() {
+      // Available properties (assuming properties with status 'available')
+      const availableProps = dashboardData.properties.filter(p => 
+        p.status === 'available' || p.available === true
+      ).length;
+      
+      // Pending viewings (assuming viewings with status 'pending' or 'scheduled')
+      const pendingViews = dashboardData.viewings.filter(v => 
+        v.status === 'pending' || v.status === 'scheduled'
+      ).length;
+      
+      // Active bookings (assuming bookings with status 'active' or 'confirmed')
+      const activeBooks = dashboardData.bookings.filter(b => 
+        b.status === 'active' || b.status === 'confirmed'
+      ).length;
+      
+      // Unread messages (assuming messages with read: false)
+      const unreadMsgs = dashboardData.messages.filter(m => 
+        m.read === false || m.status === 'unread'
+      ).length;
+
+      document.getElementById('availableProperties').textContent = availableProps;
+      document.getElementById('pendingViewings').textContent = pendingViews;
+      document.getElementById('activeBookings').textContent = activeBooks;
+      document.getElementById('unreadMessages').textContent = unreadMsgs;
+    }
+
+    function generateRecentActivity() {
+      const activityContainer = document.getElementById('recentActivity');
+      let activities = [];
+
+      // Add recent properties
+      const recentProperties = dashboardData.properties
+        .sort((a, b) => new Date(b.created_at || b.createdAt || Date.now()) - new Date(a.created_at || a.createdAt || Date.now()))
+        .slice(0, 2);
+      
+      recentProperties.forEach(prop => {
+        activities.push({
+          type: 'property',
+          text: `New property added: ${prop.title || prop.name || 'Property'}`,
+          time: formatTimeAgo(prop.created_at || prop.createdAt),
+          icon: 'fas fa-building'
+        });
+      });
+
+      // Add recent bookings
+      const recentBookings = dashboardData.bookings
+        .sort((a, b) => new Date(b.created_at || b.createdAt || Date.now()) - new Date(a.created_at || a.createdAt || Date.now()))
+        .slice(0, 2);
+      
+      recentBookings.forEach(booking => {
+        activities.push({
+          type: 'booking',
+          text: `New booking received from ${booking.client_name || booking.name || 'Client'}`,
+          time: formatTimeAgo(booking.created_at || booking.createdAt),
+          icon: 'fas fa-calendar-check'
+        });
+      });
+
+      // Add recent messages
+      const recentMessages = dashboardData.messages
+        .sort((a, b) => new Date(b.created_at || b.createdAt || Date.now()) - new Date(a.created_at || a.createdAt || Date.now()))
+        .slice(0, 2);
+      
+      recentMessages.forEach(msg => {
+        activities.push({
+          type: 'message',
+          text: `New message from ${msg.name || msg.client_name || 'User'}: ${(msg.message || msg.subject || '').substring(0, 50)}...`,
+          time: formatTimeAgo(msg.created_at || msg.createdAt),
+          icon: 'fas fa-envelope'
+        });
+      });
+
+      // Sort all activities by time and take top 5
+      activities = activities
+        .sort((a, b) => new Date(b.time) - new Date(a.time))
+        .slice(0, 5);
+
+      if (activities.length === 0) {
+        activityContainer.innerHTML = '<p style="color: #64748b;">No recent activity to display.</p>';
+        return;
+      }
+
+      const activityHTML = activities.map(activity => `
+        <div style="display: flex; align-items: center; padding: 0.75rem 0; border-bottom: 1px solid #e2e8f0;">
+          <i class="${activity.icon}" style="margin-right: 1rem; color: #64748b; width: 16px;"></i>
+          <div style="flex: 1;">
+            <p style="margin: 0; font-size: 0.875rem; color: #1e293b;">${activity.text}</p>
+            <p style="margin: 0; font-size: 0.75rem; color: #64748b;">${activity.time}</p>
+          </div>
+        </div>
+      `).join('');
+
+      activityContainer.innerHTML = activityHTML;
+    }
+
+    function formatTimeAgo(dateString) {
+      if (!dateString) return 'Unknown';
+      
+      const date = new Date(dateString);
+      const now = new Date();
+      const diffInMs = now - date;
+      const diffInHours = Math.floor(diffInMs / (1000 * 60 * 60));
+      const diffInDays = Math.floor(diffInHours / 24);
+
+      if (diffInDays > 0) {
+        return `${diffInDays} day${diffInDays > 1 ? 's' : ''} ago`;
+      } else if (diffInHours > 0) {
+        return `${diffInHours} hour${diffInHours > 1 ? 's' : ''} ago`;
+      } else {
+        return 'Recently';
+      }
+    }
+
+    async function loadDashboardData() {
+      const refreshBtn = document.getElementById('refreshBtn');
+      refreshBtn.disabled = true;
+      refreshBtn.innerHTML = '<div class="loading-spinner"></div> Loading...';
+
+      try {
+        updateStatusIndicator(true, 'Fetching data...');
+
+        // Fetch data from all endpoints
+        const [properties, viewings, bookings, messages] = await Promise.allSettled([
+          fetchData('/properties'),
+          fetchData('/viewings'),
+          fetchData('/bookings'),
+          fetchData('/contact')
+        ]);
+
+        // Handle properties
+        if (properties.status === 'fulfilled') {
+          dashboardData.properties = Array.isArray(properties.value) ? properties.value : 
+                                    (properties.value.data ? properties.value.data : []);
+          updateCardCount('propertiesCount', dashboardData.properties.length);
+        } else {
+          updateCardCount('propertiesCount', 0, true);
+          console.error('Properties fetch failed:', properties.reason);
+        }
+
+        // Handle viewings
+        if (viewings.status === 'fulfilled') {
+          dashboardData.viewings = Array.isArray(viewings.value) ? viewings.value : 
+                                  (viewings.value.data ? viewings.value.data : []);
+          updateCardCount('viewingsCount', dashboardData.viewings.length);
+        } else {
+          updateCardCount('viewingsCount', 0, true);
+          console.error('Viewings fetch failed:', viewings.reason);
+        }
+
+        // Handle bookings
+        if (bookings.status === 'fulfilled') {
+          dashboardData.bookings = Array.isArray(bookings.value) ? bookings.value : 
+                                  (bookings.value.data ? bookings.value.data : []);
+          updateCardCount('bookingsCount', dashboardData.bookings.length);
+        } else {
+          updateCardCount('bookingsCount', 0, true);
+          console.error('Bookings fetch failed:', bookings.reason);
+        }
+
+        // Handle messages
+        if (messages.status === 'fulfilled') {
+          dashboardData.messages = Array.isArray(messages.value) ? messages.value : 
+                                  (messages.value.data ? messages.value.data : []);
+          updateCardCount('messagesCount', dashboardData.messages.length);
+        } else {
+          updateCardCount('messagesCount', 0, true);
+          console.error('Messages fetch failed:', messages.reason);
+        }
+
+        // Update quick stats and recent activity
+        calculateQuickStats();
+        generateRecentActivity();
+
+        updateStatusIndicator(true, 'Data loaded successfully');
+
+      } catch (error) {
+        console.error('Error loading dashboard data:', error);
+        updateStatusIndicator(false, 'Failed to load data');
+      } finally {
+        refreshBtn.disabled = false;
+        refreshBtn.innerHTML = '<i class="fas fa-sync-alt"></i> Refresh Data';
+      }
+    }
+
+    // Auto-refresh every 5 minutes
+    setInterval(loadDashboardData, 5 * 60 * 1000);
+
+    // Load data when page loads
+    document.addEventListener('DOMContentLoaded', loadDashboardData);
+  </script>
 </body>
 </html>

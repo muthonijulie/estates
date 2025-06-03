@@ -9,9 +9,9 @@
   <!-- Bootstrap 5.3 CSS CDN -->
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B1xZhJ5xulwld6J7U6ZlD2+J5i9GqV" crossorigin="anonymous">
   <!-- Google Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="assets/css/styles.css">
-   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
   <style>
  .featured-section {
             max-width: 1400px;
@@ -21,6 +21,7 @@
             border-radius: 20px;
             backdrop-filter: blur(10px);
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            font-family: 'Poppins', sans-serif;
         }
 
         .featured-section h2 {
@@ -35,6 +36,8 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 700;
         }
 
         .featured-section h2::after {
@@ -56,6 +59,8 @@
             text-transform: uppercase;
             letter-spacing: 2px;
             position: relative;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
         }
 
         .properties {
@@ -68,20 +73,21 @@
 
         .rental-card, .sales-card {
             background: white;
-            border-radius: 20px;
+            border-radius: 15px;
             overflow: hidden;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
             transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             position: relative;
-            border: 2px solid transparent;
+            border: 1px solid #eaeaea;
             width: 100%;
             max-width: 380px;
             height: auto;
+            font-family: 'Poppins', sans-serif;
         }
 
         .rental-card:hover, .sales-card:hover {
-            transform: translateY(-15px) scale(1.02);
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+            transform: translateY(-10px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
             border-color: #667eea;
         }
 
@@ -93,7 +99,7 @@
         }
 
         .rental-card:hover img, .sales-card:hover img {
-            transform: scale(1.1);
+            transform: scale(1.05);
         }
 
         .content {
@@ -101,7 +107,7 @@
         }
 
         .content h3 {
-            font-size: 1.3rem;
+            font-size: 1.25rem;
             margin-bottom: 8px;
             color: #2c3e50;
             border: none;
@@ -109,13 +115,21 @@
             text-transform: none;
             letter-spacing: 0;
             line-height: 1.3;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
         }
 
         .content > p {
-            font-size: 1.2rem;
-            font-weight: bold;
-            color: #27ae60;
+            font-size: 1.1rem;
+            font-weight: 600;
             margin-bottom: 15px;
+            font-family: 'Poppins', sans-serif;
+            display: flex;
+            align-items: center;
+        }
+        
+        .content > p i {
+            margin-right: 8px;
         }
 
         .calendar {
@@ -123,7 +137,7 @@
             gap: 6px;
             margin-bottom: 20px;
             flex-wrap: wrap;
-            justify-content: center;
+            justify-content: flex-start;
         }
 
         .calendar span {
@@ -133,32 +147,35 @@
             align-items: center;
             justify-content: center;
             border-radius: 50%;
-            font-weight: bold;
+            font-weight: 600;
             font-size: 0.8rem;
             transition: all 0.3s ease;
             cursor: pointer;
+            font-family: 'Poppins', sans-serif;
         }
 
         .calendar .available {
-            background: linear-gradient(45deg, #2ecc71, #27ae60);
-            color: white;
-            box-shadow: 0 4px 15px rgba(46, 204, 113, 0.3);
+            background: #e8f5e9;
+            color: #2e7d32;
+            border: 1px solid #a5d6a7;
         }
 
         .calendar .available:hover {
             transform: scale(1.1);
-            box-shadow: 0 6px 20px rgba(46, 204, 113, 0.4);
+            background: #2e7d32;
+            color: white;
         }
 
         .calendar .booked {
-            background: linear-gradient(45deg, #e74c3c, #c0392b);
-            color: white;
-            box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
+            background: #ffebee;
+            color: #c62828;
+            border: 1px solid #ef9a9a;
         }
 
         .calendar .booked:hover {
             transform: scale(1.1);
-            box-shadow: 0 6px 20px rgba(231, 76, 60, 0.4);
+            background: #c62828;
+            color: white;
         }
 
         .buttons {
@@ -171,48 +188,59 @@
         .book-btn, .view-btn {
             padding: 10px 18px;
             border: none;
-            border-radius: 25px;
-            font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+            border-radius: 8px;
+            font-weight: 500;
+            letter-spacing: 0.5px;
             cursor: pointer;
             transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
-            font-size: 0.85rem;
+            font-size: 0.9rem;
+            font-family: 'Poppins', sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .book-btn i, .view-btn i {
+            margin-right: 8px;
         }
 
         .book-btn {
-            background: linear-gradient(45deg, #667eea, #764ba2);
+            background: #667eea;
             color: white;
             flex: 1;
             min-width: 110px;
         }
 
         .book-btn:hover {
+            background: #5a70d6;
             transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
         }
 
         .view-btn {
-            background: linear-gradient(45deg, #f39c12, #e67e22);
-            color: white;
+            background: #f5f5f5;
+            color: #333;
             flex: 1;
             min-width: 110px;
+            border: 1px solid #ddd;
         }
 
         .view-btn:hover {
+            background: #eee;
             transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(243, 156, 18, 0.4);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
         }
 
         .details {
             max-height: 0;
             overflow: hidden;
             transition: max-height 0.4s ease, padding 0.4s ease;
-            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
-            border-radius: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
             margin-top: 15px;
+            font-family: 'Poppins', sans-serif;
         }
 
         .details.show {
@@ -225,7 +253,7 @@
             max-width: 120px;
             height: 80px;
             object-fit: cover;
-            border-radius: 10px;
+            border-radius: 8px;
             margin: 5px 8px 10px 0;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
             transition: transform 0.3s ease;
@@ -238,9 +266,14 @@
         .details p {
             margin-top: 10px;
             color: #555;
-            font-style: italic;
             line-height: 1.5;
             font-size: 0.9rem;
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        .details p strong {
+            color: #333;
+            font-weight: 600;
         }
 
         /* Rental specific styling */
@@ -372,39 +405,120 @@
             }
         }
 
-        /* Animation for calendar numbers */
-        .calendar span {
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0% {
-                transform: scale(1);
-            }
-            50% {
-                transform: scale(1.05);
-            }
-            100% {
-                transform: scale(1);
-            }
-        }
-
-        /* Make calendar numbers appear more dynamic */
-        .calendar .available:nth-child(odd) {
-            animation-delay: 0.5s;
+        /* Card label */
+        .property-label {
+            position: absolute;
+            top: 15px;
+            left: 0;
+            background: #3498db;
+            color: white;
+            padding: 5px 15px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            border-radius: 0 4px 4px 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            font-family: 'Poppins', sans-serif;
+            z-index: 1;
         }
         
-        .calendar .booked:nth-child(even) {
-            animation-delay: 0.7s;
+        .sale-properties .property-label {
+            background: #e74c3c;
         }
-
+        
+        /* Property features */
+        .property-features {
+            display: flex;
+            gap: 15px;
+            margin: 15px 0;
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        .feature {
+            display: flex;
+            align-items: center;
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .feature i {
+            margin-right: 5px;
+            color: #667eea;
+        }
+        
+        .sale-properties .feature i {
+            color: #e74c3c;
+        }
+        
         /* Loading message styling */
         .loading-message {
             text-align: center;
             color: #666;
-            font-style: italic;
             padding: 40px;
             grid-column: 1 / -1;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1rem;
+        }
+        
+        /* Review button */
+        .leave-review-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 25px;
+            background: #667eea;
+            color: white;
+            border-radius: 30px;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+            font-family: 'Poppins', sans-serif;
+            border: none;
+        }
+        
+        .leave-review-btn:hover {
+            background: #5a70d6;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.5);
+            color: white;
+        }
+        
+        .review-button-container {
+            text-align: center;
+            margin: 50px 0;
+        }
+        
+        /* Hero buttons */
+        .btn-custom-primary, .btn-custom-outline {
+            font-family: 'Poppins', sans-serif;
+            padding: 12px 25px;
+            font-weight: 500;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-custom-primary {
+            background: #667eea;
+            border: none;
+            color: white;
+        }
+        
+        .btn-custom-primary:hover {
+            background: #5a70d6;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-custom-outline {
+            background: transparent;
+            border: 2px solid white;
+            color: white;
+        }
+        
+        .btn-custom-outline:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(255, 255, 255, 0.2);
         }
     </style>
   
@@ -439,8 +553,8 @@
     <h1 class="display-4 fw-bold mb-4">Welcome to <span class="text-warning">Your Website Name</span></h1>
     <p class="lead mb-5">Your Dream Home, Just a Click Away. Find a home to rent or buy effortlessly.</p>
     <div class="d-flex flex-column flex-sm-row justify-content-center gap-3">
-      <a href="rentals.html" class="btn btn-custom-primary">Find Rentals</a>
-      <a href="sales.html" class="btn btn-custom-outline">Buy a Home</a>
+      <a href="rentals.html" class="btn btn-custom-primary"><i class="fas fa-key"></i> Find Rentals</a>
+      <a href="sales.html" class="btn btn-custom-outline"><i class="fas fa-home"></i> Buy a Home</a>
     </div>
   </div>
 </section>
@@ -541,7 +655,7 @@
 
 <div class="review-button-container">
   <a href="https://g.page/YOUR-GOOGLE-BUSINESS-NAME/review" target="_blank" class="leave-review-btn">
-    ⭐ Leave a Google Review
+    <i class="fas fa-star mr-2"></i> Leave a Google Review
   </a>
 </div>
 
@@ -627,9 +741,9 @@
     details.classList.toggle('show');
     
     if (details.classList.contains('show')) {
-      button.textContent = 'Hide Details';
+      button.innerHTML = '<i class="fas fa-chevron-up"></i> Hide Details';
     } else {
-      button.textContent = 'View More';
+      button.innerHTML = '<i class="fas fa-chevron-down"></i> View More';
     }
   }
   
@@ -681,17 +795,21 @@
     const formattedPrice = new Intl.NumberFormat('en-KE').format(property.price || 35000);
     
     card.innerHTML = `
+          <div class="property-label">For Rent</div>
           <img src="${property.mainImage || 'assets/images/final.png'}" alt="${property.title}" onerror="this.src='assets/images/final.png'">
       <div class="content">
         <h3>${property.title || 'Modern Apartment'}</h3>
-        <p>Ksh ${formattedPrice}/month</p>
+        <p><i class="fas fa-tag"></i> Ksh ${formattedPrice}/month</p>
+        <div class="property-features">
+          <span class="feature"><i class="fas fa-bed"></i> ${property.bedrooms || '2'} BD</span>
+          <span class="feature"><i class="fas fa-bath"></i> ${property.bathrooms || '1'} BA</span>
+          <span class="feature"><i class="fas fa-map-marker-alt"></i> ${property.location || 'Nairobi'}</span>
+        </div>
         <div class="buttons">
-          <button class="book-btn" onclick="openBookingForm()">Book Now</button>
-          <button class="view-btn" onclick="toggleDetails(this)">View More</button>
+          <button class="view-btn" onclick="toggleDetails(this)"><i class="fas fa-chevron-down"></i> View More</button>
         </div>
         <div class="details">
-                <img src="${property.mainImage || 'assets/images/final.png'}" alt="${property.title}" onerror="this.src='assets/images/final.png'">
-
+          <img src="${property.mainImage || 'assets/images/final.png'}" alt="${property.title}" onerror="this.src='assets/images/final.png'">
           <p><strong>Location:</strong> ${property.location || 'Not specified'}</p>
           <p><strong>Bedrooms:</strong> ${property.bedrooms || 'Not specified'}</p>
           <p><strong>Bathrooms:</strong> ${property.bathrooms || 'Not specified'}</p>
@@ -717,16 +835,21 @@
     const formattedPrice = new Intl.NumberFormat('en-KE').format(property.price || 12500000);
     
     card.innerHTML = `
+          <div class="property-label">For Sale</div>
           <img src="${property.mainImage || 'assets/images/final.png'}" alt="${property.title}" onerror="this.src='assets/images/final.png'">
       <div class="content">
         <h3>${property.title || 'Elegant Villa'}</h3>
-        <p>Ksh ${formattedPrice}</p>
+        <p><i class="fas fa-tag"></i> Ksh ${formattedPrice}</p>
+        <div class="property-features">
+          <span class="feature"><i class="fas fa-bed"></i> ${property.bedrooms || '4'} BD</span>
+          <span class="feature"><i class="fas fa-bath"></i> ${property.bathrooms || '3'} BA</span>
+          <span class="feature"><i class="fas fa-map-marker-alt"></i> ${property.location || 'Mombasa'}</span>
+        </div>
         <div class="buttons">
-          <button class="book-btn" onclick="openViewingForm()">Book a Viewing</button>
-          <button class="view-btn" onclick="toggleDetails(this)">View More</button>
+          <button class="view-btn" onclick="toggleDetails(this)"><i class="fas fa-chevron-down"></i> View More</button>
         </div>
         <div class="details">
-                <img src="${property.mainImage || 'assets/images/final.png'}" alt="${property.title}" onerror="this.src='assets/images/final.png'">
+          <img src="${property.mainImage || 'assets/images/final.png'}" alt="${property.title}" onerror="this.src='assets/images/final.png'">
           <p><strong>Location:</strong> ${property.location || 'Not specified'}</p>
           <p><strong>Bedrooms:</strong> ${property.bedrooms || 'Not specified'}</p>
           <p><strong>Bathrooms:</strong> ${property.bathrooms || 'Not specified'}</p>
@@ -760,7 +883,10 @@
             price: [35000, 25000, 50000][i],
             description: ['Wi-Fi, parking, 24/7 security, near town.', 'Private balcony, smart TV, city views.', 'Garden, garage, pet-friendly, near school.'][i],
             mainImage: null,
-            listingType: 'Rent'
+            listingType: 'Rent',
+            bedrooms: [2, 1, 3][i],
+            bathrooms: [2, 1, 2][i],
+            location: ['Nairobi CBD', 'Westlands', 'Karen'][i]
           };
           rentalContainer.appendChild(createRentalCard(sampleRental));
         }
@@ -771,7 +897,10 @@
             price: [12500000, 9800000, 6300000][i],
             description: 'Prime location with excellent amenities.',
             mainImage: null,
-            listingType: 'Sale'
+            listingType: 'Sale',
+            bedrooms: [4, 3, 2][i],
+            bathrooms: [3, 2, 2][i],
+            location: ['Kilimani', 'Lavington', 'Kileleshwa'][i]
           };
           saleContainer.appendChild(createSaleCard(sampleSale));
         }
