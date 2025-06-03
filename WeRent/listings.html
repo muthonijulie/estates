@@ -19,7 +19,6 @@
     <link rel="stylesheet" href="assets/css/listings.css">
 </head>
 <body>
-    <!-- Header -->
     <header class="navbar">
         <div class="logo">
             <img src="assets/images/logo.jpeg" alt="WeRent Logo">
@@ -34,17 +33,20 @@
         </nav>
 
         <div class="menu-toggle" id="menuToggle">
-            <i class="fas fa-bars"></i>
+            <i class="fas fa-bars" id="openIcon"></i>
+            <i class="fas fa-times" id="closeIcon" style="display: none;"></i>
         </div>
     </header>
 
     <!-- Main Content -->
     <main>
         <div class="hero">
-            <h1>Properties for Sale</h1>
+            <h1>Properties</h1>
         </div>
 
-        <div id="loading" class="loading">Loading properties...</div>
+        <div id="loading" class="loading">
+            <i class="fas fa-spinner fa-spin"></i> Loading properties...
+        </div>
         <div id="error" class="error" style="display: none;"></div>
         <div id="propertiesGrid" class="properties-grid"></div>
     </main>
@@ -54,23 +56,28 @@
         <div class="modal-content">
             <span class="close" onclick="closeModal()">&times;</span>
             <h2>Book Viewing</h2>
-            <form id="bookingForm" onsubmit="submitForm(event)">
-                <input type="text" id="name" name="name" placeholder="Full Name" required>
-                <input type="tel" id="phone" name="phone" placeholder="Phone Number" required>
-                <input type="datetime-local" id="date" name="date" required>
-                <textarea id="notes" name="notes" placeholder="Additional notes or special requirements" rows="3"></textarea>
+            <form id="bookingForm" onsubmit="submitViewing(event)">
+                <input type="hidden" id="propertyId" name="propertyId">
+                <input type="text" id="fullName" name="fullName" placeholder="Full Name" required>
+                <input type="tel" id="contactInfo" name="contactInfo" placeholder="Contact Info (Phone/Email)" required>
+                <div class="datetime-container">
+                    <input type="date" id="preferredDate" name="preferredDate" required>
+                    <input type="time" id="preferredTime" name="preferredTime" required>
+                </div>
+                <textarea id="comments" name="comments" placeholder="Any Comments (Optional)" rows="3"></textarea>
                 <button type="submit" class="book-btn">
-                    <i class="fas fa-calendar-check"></i>
-                    Book Viewing
+                    <span id="submitText">Submit</span>
+                    <span id="submitLoading" style="display: none;">
+                        <i class="fas fa-spinner fa-spin"></i> Submitting...
+                    </span>
                 </button>
             </form>
         </div>
     </div>
 
     <!-- Success Message -->
-    <div id="success" class="success">
-        <i class="fas fa-check-circle"></i>
-        <span>Viewing booked successfully!</span>
+    <div id="viewingSuccess" class="success">
+        Thank you for scheduling a viewing. We'll be in touch to confirm the time and guide you through the process!
     </div>
 
     <!-- Footer -->
@@ -110,15 +117,16 @@
                 <h4>Follow Us</h4>
                 <div class="social-icons">
                     <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
-                    <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                    <a href="#" aria-label="X"><i class="fab fa-x-twitter"></i></a>
                     <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
                     <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="#" aria-label="TikTok"><i class="fab fa-tiktok"></i></a>
                 </div>
             </div>
         </div>
 
         <div class="footer-bottom">
-            <p>&copy; 2024 WeRent. All rights reserved.</p>
+            <p>&copy; 2025 WeRent. All rights reserved.</p>
         </div>
     </footer>
 
@@ -134,259 +142,218 @@
             RETRY_DELAY: 1000
         };
 
-        let selectedProperty = null;
+        // Global variables
+        let selectedPropertyId = null;
 
-        // Utility Functions
-        function formatPrice(price) {
-            if (typeof price === 'number') {
-                return `KSh ${price.toLocaleString()}`;
-            }
-            return price || 'Price on request';
-        }
-
-        function formatDate(dateString) {
+        // Fetch and display properties
+        async function fetchProperties() {
             try {
-                const date = new Date(dateString);
-                return date.toLocaleDateString('en-US', {
-                    weekday: 'short',
-                    month: 'short',
-                    day: 'numeric'
-                });
-            } catch (error) {
-                return dateString;
-            }
-        }
+                document.getElementById('loading').style.display = 'block';
+                document.getElementById('error').style.display = 'none';
+                document.getElementById('propertiesGrid').innerHTML = '';
 
-        // API Functions
-        async function fetchWithRetry(url, options = {}, attempts = CONFIG.RETRY_ATTEMPTS) {
-            try {
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 10000);
-
-                const response = await fetch(url, {
-                    ...options,
-                    signal: controller.signal,
-                    headers: {
-                        'Content-Type': 'application/json',
-                        ...options.headers
-                    }
-                });
-
-                clearTimeout(timeoutId);
-
+                const response = await fetch(`${API_BASE}/properties`);
+                
                 if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-                }
-
-                return await response.json();
-            } catch (error) {
-                if (error.name === 'AbortError') {
-                    throw new Error('Request timed out. Please check your connection.');
+                    throw new Error(`HTTP error! status: ${response.status}`);
                 }
                 
-                if (attempts > 1) {
-                    console.warn(`Request failed, retrying... (${CONFIG.RETRY_ATTEMPTS - attempts + 2}/${CONFIG.RETRY_ATTEMPTS})`);
-                    await new Promise(resolve => setTimeout(resolve, CONFIG.RETRY_DELAY));
-                    return fetchWithRetry(url, options, attempts - 1);
-                }
-                throw error;
+                const data = await response.json();
+                
+                // Filter properties for rental listings (this can be modified if needed)
+                const properties = data.data || [];
+                
+                displayProperties(properties);
+                
+            } catch (error) {
+                console.error('Error fetching properties:', error);
+                showError(error.message || 'Failed to load properties. Please try again later.');
+            } finally {
+                document.getElementById('loading').style.display = 'none';
             }
         }
 
-
-
-        async function loadProperties() {
-            const loadingEl = document.getElementById('loading');
-            const errorEl = document.getElementById('error');
-            const gridEl = document.getElementById('propertiesGrid');
-
-            try {
-                loadingEl.style.display = 'flex';
-                errorEl.style.display = 'none';
-                gridEl.innerHTML = '';
-
-                const url = `${CONFIG.API_BASE_URL}${CONFIG.ENDPOINTS.PROPERTIES}`;
-                const data = await fetchWithRetry(url);
-                
-                // Handle different response structures
-                const properties = data.data || data.properties || data || [];
-
-                loadingEl.style.display = 'none';
-                
-                if (properties.length === 0) {
-                    displayNoProperties();
-                } else {
-                    displayProperties(properties);
-                }
-                
-            } catch (error) {
-                console.error('Failed to load properties:', error);
-                loadingEl.style.display = 'none';
-                showError(`Unable to load properties: ${error.message || 'Please check your connection and try again'}`);
-            }
-        }
-
-        function displayNoProperties() {
-            const grid = document.getElementById('propertiesGrid');
-            grid.innerHTML = `
-                <div class="no-properties">
-                    <i class="fas fa-home"></i>
-                    <h3>No Properties Available</h3>
-                    <p>We're currently updating our listings. Please check back soon!</p>
-                    <button onclick="loadProperties()" class="book-btn" style="margin-top: 1rem; max-width: 200px;">
-                        <i class="fas fa-refresh"></i> Refresh
-                    </button>
-                </div>
-            `;
-        }
-
+        // Display properties in the UI
         function displayProperties(properties) {
             const grid = document.getElementById('propertiesGrid');
             
-            grid.innerHTML = properties.map(property => {
-                const propertyDetails = [
-                    property.bedrooms ? `<div class="detail-item"><i class="fas fa-bed"></i> ${property.bedrooms} beds</div>` : '',
-                    property.bathrooms ? `<div class="detail-item"><i class="fas fa-bath"></i> ${property.bathrooms} baths</div>` : '',
-                    property.area ? `<div class="detail-item"><i class="fas fa-ruler-combined"></i> ${property.area}</div>` : '',
-                    property.location ? `<div class="detail-item"><i class="fas fa-map-marker-alt"></i> ${property.location}</div>` : ''
-                ].filter(detail => detail).join('');
-
-                const availabilityCalendar = property.availability && property.availability.length > 0 ? 
-                    property.availability.map(day => 
-                        `<span class="${day.status || 'available'}" title="${day.date || day.day}">
-                            ${day.day || formatDate(day.date)}
-                        </span>`
-                    ).join('') : 
-                    '<span class="available">Contact for availability</span>';
-
-                const safeTitle = (property.title || property.name || 'Property').replace(/'/g, "&apos;");
-
-                return `
-                    <div class="property-card" data-property-id="${property.id}">
-                        <div class="property-image">
-                            ${property.mainImage ? 
-                                `      <img src="${property.mainImage || 'assets/images/final.png'}" alt="${property.title}" onerror="this.src='assets/images/final.png'">
-
-                                 <div class="placeholder" style="display:none;"><i class="fas fa-home"></i></div>` : 
-                                '<div class="placeholder"><i class="fas fa-home"></i></div>'
-                            }
-                        </div>
-                        <div class="property-content">
-                            <h3 class="property-title">${safeTitle}</h3>
-                            <div class="property-price">${formatPrice(property.price)}</div>
-                            
-                            ${propertyDetails ? `<div class="property-details">${propertyDetails}</div>` : ''}
-                            
-                            <div class="calendar">
-                                ${availabilityCalendar}
-                            </div>
-                            
-                            <button class="book-btn" onclick="openModal('${property.id}', '${safeTitle}')">
-                                <i class="fas fa-calendar-check"></i> Book Viewing
-                            </button>
-                        </div>
+            if (properties.length === 0) {
+                grid.innerHTML = `
+                    <div class="no-properties">
+                        <i class="fas fa-home"></i>
+                        <h3>No Properties Available</h3>
+                        <p>We're currently updating our listings. Please check back soon!</p>
+                        <button onclick="fetchProperties()" class="book-btn" style="margin-top: 1rem; max-width: 200px;">
+                            <i class="fas fa-refresh"></i> Refresh
+                        </button>
                     </div>
                 `;
-            }).join('');
+                return;
+            }
+            
+            grid.innerHTML = properties.map(property => `
+                <div class="property-card">
+                    ${property.status ? `<div class="property-status ${property.status.toLowerCase()}">${property.status}</div>` : ''}
+                    <div class="property-image">
+                        <img src="${property.mainImage || 'assets/images/final.png'}" alt="${property.title}" onerror="this.src='assets/images/final.png'">
+                    </div>
+                    <div class="property-content">
+                        <h3 class="property-title">${property.title}</h3>
+                        <div class="property-price">KSh ${property.price.toLocaleString()}</div>
+                        
+                        <div class="property-details">
+                            ${property.bedrooms ? `<div class="detail-item"><i class="fas fa-bed"></i> ${property.bedrooms} beds</div>` : ''}
+                            ${property.bathrooms ? `<div class="detail-item"><i class="fas fa-bath"></i> ${property.bathrooms} baths</div>` : ''}
+                            ${property.location ? `<div class="detail-item"><i class="fas fa-map-marker-alt"></i> ${property.location}</div>` : ''}
+                        </div>
+                        
+                        <div class="property-type">
+                            <span class="listing-type">${property.listingType || 'Rental'}</span>
+                        </div>
+                        
+                        <div class="buttons">
+                            <button class="book-btn" onclick="openModal('${property._id}')" ${property.status === 'Sold' || property.status === 'Booked' ? 'disabled' : ''}>
+                                ${property.status === 'Sold' ? 'Sold' : (property.status === 'Booked' ? 'Booked' : 'Book a Viewing')}
+                            </button>
+                            <button class="details-btn" onclick="toggleDetails('${property._id}')">
+                                <span id="toggle-text-${property._id}">View More</span>
+                            </button>
+                        </div>
+                        
+                        <div id="details-${property._id}" class="property-expanded" style="display: none;">
+                            <p><strong>Description:</strong> ${property.description}</p>
+                            ${property.propertyType ? `<p><strong>Property Type:</strong> ${Array.isArray(property.propertyType) ? property.propertyType.join(', ') : property.propertyType}</p>` : ''}
+                            
+                            ${property.amenities && property.amenities.length > 0 ? `
+                                <p><strong>Amenities:</strong></p>
+                                <div class="amenities-list">
+                                    ${property.amenities.map(amenity => `<span class="amenity-tag">${amenity}</span>`).join('')}
+                                </div>
+                            ` : ''}
+                            
+                            ${property.galleryImages && property.galleryImages.length > 0 ? `
+                                <p><strong>Gallery:</strong></p>
+                                <div class="gallery-preview">
+                                    ${property.galleryImages.slice(0, 3).map(img => `
+                                        <img src="${img}" alt="Gallery" onerror="this.style.display='none'">
+                                    `).join('')}
+                                </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
         }
 
-        function openModal(propertyId, propertyTitle = '') {
-            selectedProperty = { id: propertyId, title: propertyTitle };
-            const modal = document.getElementById('viewingModal');
-            const modalTitle = modal.querySelector('h2');
+        // Toggle property details
+        function toggleDetails(propertyId) {
+            const detailsDiv = document.getElementById(`details-${propertyId}`);
+            const toggleText = document.getElementById(`toggle-text-${propertyId}`);
             
-            modalTitle.textContent = propertyTitle ? `Book Viewing - ${propertyTitle}` : 'Book Viewing';
-            modal.style.display = 'block';
+            if (detailsDiv.style.display === 'block') {
+                detailsDiv.style.display = 'none';
+                toggleText.textContent = 'View More';
+            } else {
+                detailsDiv.style.display = 'block';
+                toggleText.textContent = 'View Less';
+            }
+        }
+
+        // Open viewing modal
+        function openModal(propertyId) {
+            selectedPropertyId = propertyId;
+            document.getElementById('propertyId').value = propertyId;
+            document.getElementById('viewingModal').style.display = 'block';
             
             // Set minimum date to today
-            const dateInput = document.getElementById('date');
-            const now = new Date();
-            const minDateTime = now.toISOString().slice(0, 16);
-            dateInput.min = minDateTime;
+            const dateInput = document.getElementById('preferredDate');
+            if (dateInput) {
+                const today = new Date().toISOString().split('T')[0];
+                dateInput.min = today;
+            }
         }
 
+        // Close viewing modal
         function closeModal() {
             document.getElementById('viewingModal').style.display = 'none';
             document.getElementById('bookingForm').reset();
-            selectedProperty = null;
+            selectedPropertyId = null;
         }
 
-        async function submitForm(event) {
-            event.preventDefault();
+        // Submit viewing request
+        async function submitViewing(e) {
+            e.preventDefault();
             
-            if (!selectedProperty) {
-                showError('No property selected');
-                return;
-            }
-
-            const form = event.target;
-            const submitButton = form.querySelector('button[type="submit"]');
-            const originalHTML = submitButton.innerHTML;
+            const submitBtn = document.querySelector('#bookingForm button[type="submit"]');
+            const submitText = document.getElementById('submitText');
+            const submitLoading = document.getElementById('submitLoading');
+            
+            // Show loading state
+            submitBtn.disabled = true;
+            submitText.style.display = 'none';
+            submitLoading.style.display = 'inline';
             
             try {
-                // Show loading state
-                submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Booking...';
-                submitButton.disabled = true;
-
-                const formData = {
-                    propertyId: selectedProperty.id,
-                    propertyTitle: selectedProperty.title,
-                    name: document.getElementById('name').value,
-                    phone: document.getElementById('phone').value,
-                    date: document.getElementById('date').value,
-                    notes: document.getElementById('notes').value
+                const formData = new FormData(e.target);
+                const viewingData = {
+                    propertyId: formData.get('propertyId'),
+                    fullName: formData.get('fullName'),
+                    contactInfo: formData.get('contactInfo'),
+                    preferredDate: formData.get('preferredDate'),
+                    preferredTime: formData.get('preferredTime'),
+                    comments: formData.get('comments') || ''
                 };
-
-                // Try to submit to API
-                const response = await fetchWithRetry(`${CONFIG.API_BASE_URL}${CONFIG.ENDPOINTS.BOOKINGS}`, {
+                
+                const response = await fetch(`${API_BASE}/viewings`, {
                     method: 'POST',
-                    body: JSON.stringify(formData)
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(viewingData)
                 });
-
-                console.log('Booking submitted successfully:', response);
-
+                
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || 'Failed to submit viewing request');
+                }
+                
+                const result = await response.json();
+                
+                // Close modal and show success
                 closeModal();
-                showSuccess('Viewing booked successfully! We\'ll contact you soon.');
+                showSuccessMessage();
+                
+                console.log('Viewing scheduled successfully:', result);
                 
             } catch (error) {
-                console.error('Booking failed:', error);
-                showError(error.message || 'Failed to book viewing. Please try again.');
+                console.error('Error submitting viewing:', error);
+                showError('Failed to submit viewing request. Please try again.');
             } finally {
-                // Restore button state
-                submitButton.innerHTML = originalHTML;
-                submitButton.disabled = false;
+                // Reset button state
+                submitBtn.disabled = false;
+                submitText.style.display = 'inline';
+                submitLoading.style.display = 'none';
             }
         }
 
-        function showSuccess(message = 'Viewing booked successfully!') {
-            const success = document.getElementById('success');
-            success.querySelector('span').textContent = message;
-            success.style.display = 'flex';
-            
-            setTimeout(() => {
-                success.style.display = 'none';
-            }, 5000);
+        // Show success message
+        function showSuccessMessage() {
+            const popup = document.getElementById('viewingSuccess');
+            popup.style.display = 'block';
+            setTimeout(() => popup.style.display = 'none', 5000);
         }
 
+        // Show error message
         function showError(message) {
-            const errorEl = document.createElement('div');
-            errorEl.className = 'error';
-            errorEl.style.position = 'fixed';
-            errorEl.style.top = '100px';
-            errorEl.style.right = '2rem';
-            errorEl.style.zIndex = '3000';
+            const errorEl = document.getElementById('error');
             errorEl.innerHTML = `<i class="fas fa-exclamation-triangle"></i> ${message}`;
+            errorEl.style.display = 'block';
             
-            document.body.appendChild(errorEl);
-            
-            setTimeout(() => {
-                if (errorEl.parentNode) {
-                    errorEl.parentNode.removeChild(errorEl);
-                }
-            }, 5000);
+            // Add retry button
+            errorEl.innerHTML += '<br><button onclick="fetchProperties()" class="book-btn" style="margin-top: 1rem; max-width: 200px;">Try Again</button>';
         }
 
-        // Event Listeners
+        // Close modal when clicking outside
         window.onclick = function(event) {
             const modal = document.getElementById('viewingModal');
             if (event.target === modal) {
@@ -394,47 +361,33 @@
             }
         }
 
-        // Keyboard navigation
-        document.addEventListener('keydown', function(event) {
-            if (event.key === 'Escape') {
-                closeModal();
-            }
-        });
-
         // Mobile menu toggle
         document.addEventListener('DOMContentLoaded', function() {
-            loadProperties();
-            
             const menuToggle = document.getElementById('menuToggle');
             const navLinks = document.getElementById('navLinks');
+            const openIcon = document.getElementById('openIcon');
+            const closeIcon = document.getElementById('closeIcon');
             
             if (menuToggle && navLinks) {
-                menuToggle.addEventListener('click', function() {
-                    navLinks.style.display = navLinks.style.display === 'flex' ? 'none' : 'flex';
+                menuToggle.addEventListener('click', () => {
+                    navLinks.classList.toggle('active');
+
+                    if (navLinks.classList.contains('active')) {
+                        openIcon.style.display = 'none';
+                        closeIcon.style.display = 'block';
+                    } else {
+                        openIcon.style.display = 'block';
+                        closeIcon.style.display = 'none';
+                    }
                 });
             }
+            
+            // Load properties when page loads
+            fetchProperties();
         });
+    </script>
 
-        // Retry mechanism for failed requests
-        function addRetryButton() {
-            const errorEl = document.getElementById('error');
-            if (errorEl.style.display !== 'none') {
-                errorEl.innerHTML += '<br><button onclick="loadProperties()" class="book-btn" style="margin-top: 1rem; max-width: 200px;">Try Again</button>';
-            }
-        }
-
-        // Auto-retry on network restoration
-        let isOnline = navigator.onLine;
-        window.addEventListener('online', function() {
-            if (!isOnline) {
-                isOnline = true;
-                loadProperties();
-            }
-        });
-
-        window.addEventListener('offline', function() {
-            isOnline = false;
-        });
-        </script>
-        </body>
-        </html>
+    <!-- Bootstrap 5.3 JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+</body>
+</html>
