@@ -1,17 +1,29 @@
-const express=require('express');
-const app=express();
+const express = require('express');
+const app = express();
 
 require("dotenv").config();
 
-const cors=require('cors');
-const mongoose=require('mongoose');
+const cors = require('cors');
+const mongoose = require('mongoose');
 const viewRoutes = require('./routes/ViewRoutes');
 const propertyRoutes = require('./routes/propertyRoutes');
-const contactRoutes=require("./routes/contactRoutes")
+const contactRoutes = require("./routes/contactRoutes");
 const rentalRoutes = require('./routes/rentalRoutes');
 const bookingRoutes = require('./routes/bookingRoutes');
 
-//connecting to the database
+// CORS configuration - MUST come before routes
+app.use(cors({
+    origin: ['http://127.0.0.1:5500', 'http://localhost:5500', 'http://localhost:3000'],
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true
+}));
+
+// Body parsing middleware
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// Connecting to the database
 mongoose.connect(process.env.MONGODB_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true
@@ -21,40 +33,20 @@ mongoose.connect(process.env.MONGODB_URI, {
     console.error("Error connecting to MongoDB:", err);
 });
 
-//use routes
-
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-
-//importing routes
-//sales routes
+// Routes - AFTER CORS configuration
 app.use('/api/v1', viewRoutes);
-
-//property routes
 app.use('/api/v1', propertyRoutes);
-
-//contact routes
 app.use('/api/v1', contactRoutes);
-
-//rental routes
 app.use('/api/v1', rentalRoutes);
+app.use('/api/v1', bookingRoutes);
 
-//booking routes
-app.use('/api/v1', bookingRoutes); 
+const port_number = process.env.PORT || 5000;
 
-const port_number=process.env.PORT ||5000;
-
-
-app.use(cors());
-
-//routes
-
-app.get('/',(req,res)=>{
+// Health check route
+app.get('/', (req, res) => {
     res.send("Server is Healthy 😂😂😂");
-})
+});
 
-
-app.listen(port_number,()=>{
+app.listen(port_number, () => {
     console.log(`Server is running on http://localhost:${port_number}`);
-  
-})
+});
