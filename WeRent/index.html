@@ -1,7 +1,3 @@
-
-
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -19,8 +15,8 @@
   <style>
  .featured-section {
             max-width: 1400px;
-            margin: 0 auto;
-            padding: 50px 20px;
+            margin: 80px auto;
+            padding: 60px 20px 80px 20px;
             background: rgba(255, 255, 255, 0.95);
             border-radius: 20px;
             backdrop-filter: blur(10px);
@@ -53,7 +49,7 @@
 
         .featured-section h3 {
             font-size: 2.2rem;
-            margin: 50px 0 40px 0;
+            margin: 60px 0 40px 0;
             color: #34495e;
             border-left: 6px solid #667eea;
             padding-left: 20px;
@@ -64,9 +60,10 @@
 
         .properties {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 30px;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
             margin-bottom: 60px;
+            justify-items: center;
         }
 
         .rental-card, .sales-card {
@@ -77,6 +74,9 @@
             transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             position: relative;
             border: 2px solid transparent;
+            width: 100%;
+            max-width: 380px;
+            height: auto;
         }
 
         .rental-card:hover, .sales-card:hover {
@@ -87,7 +87,7 @@
 
         .rental-card img, .sales-card img {
             width: 100%;
-            height: 250px;
+            height: 220px;
             object-fit: cover;
             transition: transform 0.4s ease;
         }
@@ -97,42 +97,44 @@
         }
 
         .content {
-            padding: 25px;
+            padding: 20px;
         }
 
         .content h3 {
-            font-size: 1.4rem;
-            margin-bottom: 10px;
+            font-size: 1.3rem;
+            margin-bottom: 8px;
             color: #2c3e50;
             border: none;
             padding: 0;
             text-transform: none;
             letter-spacing: 0;
+            line-height: 1.3;
         }
 
         .content > p {
-            font-size: 1.3rem;
+            font-size: 1.2rem;
             font-weight: bold;
             color: #27ae60;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
 
         .calendar {
             display: flex;
-            gap: 8px;
-            margin-bottom: 25px;
+            gap: 6px;
+            margin-bottom: 20px;
             flex-wrap: wrap;
+            justify-content: center;
         }
 
         .calendar span {
-            width: 35px;
-            height: 35px;
+            width: 30px;
+            height: 30px;
             display: flex;
             align-items: center;
             justify-content: center;
             border-radius: 50%;
             font-weight: bold;
-            font-size: 0.9rem;
+            font-size: 0.8rem;
             transition: all 0.3s ease;
             cursor: pointer;
         }
@@ -161,13 +163,13 @@
 
         .buttons {
             display: flex;
-            gap: 15px;
-            margin-bottom: 20px;
+            gap: 10px;
+            margin-bottom: 15px;
             flex-wrap: wrap;
         }
 
         .book-btn, .view-btn {
-            padding: 12px 24px;
+            padding: 10px 18px;
             border: none;
             border-radius: 25px;
             font-weight: bold;
@@ -177,13 +179,14 @@
             transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
+            font-size: 0.85rem;
         }
 
         .book-btn {
             background: linear-gradient(45deg, #667eea, #764ba2);
             color: white;
             flex: 1;
-            min-width: 120px;
+            min-width: 110px;
         }
 
         .book-btn:hover {
@@ -195,7 +198,7 @@
             background: linear-gradient(45deg, #f39c12, #e67e22);
             color: white;
             flex: 1;
-            min-width: 120px;
+            min-width: 110px;
         }
 
         .view-btn:hover {
@@ -214,16 +217,16 @@
 
         .details.show {
             max-height: 500px;
-            padding: 20px;
+            padding: 15px;
         }
 
         .details img {
             width: 100%;
-            max-width: 150px;
-            height: 100px;
+            max-width: 120px;
+            height: 80px;
             object-fit: cover;
             border-radius: 10px;
-            margin: 5px 10px 10px 0;
+            margin: 5px 8px 10px 0;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
             transition: transform 0.3s ease;
         }
@@ -233,10 +236,11 @@
         }
 
         .details p {
-            margin-top: 15px;
+            margin-top: 10px;
             color: #555;
             font-style: italic;
-            line-height: 1.6;
+            line-height: 1.5;
+            font-size: 0.9rem;
         }
 
         /* Rental specific styling */
@@ -290,13 +294,26 @@
         }
 
         /* Responsive Design */
+        @media (max-width: 1200px) {
+            .properties {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 20px;
+            }
+        }
+
         @media (max-width: 768px) {
+            .featured-section {
+                margin: 40px auto;
+                padding: 40px 15px 60px 15px;
+            }
+            
             .featured-section h2 {
                 font-size: 2.2rem;
             }
             
             .featured-section h3 {
                 font-size: 1.8rem;
+                margin: 40px 0 30px 0;
             }
             
             .properties {
@@ -313,25 +330,29 @@
             }
             
             .content {
-                padding: 20px;
+                padding: 15px;
+            }
+
+            .rental-card, .sales-card {
+                max-width: 100%;
             }
         }
 
         @media (max-width: 480px) {
             .featured-section {
-                padding: 30px 15px;
-                margin: 10px;
+                padding: 30px 10px 50px 10px;
+                margin: 20px 10px;
             }
             
             .calendar span {
-                width: 30px;
-                height: 30px;
-                font-size: 0.8rem;
+                width: 28px;
+                height: 28px;
+                font-size: 0.75rem;
             }
             
             .book-btn, .view-btn {
-                padding: 10px 20px;
-                font-size: 0.9rem;
+                padding: 8px 16px;
+                font-size: 0.8rem;
             }
         }
 
@@ -349,6 +370,41 @@
             100% {
                 background-position: -200% 0;
             }
+        }
+
+        /* Animation for calendar numbers */
+        .calendar span {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        /* Make calendar numbers appear more dynamic */
+        .calendar .available:nth-child(odd) {
+            animation-delay: 0.5s;
+        }
+        
+        .calendar .booked:nth-child(even) {
+            animation-delay: 0.7s;
+        }
+
+        /* Loading message styling */
+        .loading-message {
+            text-align: center;
+            color: #666;
+            font-style: italic;
+            padding: 40px;
+            grid-column: 1 / -1;
         }
     </style>
   
@@ -377,11 +433,6 @@
     </div>
   </header>
 
-  
-
-
-  <!-- ======= Main Content ======= -->
-   
   <!-- Hero Section -->
 <section class="hero d-flex align-items-center justify-content-center text-center text-white">
   <div class="container">
@@ -405,175 +456,23 @@
   </div>
 </section>
 
-
-
 <section id="featured-properties" class="featured-section">
   <h2>Featured Properties</h2>
 
   <h3>Rentals</h3>
-  <div class="properties rental-properties featured">
-     <div class="rental-card">
-        <img src="assets/images/final.png" alt="Rental House">
-        <div class="content">
-          <h3>Modern 2-Bedroom Apartment</h3>
-          <p>Ksh 35,000/month</p>
-
-          <div class="calendar">
-            <span class="available">1</span>
-            <span class="booked">2</span>
-            <span class="available">3</span>
-            <span class="booked">4</span>
-            <span class="available">5</span>
-            <span class="available">6</span>
-            <span class="booked">7</span>
-          </div>
-
-          <div class="buttons">
-            <button class="book-btn" onclick="openBookingForm()">Book Now</button>
-            <button class="view-btn" onclick="toggleDetails(this)">View More</button>
-          </div>
-
-          <div class="details">
-            <img src="assets/images/rent.webp" alt="Interior">
-            <img src="assets/images/sale.webp" alt="Bedroom">
-            <p>Wi-Fi, parking, 24/7 security, near town.</p>
-          </div>
-        </div>
-      </div>
-
-      <!-- COPY RENTAL 1 AND CHANGE IMAGES, PRICES, TITLES FOR MORE RENTALS -->
-
-      <div class="rental-card">
-        <img src="assets/images/rent.webp" alt="Rental House">
-        <div class="content">
-          <h3>Cozy 1-Bedroom Studio</h3>
-          <p>Ksh 25,000/month</p>
-
-          <div class="calendar">
-            <span class="available">1</span>
-            <span class="available">2</span>
-            <span class="booked">3</span>
-            <span class="booked">4</span>
-            <span class="available">5</span>
-            <span class="booked">6</span>
-            <span class="available">7</span>
-          </div>
-
-          <div class="buttons">
-            <button class="book-btn" onclick="openBookingForm()">Book Now</button>
-            <button class="view-btn" onclick="toggleDetails(this)">View More</button>
-          </div>
-
-          <div class="details">
-            <img src="assets/images/rent.webp" alt="Interior">
-            <img src="assets/images/rent.webp" alt="Bedroom">
-            <p>Private balcony, smart TV, city views.</p>
-          </div>
-        </div>
-      </div>
-
-      <div class="rental-card">
-        <img src="assets/images/rent.webp" alt="Rental House">
-        <div class="content">
-          <h3>Spacious 3-Bedroom House</h3>
-          <p>Ksh 50,000/month</p>
-
-          <div class="calendar">
-            <span class="booked">1</span>
-            <span class="available">2</span>
-            <span class="available">3</span>
-            <span class="available">4</span>
-            <span class="booked">5</span>
-            <span class="booked">6</span>
-            <span class="available">7</span>
-          </div>
-
-          <div class="buttons">
-            <button class="book-btn" onclick="openBookingForm()">Book Now</button>
-            <button class="view-btn" onclick="toggleDetails(this)">View More</button>
-          </div>
-
-          <div class="details">
-            <img src="assets/images/rent.webp" alt="Interior">
-            <img src="assets/images/rent.webp" alt="Bedroom">
-            <p>Garden, garage, pet-friendly, near school.</p>
-          </div>
-        </div>
-      
-  </div>
+  <div class="properties rental-properties featured" id="rental-properties-container">
+    <!-- Rental properties will be loaded here from API -->
+    <div class="loading-message">Loading rental properties...</div>
   </div>
 
   <h3>For Sale</h3>
-  <div class="properties sale-properties featured">
-     <div class="sales-card">
-    <img src="assets/images/final.png" alt="House for Sale">
-    <div class="content">
-      <h3>Elegant 4-Bedroom Villa</h3>
-      <p>Ksh 12,500,000</p>
-
-      <div class="calendar">
-        <span class="available">1</span>
-        <span class="booked">2</span>
-        <span class="available">3</span>
-        <span class="booked">4</span>
-        <span class="available">5</span>
-        <span class="available">6</span>
-        <span class="booked">7</span>
-      </div>
-
-      <div class="buttons">
-        <button class="book-btn" onclick="openViewingForm()">Book a Viewing</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Repeat cards as needed -->
-  <div class="sales-card">
-    <img src="assets/images/final.png" alt="House for Sale">
-    <div class="content">
-      <h3>Cozy 3-Bedroom Bungalow</h3>
-      <p>Ksh 9,800,000</p>
-      <div class="calendar">
-        <span class="available">8</span>
-        <span class="booked">9</span>
-        <span class="available">10</span>
-        <span class="booked">11</span>
-        <span class="available">12</span>
-        <span class="available">13</span>
-        <span class="booked">14</span>
-      </div>
-      <div class="buttons">
-        <button class="book-btn" onclick="openViewingForm()">Book a Viewing</button>
-      </div>
-    </div>
-  </div>
-
-  <div class="sales-card">
-    <img src="assets/images/final.png" alt="House for Sale">
-    <div class="content">
-      <h3>Modern Apartment with Balcony</h3>
-      <p>Ksh 6,300,000</p>
-      <div class="calendar">
-        <span class="available">15</span>
-        <span class="booked">16</span>
-        <span class="available">17</span>
-        <span class="booked">18</span>
-        <span class="available">19</span>
-        <span class="available">20</span>
-        <span class="booked">21</span>
-      </div>
-      <div class="buttons">
-        <button class="book-btn" onclick="openViewingForm()">Book a Viewing</button>
-      </div>
-    </div>
+  <div class="properties sale-properties featured" id="sale-properties-container">
+    <!-- Sale properties will be loaded here from API -->
+    <div class="loading-message">Loading properties for sale...</div>
   </div>
 </section>
- 
 
-  
-
-
-  <section class="testimonial-section">
+<section class="testimonial-section">
   <h2 class="section-title">What Our Clients Say</h2>
   <div class="testimonial-container">
 
@@ -589,7 +488,7 @@
         <p>"Finding our dream home was effortless with WeRent. The booking and viewing process was seamless!"</p>
       </div>
       <div class="testimonial-profile">
-        <img src="assets/images/avatar1.jpg" alt="Jane Mwangi">
+        <img src="./assets/images/avatar" alt="Jane Mwangi">
         <div>
           <h4>MR ROBOT</h4>
           <span>Tenant</span>
@@ -646,22 +545,10 @@
   </a>
 </div>
 
-
-
-
 <section id="favorites-section" class="container" style="display:none;">
   <h2>Your Favorite Properties</h2>
   <div id="favorites-grid" class="grid"></div>
 </section>
-
-
-
-
-
-
-
-
-
 
 <footer class="new-footer">
   <div class="footer-grid">
@@ -716,31 +603,208 @@
   </div>
 </footer>
 
-
-
-  <!-- Toggle Menu Script -->
-  <script>
-   const menuToggle = document.getElementById('menuToggle');
-const navLinks = document.getElementById('navLinks');
-const openIcon = document.getElementById('openIcon');
-const closeIcon = document.getElementById('closeIcon');
-
-menuToggle.addEventListener('click', () => {
-  navLinks.classList.toggle('active');
-
-  if (navLinks.classList.contains('active')) {
-    openIcon.style.display = 'none';
-    closeIcon.style.display = 'block';
-  } else {
-    openIcon.style.display = 'block';
-    closeIcon.style.display = 'none';
+<script>
+  const menuToggle = document.getElementById('menuToggle');
+  const navLinks = document.getElementById('navLinks');
+  const openIcon = document.getElementById('openIcon');
+  const closeIcon = document.getElementById('closeIcon');
+  
+  menuToggle.addEventListener('click', () => {
+    navLinks.classList.toggle('active');
+  
+    if (navLinks.classList.contains('active')) {
+      openIcon.style.display = 'none';
+      closeIcon.style.display = 'block';
+    } else {
+      openIcon.style.display = 'block';
+      closeIcon.style.display = 'none';
+    }
+  });
+  
+  function toggleDetails(button) {
+    const card = button.closest('.rental-card, .sales-card');
+    const details = card.querySelector('.details');
+    details.classList.toggle('show');
+    
+    if (details.classList.contains('show')) {
+      button.textContent = 'Hide Details';
+    } else {
+      button.textContent = 'View More';
+    }
   }
-});
+  
+  function openBookingForm() {
+    alert('Booking form will open here');
+  }
+  
+  function openViewingForm() {
+    alert('Viewing form will open here');
+  }
+  
+  async function fetchProperties() {
+    try {
+      const response = await fetch('http://localhost:5000/api/v1/properties');
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      const result = await response.json();
+      
+      return result.data || [];
+    } catch (error) {
+      console.error('Error fetching properties:', error);
+      return [];
+    }
+  }
+  
+  function createRandomCalendar() {
+    const calendar = document.createElement('div');
+    calendar.className = 'calendar';
+    
+    const daysCount = Math.floor(Math.random() * 3) + 5;
+    
+    for (let i = 1; i <= daysCount; i++) {
+      const span = document.createElement('span');
+      span.textContent = i;
+      span.className = Math.random() > 0.5 ? 'available' : 'booked';
+      calendar.appendChild(span);
+    }
+    
+    return calendar;
+  }
+  
+  function createRentalCard(property) {
+    const card = document.createElement('div');
+    card.className = 'rental-card';
+    
+    const imageUrl = property.mainImage ? `http://localhost:5000/${property.mainImage}` : 'assets/images/final.png';
+    
+    const formattedPrice = new Intl.NumberFormat('en-KE').format(property.price || 35000);
+    
+    card.innerHTML = `
+      <img src="${imageUrl}" alt="${property.title || 'Rental Property'}">
+      <div class="content">
+        <h3>${property.title || 'Modern Apartment'}</h3>
+        <p>Ksh ${formattedPrice}/month</p>
+        <div class="buttons">
+          <button class="book-btn" onclick="openBookingForm()">Book Now</button>
+          <button class="view-btn" onclick="toggleDetails(this)">View More</button>
+        </div>
+        <div class="details">
+          <img src="${imageUrl}" alt="Interior">
+          <p><strong>Location:</strong> ${property.location || 'Not specified'}</p>
+          <p><strong>Bedrooms:</strong> ${property.bedrooms || 'Not specified'}</p>
+          <p><strong>Bathrooms:</strong> ${property.bathrooms || 'Not specified'}</p>
+          <p><strong>Amenities:</strong> ${property.amenities ? property.amenities.join(', ') : 'Not specified'}</p>
+          <p>${property.description || 'Beautiful property with great amenities.'}</p>
+        </div>
+      </div>
+    `;
+    
+    const content = card.querySelector('.content');
+    const priceElement = content.querySelector('p');
+    content.insertBefore(createRandomCalendar(), priceElement.nextSibling);
+    
+    return card;
+  }
+  
+  function createSaleCard(property) {
+    const card = document.createElement('div');
+    card.className = 'sales-card';
+    
+    const imageUrl = property.mainImage ? `http://localhost:5000/${property.mainImage}` : 'assets/images/final.png';
+    
+    const formattedPrice = new Intl.NumberFormat('en-KE').format(property.price || 12500000);
+    
+    card.innerHTML = `
+      <img src="${imageUrl}" alt="${property.title || 'Property for Sale'}">
+      <div class="content">
+        <h3>${property.title || 'Elegant Villa'}</h3>
+        <p>Ksh ${formattedPrice}</p>
+        <div class="buttons">
+          <button class="book-btn" onclick="openViewingForm()">Book a Viewing</button>
+          <button class="view-btn" onclick="toggleDetails(this)">View More</button>
+        </div>
+        <div class="details">
+          <img src="${imageUrl}" alt="Interior">
+          <p><strong>Location:</strong> ${property.location || 'Not specified'}</p>
+          <p><strong>Bedrooms:</strong> ${property.bedrooms || 'Not specified'}</p>
+          <p><strong>Bathrooms:</strong> ${property.bathrooms || 'Not specified'}</p>
+          <p><strong>Amenities:</strong> ${property.amenities ? property.amenities.join(', ') : 'Not specified'}</p>
+          <p>${property.description || 'Beautiful property with great amenities.'}</p>
+        </div>
+      </div>
+    `;
+    
+    const content = card.querySelector('.content');
+    const priceElement = content.querySelector('p');
+    content.insertBefore(createRandomCalendar(), priceElement.nextSibling);
+    
+    return card;
+  }
+  
+  async function loadProperties() {
+    const rentalContainer = document.getElementById('rental-properties-container');
+    const saleContainer = document.getElementById('sale-properties-container');
+    
+    rentalContainer.innerHTML = '';
+    saleContainer.innerHTML = '';
+    
+    try {
+      const properties = await fetchProperties();
+      
+      if (properties.length === 0) {
+        for (let i = 0; i < 3; i++) {
+          const sampleRental = {
+            title: ['Modern 2-Bedroom Apartment', 'Cozy 1-Bedroom Studio', 'Spacious 3-Bedroom House'][i],
+            price: [35000, 25000, 50000][i],
+            description: ['Wi-Fi, parking, 24/7 security, near town.', 'Private balcony, smart TV, city views.', 'Garden, garage, pet-friendly, near school.'][i],
+            mainImage: null,
+            listingType: 'Rent'
+          };
+          rentalContainer.appendChild(createRentalCard(sampleRental));
+        }
+        
+        for (let i = 0; i < 3; i++) {
+          const sampleSale = {
+            title: ['Elegant 4-Bedroom Villa', 'Cozy 3-Bedroom Bungalow', 'Modern Apartment with Balcony'][i],
+            price: [12500000, 9800000, 6300000][i],
+            description: 'Prime location with excellent amenities.',
+            mainImage: null,
+            listingType: 'Sale'
+          };
+          saleContainer.appendChild(createSaleCard(sampleSale));
+        }
+      } else {
+        const rentals = properties.filter(p => p.listingType === 'Rent');
+        const sales = properties.filter(p => p.listingType === 'Sale');
+        
+        const rentalProperties = rentals.slice(0, 3);
+        if (rentalProperties.length > 0) {
+          rentalProperties.forEach(property => {
+            rentalContainer.appendChild(createRentalCard(property));
+          });
+        } else {
+          rentalContainer.innerHTML = '<p class="loading-message">No rental properties available at the moment.</p>';
+        }
+        
+        const saleProperties = sales.slice(0, 3);
+        if (saleProperties.length > 0) {
+          saleProperties.forEach(property => {
+            saleContainer.appendChild(createSaleCard(property));
+          });
+        } else {
+          saleContainer.innerHTML = '<p class="loading-message">No properties for sale available at the moment.</p>';
+        }
+      }
+    } catch (error) {
+      console.error('Error loading properties:', error);
+      rentalContainer.innerHTML = '<p class="loading-message">Failed to load rental properties. Please try again later.</p>';
+      saleContainer.innerHTML = '<p class="loading-message">Failed to load properties for sale. Please try again later.</p>';
+    }
+  }
+  
+  document.addEventListener('DOMContentLoaded', loadProperties);
+</script>
 
-  </script>
-
-
- <!-- Bootstrap 5.3 JS CDN (with Popper) -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-TNbMZjwnuN+uyVXX9A++a2hQwGItV9q8OQa2k3+u7jVr8J5eG9+lGqQvFa+hmpoK" crossorigin="anonymous"></script>
 </body>
 </html>

@@ -179,8 +179,102 @@
   </div>
 
   <script>
-    function toggleDetails(btn) {
-      const details = btn.parentElement.nextElementSibling;
+    const API_BASE_URL = 'http://localhost:5000/api/v1';
+    let currentPropertyId = null;
+    
+    // Fetch and display rental properties
+    async function loadRentalProperties() {
+      try {
+        const response = await fetch(`${API_BASE_URL}/properties`);
+        if (!response.ok) throw new Error('Failed to fetch properties');
+        
+        const data = await response.json();
+        const rentalProperties = data.data.filter(property => property.listingType === 'Rent');
+        
+        displayProperties(rentalProperties);
+        document.getElementById('loading').style.display = 'none';
+      } catch (error) {
+        console.error('Error loading properties:', error);
+        document.getElementById('loading').innerHTML = '<i class="fas fa-exclamation-triangle"></i> Failed to load properties. Please try again later.';
+      }
+    }
+    
+    // Display properties in the DOM
+    function displayProperties(properties) {
+      const container = document.getElementById('rental-properties');
+      
+      if (properties.length === 0) {
+        container.innerHTML = '<div style="text-align: center; color: white; font-size: 1.2rem;">No rental properties available at the moment.</div>';
+        return;
+      }
+      
+      container.innerHTML = properties.map(property => `
+        <div class="rental-card">
+          <img src="${property.mainImage || 'https://via.placeholder.com/400x250?text=No+Image'}" alt="${property.title}" onerror="this.src='https://via.placeholder.com/400x250?text=No+Image'">
+          <div class="content">
+            <h3>${property.title}</h3>
+            <div class="price">Ksh ${property.price.toLocaleString()}/month</div>
+            
+            <div class="property-info">
+              <div class="info-item">
+                <i class="fas fa-bed"></i>
+                ${property.bedrooms} ${property.bedrooms === 1 ? 'Bedroom' : 'Bedrooms'}
+              </div>
+              <div class="info-item">
+                <i class="fas fa-bath"></i>
+                ${property.bathrooms} ${property.bathrooms === 1 ? 'Bathroom' : 'Bathrooms'}
+              </div>
+              <div class="info-item">
+                <i class="fas fa-home"></i>
+                ${Array.isArray(property.propertyType) ? property.propertyType.join(', ') : property.propertyType}
+              </div>
+            </div>
+    
+            <div class="location">
+              <i class="fas fa-map-marker-alt"></i>
+              ${property.location}
+            </div>
+    
+            ${property.amenities && property.amenities.length > 0 ? `
+              <div class="amenities">
+                <h5>Amenities:</h5>
+                <div class="amenity-tags">
+                  ${property.amenities.slice(0, 4).map(amenity => `<span class="amenity-tag">${amenity}</span>`).join('')}
+                  ${property.amenities.length > 4 ? `<span class="amenity-tag">+${property.amenities.length - 4} more</span>` : ''}
+                </div>
+              </div>
+            ` : ''}
+    
+            <div class="buttons">
+              <button class="book-btn" onclick="openBookingForm('${property._id}')">Book Now</button>
+              <button class="view-btn" onclick="toggleDetails(this, '${property._id}')">View More</button>
+            </div>
+    
+            <div class="details" id="details-${property._id}">
+              <p><strong>Description:</strong> ${property.description}</p>
+              
+              ${property.galleryImages && property.galleryImages.length > 0 ? `
+                <div class="gallery-images">
+                  ${property.galleryImages.slice(0, 6).map(img => `
+                    <img src="${img}" alt="Property Image" onerror="this.style.display='none'">
+                  `).join('')}
+                </div>
+              ` : ''}
+              
+              ${property.amenities && property.amenities.length > 0 ? `
+                <div><strong>All Amenities:</strong> ${property.amenities.join(', ')}</div>
+              ` : ''}
+              
+              ${property.status ? `<div><strong>Status:</strong> <span style="color: #e74c3c; font-weight: 600;">${property.status.toUpperCase()}</span></div>` : ''}
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+    
+    // Toggle details view
+    function toggleDetails(btn, propertyId) {
+      const details = document.getElementById(`details-${propertyId}`);
       if (details.style.display === "block") {
         details.style.display = "none";
         btn.textContent = "View More";
@@ -189,23 +283,139 @@
         btn.textContent = "Hide Details";
       }
     }
-
-    function openBookingForm() {
-      document.getElementById("bookingModal").style.display = "flex";
+    
+    // Open booking form
+    function openBookingForm(propertyId) {
+      currentPropertyId = propertyId;
+      document.getElementById('propertyId').value = propertyId;
+      document.getElementById('bookingModal').style.display = 'flex';
+      
+      // Set minimum dates to today
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById('checkInDate').min = today;
+      document.getElementById('checkOutDate').min = today;
     }
-
+    
+    // Close booking form
     function closeBookingForm() {
-      document.getElementById("bookingModal").style.display = "none";
+      document.getElementById('bookingModal').style.display = 'none';
+      document.getElementById('bookingForm').reset();
+      currentPropertyId = null;
     }
-
-    function submitBooking(e) {
+    
+    // Handle date validation
+    document.getElementById('checkInDate').addEventListener('change', function() {
+      const checkInDate = this.value;
+      const checkOutDateInput = document.getElementById('checkOutDate');
+      checkOutDateInput.min = checkInDate;
+      
+      if (checkOutDateInput.value && checkOutDateInput.value <= checkInDate) {
+        checkOutDateInput.value = '';
+      }
+    });
+    
+    // Submit booking
+    document.getElementById('bookingForm').addEventListener('submit', async function(e) {
       e.preventDefault();
-      closeBookingForm();
-      const popup = document.getElementById("successPopup");
-      popup.style.display = "block";
-      setTimeout(() => popup.style.display = "none", 5000);
+      
+      const submitBtn = e.target.querySelector('button[type="submit"]');
+      const btnText = document.getElementById('bookingBtnText');
+      const spinner = document.getElementById('bookingSpinner');
+      
+      // Show loading state
+      btnText.style.display = 'none';
+      spinner.style.display = 'inline-block';
+      submitBtn.disabled = true;
+      
+      const formData = new FormData(e.target);
+      const bookingData = {
+        propertyId: formData.get('propertyId'),
+        fullName: formData.get('fullName'),
+        contact: formData.get('contact'),
+        email: formData.get('email'),
+        checkInDate: formData.get('checkInDate'),
+        checkOutDate: formData.get('checkOutDate'),
+        numberOfAdults: parseInt(formData.get('numberOfAdults')),
+        numberOfChildren: parseInt(formData.get('numberOfChildren')) || 0,
+        numberOfBedrooms: parseInt(formData.get('numberOfBedrooms')),
+        specialRequests: formData.get('specialRequests') || ''
+      };
+      
+      try {
+        const response = await fetch(`${API_BASE_URL}/bookings`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(bookingData)
+        });
+        
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.message || 'Booking failed');
+        }
+        
+        const result = await response.json();
+        
+        // Close modal and show success
+        closeBookingForm();
+        showSuccessPopup();
+        
+      } catch (error) {
+        console.error('Booking error:', error);
+        showErrorPopup(error.message);
+      } finally {
+        // Reset button state
+        btnText.style.display = 'inline';
+        spinner.style.display = 'none';
+        submitBtn.disabled = false;
+      }
+    });
+    
+    // Show success popup
+    function showSuccessPopup() {
+      const popup = document.getElementById('successPopup');
+      popup.style.display = 'block';
+      setTimeout(() => popup.style.display = 'none', 5000);
     }
-  </script>
+    
+    // Show error popup
+    function showErrorPopup(message) {
+      const popup = document.getElementById('errorPopup');
+      const messageEl = document.getElementById('errorMessage');
+      messageEl.textContent = message;
+      popup.style.display = 'block';
+      setTimeout(() => popup.style.display = 'none', 5000);
+    }
+    
+    // Menu toggle functionality
+    const menuToggle = document.getElementById('menuToggle');
+    const navLinks = document.getElementById('navLinks');
+    const openIcon = document.getElementById('openIcon');
+    const closeIcon = document.getElementById('closeIcon');
+    
+    menuToggle.addEventListener('click', () => {
+      navLinks.classList.toggle('active');
+    
+      if (navLinks.classList.contains('active')) {
+        openIcon.style.display = 'none';
+        closeIcon.style.display = 'block';
+      } else {
+        openIcon.style.display = 'block';
+        closeIcon.style.display = 'none';
+      }
+    });
+    
+    // Close modal when clicking outside
+    document.getElementById('bookingModal').addEventListener('click', function(e) {
+      if (e.target === this) {
+        closeBookingForm();
+      }
+    });
+    
+    // Load properties when page loads
+    document.addEventListener('DOMContentLoaded', loadRentalProperties);
+    </script>
 
 
 
