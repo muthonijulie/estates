@@ -87,7 +87,7 @@ nav a:hover {
 /* Headings */
 .section-title {
   font-size: 2.8rem;
-  color: #1a1a1a;
+  color: #e67e22;
   margin-bottom: 10px;
 }
 
@@ -125,7 +125,7 @@ nav a:hover {
 .service-card h3 {
   font-size: 1.5rem;
   margin-bottom: 15px;
-  color: #111;
+  color: #e67e22;
 }
 
 .service-card p {
