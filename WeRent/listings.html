@@ -1,115 +1,79 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <!-- Required meta tags -->
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>WeRent - Your Dream Home</title>
-  <!-- Bootstrap 5.3 CSS CDN -->
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B1xZhJ5xulwld6J7U6ZlD2+J5i9GqV" crossorigin="anonymous">
-  <!-- Google Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/listings.css">
-   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-  
-
-  
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>WeRent - Property Listings</title>
+    
+    <!-- Bootstrap 5.3 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="assets/css/listings.css">
 </head>
 <body>
-  
-  <!-- Navbar -->
-  <header class="navbar">
-    <div class="logo">
-      <img src="assets/images/logo.jpeg" alt="Logo">
-    </div>
+    <!-- Header -->
+    <header class="navbar">
+        <div class="logo">
+            <img src="assets/images/logo.jpeg" alt="WeRent Logo">
+        </div>
 
-    <nav class="nav-links" id="navLinks">
-       <a href="index.html">Home</a>
-      <a href="listings.php">Property</a>
-       <a href="index.html">Home</a>
-      <a href="listings.html">Property</a>
-      <a href="contact.html">Contact</a>
-        <a href="blog.html">Blog</a>
-      <a href="aboutus.html">AboutUs</a>
-    </nav>
+        <nav class="nav-links" id="navLinks">
+            <a href="index.html">Home</a>
+            <a href="listings.html">Property</a>
+            <a href="contact.html">Contact</a>
+            <a href="blog.html">Blog</a>
+            <a href="aboutus.html">About Us</a>
+        </nav>
 
-    <div class="menu-toggle" id="menuToggle">
-      <i class="fas fa-bars" id="openIcon"></i>
-      <i class="fas fa-times" id="closeIcon" style="display: none;"></i>
-    </div>
-  </header>
- <div class="hero">
-        <h1>Properties for Sale</h1>
-        
-        <div id="loading" class="loading">Loading...</div>
+        <div class="menu-toggle" id="menuToggle">
+            <i class="fas fa-bars"></i>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        <div class="hero">
+            <h1>Properties for Sale</h1>
+        </div>
+
+        <div id="loading" class="loading">Loading properties...</div>
         <div id="error" class="error" style="display: none;"></div>
         <div id="propertiesGrid" class="properties-grid"></div>
-    </div>
+    </main>
 
+    <!-- Booking Modal -->
     <div id="viewingModal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeModal()">&times;</span>
             <h2>Book Viewing</h2>
-            <form onsubmit="submitForm(event)">
-                <input type="text" id="name" placeholder="Full Name" required>
-                <input type="tel" id="phone" placeholder="Phone Number" required>
-                <input type="datetime-local" id="date" required>
-                <textarea id="notes" placeholder="Notes (optional)" rows="3"></textarea>
-                <button type="submit" class="book-btn">Submit</button>
+            <form id="bookingForm" onsubmit="submitForm(event)">
+                <input type="text" id="name" name="name" placeholder="Full Name" required>
+                <input type="tel" id="phone" name="phone" placeholder="Phone Number" required>
+                <input type="datetime-local" id="date" name="date" required>
+                <textarea id="notes" name="notes" placeholder="Additional notes or special requirements" rows="3"></textarea>
+                <button type="submit" class="book-btn">
+                    <i class="fas fa-calendar-check"></i>
+                    Book Viewing
+                </button>
             </form>
         </div>
     </div>
 
+    <!-- Success Message -->
     <div id="success" class="success">
-        Viewing booked successfully!
+        <i class="fas fa-check-circle"></i>
+        <span>Viewing booked successfully!</span>
     </div>
 
-  <footer class="new-footer">
-  <div class="footer-grid">
-    <!-- Brand -->
-    <div class="footer-brand">
-      <h2>WeRent</h2>
-      <p>Find the perfect property across Kenya with WeRent. Whether for rent or sale, we simplify your search experience.</p>
-    </div>
-
-    <!-- Navigation -->
-    <div class="footer-links">
-      <h4>Explore</h4>
-      <ul>
-        <li><a href="index.php">Home</a></li>
-        <li><a href="listings.html">Properties</a></li>
-        <li><a href="blog.html">Blog</a></li>
-        <li><a href="aboutus.html">About Us</a></li>
-        <li><a href="contact.html">Contact</a></li>
-      </ul>
-    </div>
-    <div class="hero">
-        <h1>Properties for Sale</h1>
-        
-        <div id="loading" class="loading">Loading properties</div>
-        <div id="error" class="error" style="display: none;"></div>
-        <div id="propertiesGrid" class="properties-grid"></div>
-    </div>
-
-    <div id="viewingModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal()">&times;</span>
-            <h2>Book Viewing</h2>
-            <form onsubmit="submitForm(event)">
-                <input type="text" id="name" placeholder="Full Name" required>
-                <input type="tel" id="phone" placeholder="Phone Number" required>
-                <input type="datetime-local" id="date" required>
-                <textarea id="notes" placeholder="Additional notes or special requirements" rows="3"></textarea>
-                <button type="submit" class="book-btn">Book Viewing</button>
-            </form>
-        </div>
-    </div>
-
-    <div id="success" class="success">
-        <i class="fas fa-check-circle"></i> Viewing booked successfully!
-    </div>
-
+    <!-- Footer -->
     <footer class="new-footer">
         <div class="footer-grid">
             <div class="footer-brand">
@@ -120,7 +84,7 @@
             <div class="footer-links">
                 <h4>Explore</h4>
                 <ul>
-                    <li><a href="index.php">Home</a></li>
+                    <li><a href="index.html">Home</a></li>
                     <li><a href="listings.html">Properties</a></li>
                     <li><a href="blog.html">Blog</a></li>
                     <li><a href="aboutus.html">About Us</a></li>
@@ -128,37 +92,37 @@
                 </ul>
             </div>
 
-    <!-- Contact Info -->
-    <div class="footer-contact">
-      <h4>Contact Us</h4>
-      <ul>
-        <li><i class="fas fa-map-marker-alt"></i>  <a href="https://www.google.com/maps/place/Mombasa,+Kenya" target="_blank" rel="noopener noreferrer" class="location-link">
-          Jacaranda road,Watamu
-        </a></li>
-        <li><i class="fas fa-phone"></i> <a href="tel:+254741257885">+254 741 257 885</a></li>
-        <li><i class="fas fa-envelope"></i> <a href="mailto:info@werent.co.ke">info@werent.co.ke</a></li>
-      </ul>
-    </div>
+            <div class="footer-contact">
+                <h4>Contact Us</h4>
+                <ul>
+                    <li>
+                        <i class="fas fa-map-marker-alt"></i> 
+                        <a href="https://www.google.com/maps/place/Watamu,+Kenya" target="_blank">
+                            Jacaranda Road, Watamu
+                        </a>
+                    </li>
+                    <li><i class="fas fa-phone"></i> <a href="tel:+254741257885">+254 741 257 885</a></li>
+                    <li><i class="fas fa-envelope"></i> <a href="mailto:info@werent.co.ke">info@werent.co.ke</a></li>
+                </ul>
+            </div>
 
-    <!-- Social -->
-    <div class="footer-social">
-      <h4>Follow Us</h4>
-      <div class="social-icons">
-        <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
-        <a href="#" aria-label="X"><i class="fab fa-x-twitter"></i></a>
-        <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
-        <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
-        <a href="" target="_blank" aria-label="X (Twitter)"><i class="fab fa-x-twitter"></i></a>
-        <a href="" target="_blank" aria-label="TikTok"><i class="fab fa-tiktok"></i></a>
-      </div>
-    </div>
-  </div>
+            <div class="footer-social">
+                <h4>Follow Us</h4>
+                <div class="social-icons">
+                    <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                    <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                    <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                </div>
+            </div>
+        </div>
 
-  <div class="footer-bottom">
-    <p>&copy; <?= date('Y') ?> WeRent. All rights reserved.</p>
-  </div>
-</footer>
- <script>
+        <div class="footer-bottom">
+            <p>&copy; 2024 WeRent. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
         // Configuration
         const CONFIG = {
             API_BASE_URL: 'http://localhost:5000/api/v1',
@@ -171,7 +135,6 @@
         };
 
         let selectedProperty = null;
-        let retryCount = 0;
 
         // Utility Functions
         function formatPrice(price) {
@@ -197,13 +160,19 @@
         // API Functions
         async function fetchWithRetry(url, options = {}, attempts = CONFIG.RETRY_ATTEMPTS) {
             try {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 10000);
+
                 const response = await fetch(url, {
                     ...options,
+                    signal: controller.signal,
                     headers: {
                         'Content-Type': 'application/json',
                         ...options.headers
                     }
                 });
+
+                clearTimeout(timeoutId);
 
                 if (!response.ok) {
                     throw new Error(`HTTP ${response.status}: ${response.statusText}`);
@@ -211,14 +180,20 @@
 
                 return await response.json();
             } catch (error) {
+                if (error.name === 'AbortError') {
+                    throw new Error('Request timed out. Please check your connection.');
+                }
+                
                 if (attempts > 1) {
-                    console.warn(`Request failed, retrying... (${CONFIG.RETRY_ATTEMPTS - attempts + 1}/${CONFIG.RETRY_ATTEMPTS})`);
+                    console.warn(`Request failed, retrying... (${CONFIG.RETRY_ATTEMPTS - attempts + 2}/${CONFIG.RETRY_ATTEMPTS})`);
                     await new Promise(resolve => setTimeout(resolve, CONFIG.RETRY_DELAY));
                     return fetchWithRetry(url, options, attempts - 1);
                 }
                 throw error;
             }
         }
+
+
 
         async function loadProperties() {
             const loadingEl = document.getElementById('loading');
@@ -234,9 +209,7 @@
                 const data = await fetchWithRetry(url);
                 
                 // Handle different response structures
-                const properties = Array.isArray(data) ? data : 
-                                 data.properties ? data.properties : 
-                                 data.data ? data.data : [];
+                const properties = data.data || data.properties || data || [];
 
                 loadingEl.style.display = 'none';
                 
@@ -249,12 +222,7 @@
             } catch (error) {
                 console.error('Failed to load properties:', error);
                 loadingEl.style.display = 'none';
-                errorEl.innerHTML = `
-                    <i class="fas fa-exclamation-triangle"></i>
-                    <strong>Unable to load properties</strong><br>
-                    ${error.message || 'Please check your connection and try again'}
-                `;
-                errorEl.style.display = 'block';
+                showError(`Unable to load properties: ${error.message || 'Please check your connection and try again'}`);
             }
         }
 
@@ -265,6 +233,9 @@
                     <i class="fas fa-home"></i>
                     <h3>No Properties Available</h3>
                     <p>We're currently updating our listings. Please check back soon!</p>
+                    <button onclick="loadProperties()" class="book-btn" style="margin-top: 1rem; max-width: 200px;">
+                        <i class="fas fa-refresh"></i> Refresh
+                    </button>
                 </div>
             `;
         }
@@ -288,17 +259,19 @@
                     ).join('') : 
                     '<span class="available">Contact for availability</span>';
 
+                const safeTitle = (property.title || property.name || 'Property').replace(/'/g, "&apos;");
+
                 return `
                     <div class="property-card" data-property-id="${property.id}">
                         <div class="property-image">
-                            ${property.image || property.images?.[0] ? 
-                                `<img src="${property.image || property.images[0]}" alt="${property.title}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
-                                 <div class="placeholder" style="display:none;">🏠</div>` : 
-                                '<div class="placeholder">🏠</div>'
+                            ${property.image ? 
+                                `<img src="${property.image}" alt="${safeTitle}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+                                 <div class="placeholder" style="display:none;"><i class="fas fa-home"></i></div>` : 
+                                '<div class="placeholder"><i class="fas fa-home"></i></div>'
                             }
                         </div>
                         <div class="property-content">
-                            <h3 class="property-title">${property.title || property.name || 'Property'}</h3>
+                            <h3 class="property-title">${safeTitle}</h3>
                             <div class="property-price">${formatPrice(property.price)}</div>
                             
                             ${propertyDetails ? `<div class="property-details">${propertyDetails}</div>` : ''}
@@ -307,7 +280,7 @@
                                 ${availabilityCalendar}
                             </div>
                             
-                            <button class="book-btn" onclick="openModal('${property.id}', '${property.title}')">
+                            <button class="book-btn" onclick="openModal('${property.id}', '${safeTitle}')">
                                 <i class="fas fa-calendar-check"></i> Book Viewing
                             </button>
                         </div>
@@ -333,6 +306,7 @@
 
         function closeModal() {
             document.getElementById('viewingModal').style.display = 'none';
+            document.getElementById('bookingForm').reset();
             selectedProperty = null;
         }
 
@@ -340,12 +314,13 @@
             event.preventDefault();
             
             if (!selectedProperty) {
-                alert('No property selected');
+                showError('No property selected');
                 return;
             }
 
-            const submitButton = event.target.querySelector('button[type="submit"]');
-            const originalText = submitButton.innerHTML;
+            const form = event.target;
+            const submitButton = form.querySelector('button[type="submit"]');
+            const originalHTML = submitButton.innerHTML;
             
             try {
                 // Show loading state
@@ -355,42 +330,37 @@
                 const formData = {
                     propertyId: selectedProperty.id,
                     propertyTitle: selectedProperty.title,
-                    name: document.getElementById('name').value.trim(),
-                    phone: document.getElementById('phone').value.trim(),
+                    name: document.getElementById('name').value,
+                    phone: document.getElementById('phone').value,
                     date: document.getElementById('date').value,
-                    notes: document.getElementById('notes').value.trim(),
-                    timestamp: new Date().toISOString()
+                    notes: document.getElementById('notes').value
                 };
 
-                // Validate form data
-                if (!formData.name || !formData.phone || !formData.date) {
-                    throw new Error('Please fill in all required fields');
-                }
-
-                const url = `${CONFIG.API_BASE_URL}${CONFIG.ENDPOINTS.BOOKINGS}`;
-                await fetchWithRetry(url, {
+                // Try to submit to API
+                const response = await fetchWithRetry(`${CONFIG.API_BASE_URL}${CONFIG.ENDPOINTS.BOOKINGS}`, {
                     method: 'POST',
                     body: JSON.stringify(formData)
                 });
 
+                console.log('Booking submitted successfully:', response);
+
                 closeModal();
                 showSuccess('Viewing booked successfully! We\'ll contact you soon.');
-                event.target.reset();
                 
             } catch (error) {
                 console.error('Booking failed:', error);
                 showError(error.message || 'Failed to book viewing. Please try again.');
             } finally {
                 // Restore button state
-                submitButton.innerHTML = originalText;
+                submitButton.innerHTML = originalHTML;
                 submitButton.disabled = false;
             }
         }
 
         function showSuccess(message = 'Viewing booked successfully!') {
             const success = document.getElementById('success');
-            success.innerHTML = `<i class="fas fa-check-circle"></i> ${message}`;
-            success.style.display = 'block';
+            success.querySelector('span').textContent = message;
+            success.style.display = 'flex';
             
             setTimeout(() => {
                 success.style.display = 'none';
@@ -465,6 +435,5 @@
             isOnline = false;
         });
         </script>
-    
-</body>
-</html>
+        </body>
+        </html>
