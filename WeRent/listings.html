@@ -10,7 +10,7 @@
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B1xZhJ5xulwld6J7U6ZlD2+J5i9GqV" crossorigin="anonymous">
   <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/sales.css">
+  <link rel="stylesheet" href="assets/css/listings.css">
    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
   
 
@@ -25,7 +25,7 @@
     </div>
 
     <nav class="nav-links" id="navLinks">
-       <a href="index.php">Home</a>
+       <a href="index.html">Home</a>
       <a href="listings.php">Property</a>
       <a href="contact.html">Contact</a>
         <a href="blog.html">Blog</a>
@@ -37,6 +37,31 @@
       <i class="fas fa-times" id="closeIcon" style="display: none;"></i>
     </div>
   </header>
+ <div class="hero">
+        <h1>Properties for Sale</h1>
+        
+        <div id="loading" class="loading">Loading...</div>
+        <div id="error" class="error" style="display: none;"></div>
+        <div id="propertiesGrid" class="properties-grid"></div>
+    </div>
+
+    <div id="viewingModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2>Book Viewing</h2>
+            <form onsubmit="submitForm(event)">
+                <input type="text" id="name" placeholder="Full Name" required>
+                <input type="tel" id="phone" placeholder="Phone Number" required>
+                <input type="datetime-local" id="date" required>
+                <textarea id="notes" placeholder="Notes (optional)" rows="3"></textarea>
+                <button type="submit" class="book-btn">Submit</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="success" class="success">
+        Viewing booked successfully!
+    </div>
 
   <footer class="new-footer">
   <div class="footer-grid">
@@ -57,6 +82,49 @@
         <li><a href="contact.html">Contact</a></li>
       </ul>
     </div>
+    <div class="hero">
+        <h1>Properties for Sale</h1>
+        
+        <div id="loading" class="loading">Loading properties</div>
+        <div id="error" class="error" style="display: none;"></div>
+        <div id="propertiesGrid" class="properties-grid"></div>
+    </div>
+
+    <div id="viewingModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2>Book Viewing</h2>
+            <form onsubmit="submitForm(event)">
+                <input type="text" id="name" placeholder="Full Name" required>
+                <input type="tel" id="phone" placeholder="Phone Number" required>
+                <input type="datetime-local" id="date" required>
+                <textarea id="notes" placeholder="Additional notes or special requirements" rows="3"></textarea>
+                <button type="submit" class="book-btn">Book Viewing</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="success" class="success">
+        <i class="fas fa-check-circle"></i> Viewing booked successfully!
+    </div>
+
+    <footer class="new-footer">
+        <div class="footer-grid">
+            <div class="footer-brand">
+                <h2>WeRent</h2>
+                <p>Find the perfect property across Kenya with WeRent. Whether for rent or sale, we simplify your search experience.</p>
+            </div>
+
+            <div class="footer-links">
+                <h4>Explore</h4>
+                <ul>
+                    <li><a href="index.php">Home</a></li>
+                    <li><a href="listings.html">Properties</a></li>
+                    <li><a href="blog.html">Blog</a></li>
+                    <li><a href="aboutus.html">About Us</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                </ul>
+            </div>
 
     <!-- Contact Info -->
     <div class="footer-contact">
@@ -88,7 +156,313 @@
     <p>&copy; <?= date('Y') ?> WeRent. All rights reserved.</p>
   </div>
 </footer>
+ <script>
+        // Configuration
+        const CONFIG = {
+            API_BASE_URL: 'http://localhost:5000/api/v1',
+            ENDPOINTS: {
+                PROPERTIES: '/properties',
+                BOOKINGS: '/bookings'
+            },
+            RETRY_ATTEMPTS: 3,
+            RETRY_DELAY: 1000
+        };
 
+        let selectedProperty = null;
+        let retryCount = 0;
+
+        // Utility Functions
+        function formatPrice(price) {
+            if (typeof price === 'number') {
+                return `KSh ${price.toLocaleString()}`;
+            }
+            return price || 'Price on request';
+        }
+
+        function formatDate(dateString) {
+            try {
+                const date = new Date(dateString);
+                return date.toLocaleDateString('en-US', {
+                    weekday: 'short',
+                    month: 'short',
+                    day: 'numeric'
+                });
+            } catch (error) {
+                return dateString;
+            }
+        }
+
+        // API Functions
+        async function fetchWithRetry(url, options = {}, attempts = CONFIG.RETRY_ATTEMPTS) {
+            try {
+                const response = await fetch(url, {
+                    ...options,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        ...options.headers
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+
+                return await response.json();
+            } catch (error) {
+                if (attempts > 1) {
+                    console.warn(`Request failed, retrying... (${CONFIG.RETRY_ATTEMPTS - attempts + 1}/${CONFIG.RETRY_ATTEMPTS})`);
+                    await new Promise(resolve => setTimeout(resolve, CONFIG.RETRY_DELAY));
+                    return fetchWithRetry(url, options, attempts - 1);
+                }
+                throw error;
+            }
+        }
+
+        async function loadProperties() {
+            const loadingEl = document.getElementById('loading');
+            const errorEl = document.getElementById('error');
+            const gridEl = document.getElementById('propertiesGrid');
+
+            try {
+                loadingEl.style.display = 'flex';
+                errorEl.style.display = 'none';
+                gridEl.innerHTML = '';
+
+                const url = `${CONFIG.API_BASE_URL}${CONFIG.ENDPOINTS.PROPERTIES}`;
+                const data = await fetchWithRetry(url);
+                
+                // Handle different response structures
+                const properties = Array.isArray(data) ? data : 
+                                 data.properties ? data.properties : 
+                                 data.data ? data.data : [];
+
+                loadingEl.style.display = 'none';
+                
+                if (properties.length === 0) {
+                    displayNoProperties();
+                } else {
+                    displayProperties(properties);
+                }
+                
+            } catch (error) {
+                console.error('Failed to load properties:', error);
+                loadingEl.style.display = 'none';
+                errorEl.innerHTML = `
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <strong>Unable to load properties</strong><br>
+                    ${error.message || 'Please check your connection and try again'}
+                `;
+                errorEl.style.display = 'block';
+            }
+        }
+
+        function displayNoProperties() {
+            const grid = document.getElementById('propertiesGrid');
+            grid.innerHTML = `
+                <div class="no-properties">
+                    <i class="fas fa-home"></i>
+                    <h3>No Properties Available</h3>
+                    <p>We're currently updating our listings. Please check back soon!</p>
+                </div>
+            `;
+        }
+
+        function displayProperties(properties) {
+            const grid = document.getElementById('propertiesGrid');
+            
+            grid.innerHTML = properties.map(property => {
+                const propertyDetails = [
+                    property.bedrooms ? `<div class="detail-item"><i class="fas fa-bed"></i> ${property.bedrooms} beds</div>` : '',
+                    property.bathrooms ? `<div class="detail-item"><i class="fas fa-bath"></i> ${property.bathrooms} baths</div>` : '',
+                    property.area ? `<div class="detail-item"><i class="fas fa-ruler-combined"></i> ${property.area}</div>` : '',
+                    property.location ? `<div class="detail-item"><i class="fas fa-map-marker-alt"></i> ${property.location}</div>` : ''
+                ].filter(detail => detail).join('');
+
+                const availabilityCalendar = property.availability && property.availability.length > 0 ? 
+                    property.availability.map(day => 
+                        `<span class="${day.status || 'available'}" title="${day.date || day.day}">
+                            ${day.day || formatDate(day.date)}
+                        </span>`
+                    ).join('') : 
+                    '<span class="available">Contact for availability</span>';
+
+                return `
+                    <div class="property-card" data-property-id="${property.id}">
+                        <div class="property-image">
+                            ${property.image || property.images?.[0] ? 
+                                `<img src="${property.image || property.images[0]}" alt="${property.title}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+                                 <div class="placeholder" style="display:none;">🏠</div>` : 
+                                '<div class="placeholder">🏠</div>'
+                            }
+                        </div>
+                        <div class="property-content">
+                            <h3 class="property-title">${property.title || property.name || 'Property'}</h3>
+                            <div class="property-price">${formatPrice(property.price)}</div>
+                            
+                            ${propertyDetails ? `<div class="property-details">${propertyDetails}</div>` : ''}
+                            
+                            <div class="calendar">
+                                ${availabilityCalendar}
+                            </div>
+                            
+                            <button class="book-btn" onclick="openModal('${property.id}', '${property.title}')">
+                                <i class="fas fa-calendar-check"></i> Book Viewing
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function openModal(propertyId, propertyTitle = '') {
+            selectedProperty = { id: propertyId, title: propertyTitle };
+            const modal = document.getElementById('viewingModal');
+            const modalTitle = modal.querySelector('h2');
+            
+            modalTitle.textContent = propertyTitle ? `Book Viewing - ${propertyTitle}` : 'Book Viewing';
+            modal.style.display = 'block';
+            
+            // Set minimum date to today
+            const dateInput = document.getElementById('date');
+            const now = new Date();
+            const minDateTime = now.toISOString().slice(0, 16);
+            dateInput.min = minDateTime;
+        }
+
+        function closeModal() {
+            document.getElementById('viewingModal').style.display = 'none';
+            selectedProperty = null;
+        }
+
+        async function submitForm(event) {
+            event.preventDefault();
+            
+            if (!selectedProperty) {
+                alert('No property selected');
+                return;
+            }
+
+            const submitButton = event.target.querySelector('button[type="submit"]');
+            const originalText = submitButton.innerHTML;
+            
+            try {
+                // Show loading state
+                submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Booking...';
+                submitButton.disabled = true;
+
+                const formData = {
+                    propertyId: selectedProperty.id,
+                    propertyTitle: selectedProperty.title,
+                    name: document.getElementById('name').value.trim(),
+                    phone: document.getElementById('phone').value.trim(),
+                    date: document.getElementById('date').value,
+                    notes: document.getElementById('notes').value.trim(),
+                    timestamp: new Date().toISOString()
+                };
+
+                // Validate form data
+                if (!formData.name || !formData.phone || !formData.date) {
+                    throw new Error('Please fill in all required fields');
+                }
+
+                const url = `${CONFIG.API_BASE_URL}${CONFIG.ENDPOINTS.BOOKINGS}`;
+                await fetchWithRetry(url, {
+                    method: 'POST',
+                    body: JSON.stringify(formData)
+                });
+
+                closeModal();
+                showSuccess('Viewing booked successfully! We\'ll contact you soon.');
+                event.target.reset();
+                
+            } catch (error) {
+                console.error('Booking failed:', error);
+                showError(error.message || 'Failed to book viewing. Please try again.');
+            } finally {
+                // Restore button state
+                submitButton.innerHTML = originalText;
+                submitButton.disabled = false;
+            }
+        }
+
+        function showSuccess(message = 'Viewing booked successfully!') {
+            const success = document.getElementById('success');
+            success.innerHTML = `<i class="fas fa-check-circle"></i> ${message}`;
+            success.style.display = 'block';
+            
+            setTimeout(() => {
+                success.style.display = 'none';
+            }, 5000);
+        }
+
+        function showError(message) {
+            const errorEl = document.createElement('div');
+            errorEl.className = 'error';
+            errorEl.style.position = 'fixed';
+            errorEl.style.top = '100px';
+            errorEl.style.right = '2rem';
+            errorEl.style.zIndex = '3000';
+            errorEl.innerHTML = `<i class="fas fa-exclamation-triangle"></i> ${message}`;
+            
+            document.body.appendChild(errorEl);
+            
+            setTimeout(() => {
+                if (errorEl.parentNode) {
+                    errorEl.parentNode.removeChild(errorEl);
+                }
+            }, 5000);
+        }
+
+        // Event Listeners
+        window.onclick = function(event) {
+            const modal = document.getElementById('viewingModal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                closeModal();
+            }
+        });
+
+        // Mobile menu toggle
+        document.addEventListener('DOMContentLoaded', function() {
+            loadProperties();
+            
+            const menuToggle = document.getElementById('menuToggle');
+            const navLinks = document.getElementById('navLinks');
+            
+            if (menuToggle && navLinks) {
+                menuToggle.addEventListener('click', function() {
+                    navLinks.style.display = navLinks.style.display === 'flex' ? 'none' : 'flex';
+                });
+            }
+        });
+
+        // Retry mechanism for failed requests
+        function addRetryButton() {
+            const errorEl = document.getElementById('error');
+            if (errorEl.style.display !== 'none') {
+                errorEl.innerHTML += '<br><button onclick="loadProperties()" class="book-btn" style="margin-top: 1rem; max-width: 200px;">Try Again</button>';
+            }
+        }
+
+        // Auto-retry on network restoration
+        let isOnline = navigator.onLine;
+        window.addEventListener('online', function() {
+            if (!isOnline) {
+                isOnline = true;
+                loadProperties();
+            }
+        });
+
+        window.addEventListener('offline', function() {
+            isOnline = false;
+        });
+        </script>
     
 </body>
 </html>
