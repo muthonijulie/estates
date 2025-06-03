@@ -35,7 +35,7 @@
 <!-- contact.html -->
 <section class="intro-text">
   <h2>Contact Us</h2>
-  <p>We’d love to hear from you. Whether you have a question about a property or want to schedule a visit, our team is here to help.</p>
+  <p>We'd love to hear from you. Whether you have a question about a property or want to schedule a visit, our team is here to help.</p>
 </section>
 
 <section class="contact-container">
@@ -116,14 +116,24 @@
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
 
+      // Get form data and convert to JSON
       const formData = new FormData(form);
+      const jsonData = {};
+      
+      for (let [key, value] of formData.entries()) {
+        jsonData[key] = value;
+      }
+
       submitBtn.disabled = true;
       submitBtn.textContent = 'Sending...';
 
       try {
-        const response = await fetch('contact-handler.php', {
+        const response = await fetch('http://localhost:5000/api/v1/contact', {
           method: 'POST',
-          body: formData
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(jsonData)
         });
 
         const text = await response.text();
@@ -135,8 +145,8 @@
           data = { status: 'error', message: 'Invalid response from server.' };
         }
 
-        if (data.status === 'success') {
-          showAlert(data.message, 'success');
+        if (response.ok) {
+          showAlert('Message sent successfully!', 'success');
           form.reset();
         } else {
           showAlert(data.message || 'Something went wrong.', 'error');
@@ -221,7 +231,7 @@
   </div>
 
   <div class="footer-bottom">
-    <p>&copy; <?= date('Y') ?> WeRent. All rights reserved.</p>
+    <p>&copy; 2024 WeRent. All rights reserved.</p>
   </div>
 </footer>
 
@@ -255,10 +265,12 @@ menuToggle.addEventListener('click', () => {
     const propertyInput = document.querySelector('input[name="property"]');
 
     // From hero section
-    openBtn.addEventListener('click', () => {
-      modal.classList.add('show');
-      propertyInput.value = '';
-    });
+    if (openBtn) {
+      openBtn.addEventListener('click', () => {
+        modal.classList.add('show');
+        propertyInput.value = '';
+      });
+    }
 
     // From property cards
     const bookButtons = document.querySelectorAll('.book-viewing-button');
@@ -271,9 +283,11 @@ menuToggle.addEventListener('click', () => {
     });
 
     // Close modal
-    closeBtn.addEventListener('click', () => {
-      modal.classList.remove('show');
-    });
+    if (closeBtn) {
+      closeBtn.addEventListener('click', () => {
+        modal.classList.remove('show');
+      });
+    }
 
     // Close if clicked outside
     window.addEventListener('click', (e) => {
@@ -326,15 +340,17 @@ menuToggle.addEventListener('click', () => {
   bookButtons.forEach(button => {
     button.addEventListener('click', () => {
       const propertyName = button.getAttribute('data-property'); // Get property name from button
-      propertyInput.value = propertyName; // Set property input value
-      modal.classList.add('show'); // Show modal
+      if (propertyInput) propertyInput.value = propertyName; // Set property input value
+      if (modal) modal.classList.add('show'); // Show modal
     });
   });
 
   // Close modal when the close button is clicked
-  closeBtn.addEventListener('click', () => {
-    modal.classList.remove('show'); // Hide modal
-  });
+  if (closeBtn) {
+    closeBtn.addEventListener('click', () => {
+      modal.classList.remove('show'); // Hide modal
+    });
+  }
 
   // Close modal if clicked outside of it
   window.addEventListener('click', (e) => {
@@ -357,11 +373,6 @@ menuToggle.addEventListener('click', () => {
 <div class="contact-fixed-right">
   <a href="tel:+2547XXXXXXXX" class="phone-number">CALL:+254 7XX XXX XXX</a>
 </div>
-
-
-
-
-
 
 </body>
 </html>
