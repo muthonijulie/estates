@@ -681,7 +681,7 @@
     const formattedPrice = new Intl.NumberFormat('en-KE').format(property.price || 35000);
     
     card.innerHTML = `
-      <img src="${imageUrl}" alt="${property.title || 'Rental Property'}">
+          <img src="${property.mainImage || 'assets/images/final.png'}" alt="${property.title}" onerror="this.src='assets/images/final.png'">
       <div class="content">
         <h3>${property.title || 'Modern Apartment'}</h3>
         <p>Ksh ${formattedPrice}/month</p>
@@ -690,7 +690,8 @@
           <button class="view-btn" onclick="toggleDetails(this)">View More</button>
         </div>
         <div class="details">
-          <img src="${imageUrl}" alt="Interior">
+                <img src="${property.mainImage || 'assets/images/final.png'}" alt="${property.title}" onerror="this.src='assets/images/final.png'">
+
           <p><strong>Location:</strong> ${property.location || 'Not specified'}</p>
           <p><strong>Bedrooms:</strong> ${property.bedrooms || 'Not specified'}</p>
           <p><strong>Bathrooms:</strong> ${property.bathrooms || 'Not specified'}</p>
@@ -716,7 +717,7 @@
     const formattedPrice = new Intl.NumberFormat('en-KE').format(property.price || 12500000);
     
     card.innerHTML = `
-      <img src="${imageUrl}" alt="${property.title || 'Property for Sale'}">
+          <img src="${property.mainImage || 'assets/images/final.png'}" alt="${property.title}" onerror="this.src='assets/images/final.png'">
       <div class="content">
         <h3>${property.title || 'Elegant Villa'}</h3>
         <p>Ksh ${formattedPrice}</p>
@@ -725,7 +726,7 @@
           <button class="view-btn" onclick="toggleDetails(this)">View More</button>
         </div>
         <div class="details">
-          <img src="${imageUrl}" alt="Interior">
+                <img src="${property.mainImage || 'assets/images/final.png'}" alt="${property.title}" onerror="this.src='assets/images/final.png'">
           <p><strong>Location:</strong> ${property.location || 'Not specified'}</p>
           <p><strong>Bedrooms:</strong> ${property.bedrooms || 'Not specified'}</p>
           <p><strong>Bathrooms:</strong> ${property.bathrooms || 'Not specified'}</p>
