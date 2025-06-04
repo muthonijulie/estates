@@ -20,10 +20,61 @@ exports.createProperty = async (req, res) => {
 
 exports.getProperties = async (req, res) => {
     try {
-        const properties = await Property.find();
+        const query = {};
+        
+        // Location filter
+        if (req.query.location) {
+            query.location = new RegExp(req.query.location, 'i');
+        }
+        
+        // Property type filter
+        if (req.query.propertyType) {
+            query.propertyType = req.query.propertyType;
+        }
+        
+        // Listing type filter
+        if (req.query.listingType) {
+            query.listingType = req.query.listingType;
+        }
+        
+        // Price range filter
+        if (req.query.minPrice || req.query.maxPrice) {
+            query.price = {};
+            if (req.query.minPrice) query.price.$gte = parseInt(req.query.minPrice);
+            if (req.query.maxPrice) query.price.$lte = parseInt(req.query.maxPrice);
+        }
+        
+        // Bedrooms filter
+        if (req.query.bedrooms) {
+            const bedrooms = parseInt(req.query.bedrooms);
+            query.bedrooms = bedrooms >= 5 ? { $gte: 5 } : bedrooms;
+        }
+        
+        // Bathrooms filter
+        if (req.query.bathrooms) {
+            const bathrooms = parseInt(req.query.bathrooms);
+            query.bathrooms = bathrooms >= 4 ? { $gte: 4 } : bathrooms;
+        }
+        
+        // Status filter
+        if (req.query.status) {
+            query.status = req.query.status;
+        }
+        
+        // Amenities filter
+        if (req.query.amenities) {
+            const amenitiesArray = req.query.amenities.split(',');
+            // Use $in to match properties that have any of the specified amenities
+            // Or use $all if you want properties that have ALL specified amenities
+            query.amenities = { $in: amenitiesArray };
+        }
+        
+        // Execute query - this will get ALL properties if no filters, or filtered properties if filters exist
+        const properties = await Property.find(query).sort({ createdAt: -1 });
         
         res.status(200).json({
             success: true,
+            count: properties.length,
             data: properties
         });
         
@@ -32,9 +83,9 @@ exports.getProperties = async (req, res) => {
             success: false,
             error: error.message
         });
-        
     }
-}
+};
+
 
 exports.getPropertyById = async (req, res) => {
     try {

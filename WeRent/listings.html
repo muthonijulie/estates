@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -17,6 +17,448 @@
     
     <!-- Custom CSS -->
     <link rel="stylesheet" href="assets/css/listings.css">
+    
+    <style>
+        /* Compact Filter Dropdown Styles */
+        .filters-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 1rem 0;
+            margin-bottom: 1rem;
+        }
+
+        .filters-dropdown {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        .filter-toggle {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 25px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .filter-toggle:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .filters-content {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-top: 1rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            display: none;
+        }
+
+        .filters-content.show {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .filters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .filter-group label {
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: #333;
+            font-size: 0.9rem;
+        }
+
+        .filter-group .form-control,
+        .filter-group .form-select {
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            padding: 0.5rem;
+            font-size: 0.9rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .filter-group .form-control:focus,
+        .filter-group .form-select:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .price-inputs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem;
+        }
+
+        .amenities-checkboxes {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 0.5rem;
+        }
+
+        .amenity-check {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.25rem;
+        }
+
+        .amenity-check input[type="checkbox"] {
+            margin: 0;
+        }
+
+        .amenity-check label {
+            margin: 0;
+            font-size: 0.85rem;
+            cursor: pointer;
+        }
+
+        .filter-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+        }
+
+        .filter-btn {
+            padding: 0.5rem 1.5rem;
+            border: none;
+            border-radius: 20px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .filter-btn.primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .filter-btn.primary:hover {
+            background: #5a6fd8;
+            transform: translateY(-1px);
+        }
+
+        .filter-btn.secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .filter-btn.secondary:hover {
+            background: #5a6268;
+        }
+
+        .active-filters {
+            margin: 0 auto 1rem auto;
+            max-width: 1200px;
+            padding: 0 1rem;
+        }
+
+        .filter-tag {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            margin: 0.25rem;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .filter-tag:hover {
+            background: #5a6fd8;
+        }
+
+        .filter-tag .remove {
+            margin-left: 0.5rem;
+            font-weight: bold;
+        }
+
+        .results-header {
+            max-width: 1200px;
+            margin: 0 auto 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .results-info {
+            background: #f8f9ff;
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .sort-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .sort-select {
+            min-width: 200px;
+        }
+
+        @media (max-width: 768px) {
+            .filters-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .filter-actions {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .sort-section {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .price-inputs {
+                grid-template-columns: 1fr;
+            }
+
+            .amenities-checkboxes {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Property Grid Styles */
+        .properties-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        .properties-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+        }
+
+        .property-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .property-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+        }
+
+        .property-image {
+            position: relative;
+            height: 200px;
+            overflow: hidden;
+        }
+
+        .property-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .property-status {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 0.25rem 0.75rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .property-status.available {
+            background: #28a745;
+            color: white;
+        }
+
+        .property-status.booked {
+            background: #ffc107;
+            color: #212529;
+        }
+
+        .property-status.sold {
+            background: #dc3545;
+            color: white;
+        }
+
+        .property-content {
+            padding: 1.5rem;
+        }
+
+        .property-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+
+        .property-price {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 1rem;
+        }
+
+        .property-details {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .detail-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .property-type {
+            margin-bottom: 1rem;
+        }
+
+        .listing-type {
+            background: #667eea;
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .book-btn, .details-btn {
+            flex: 1;
+            padding: 0.75rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .book-btn {
+            background: #667eea;
+            color: white;
+        }
+
+        .book-btn:hover:not(:disabled) {
+            background: #5a6fd8;
+        }
+
+        .book-btn:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+        }
+
+        .details-btn {
+            background: #f8f9fa;
+            color: #667eea;
+            border: 2px solid #667eea;
+        }
+
+        .details-btn:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .property-expanded {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .amenities-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .amenity-tag {
+            background: #e9ecef;
+            color: #495057;
+            padding: 0.25rem 0.5rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+        }
+
+        .gallery-preview {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .gallery-preview img {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        .loading, .error, .no-properties {
+            text-align: center;
+            padding: 3rem 1rem;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .loading i {
+            font-size: 2rem;
+            color: #667eea;
+            margin-bottom: 1rem;
+        }
+
+        .error {
+            color: #dc3545;
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            border-radius: 8px;
+        }
+
+        .no-properties {
+            color: #6c757d;
+        }
+
+        .no-properties i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: #dee2e6;
+        }
+    </style>
 </head>
 <body>
     <header class="navbar">
@@ -44,11 +486,170 @@
             <h1>Properties</h1>
         </div>
 
-        <div id="loading" class="loading">
-            <i class="fas fa-spinner fa-spin"></i> Loading properties...
+        <!-- Compact Filters Section -->
+        <section class="filters-section">
+            <div class="filters-dropdown">
+                <button class="filter-toggle" onclick="toggleFilters()">
+                    <i class="fas fa-filter"></i>
+                    <span>Filter Properties</span>
+                    <i class="fas fa-chevron-down" id="filterChevron"></i>
+                </button>
+                
+                <div class="filters-content" id="filtersContent">
+                    <div class="filters-grid">
+                        <!-- Location Filter -->
+                        <div class="filter-group">
+                            <label for="locationFilter"><i class="fas fa-map-marker-alt"></i> Location</label>
+                            <select class="form-select" id="locationFilter">
+                                <option value="">All Locations</option>
+                                <option value="Nairobi">Nairobi</option>
+                                <option value="Mombasa">Mombasa</option>
+                                <option value="Kisumu">Kisumu</option>
+                                <option value="Nakuru">Nakuru</option>
+                                <option value="Eldoret">Eldoret</option>
+                                <option value="Watamu">Watamu</option>
+                                <option value="Malindi">Malindi</option>
+                                <option value="Diani">Diani</option>
+                            </select>
+                        </div>
+
+                        <!-- Property Type Filter -->
+                        <div class="filter-group">
+                            <label for="propertyTypeFilter"><i class="fas fa-home"></i> Property Type</label>
+                            <select class="form-select" id="propertyTypeFilter">
+                                <option value="">All Types</option>
+                                <option value="Apartment">Apartment</option>
+                                <option value="House">House</option>
+                                <option value="Villa">Villa</option>
+                                <option value="Townhouse">Townhouse</option>
+                                <option value="Studio">Studio</option>
+                                <option value="Penthouse">Penthouse</option>
+                                <option value="Commercial">Commercial</option>
+                                <option value="Land">Land</option>
+                            </select>
+                        </div>
+
+                        <!-- Listing Type Filter -->
+                        <div class="filter-group">
+                            <label for="listingTypeFilter"><i class="fas fa-tag"></i> Listing Type</label>
+                            <select class="form-select" id="listingTypeFilter">
+                                <option value="">All Listings</option>
+                                <option value="Rent">For Rent</option>
+                                <option value="Sale">For Sale</option>
+                            </select>
+                        </div>
+
+                        <!-- Price Range Filter -->
+                        <div class="filter-group">
+                            <label><i class="fas fa-money-bill-wave"></i> Price Range (KSh)</label>
+                            <div class="price-inputs">
+                                <input type="number" class="form-control" id="minPrice" placeholder="Min Price">
+                                <input type="number" class="form-control" id="maxPrice" placeholder="Max Price">
+                            </div>
+                        </div>
+
+                        <!-- Bedrooms Filter -->
+                        <div class="filter-group">
+                            <label for="bedroomsFilter"><i class="fas fa-bed"></i> Bedrooms</label>
+                            <select class="form-select" id="bedroomsFilter">
+                                <option value="">Any</option>
+                                <option value="1">1 Bedroom</option>
+                                <option value="2">2 Bedrooms</option>
+                                <option value="3">3 Bedrooms</option>
+                                <option value="4">4 Bedrooms</option>
+                                <option value="5">5+ Bedrooms</option>
+                            </select>
+                        </div>
+
+                        <!-- Bathrooms Filter -->
+                        <div class="filter-group">
+                            <label for="bathroomsFilter"><i class="fas fa-bath"></i> Bathrooms</label>
+                            <select class="form-select" id="bathroomsFilter">
+                                <option value="">Any</option>
+                                <option value="1">1 Bathroom</option>
+                                <option value="2">2 Bathrooms</option>
+                                <option value="3">3 Bathrooms</option>
+                                <option value="4">4+ Bathrooms</option>
+                            </select>
+                        </div>
+
+                        <!-- Status Filter -->
+                        <div class="filter-group">
+                            <label for="statusFilter"><i class="fas fa-info-circle"></i> Status</label>
+                            <select class="form-select" id="statusFilter">
+                                <option value="">All Status</option>
+                                <option value="Available">Available</option>
+                                <option value="Booked">Booked</option>
+                                <option value="Sold">Sold</option>
+                            </select>
+                        </div>
+
+                        <!-- Amenities Filter -->
+                        <div class="filter-group">
+                            <label><i class="fas fa-star"></i> Amenities</label>
+                            <div class="amenities-checkboxes">
+                                <div class="amenity-check">
+                                    <input type="checkbox" id="parking" value="Parking">
+                                    <label for="parking">Parking</label>
+                                </div>
+                                <div class="amenity-check">
+                                    <input type="checkbox" id="pool" value="Swimming Pool">
+                                    <label for="pool">Pool</label>
+                                </div>
+                                <div class="amenity-check">
+                                    <input type="checkbox" id="garden" value="Garden">
+                                    <label for="garden">Garden</label>
+                                </div>
+                                <div class="amenity-check">
+                                    <input type="checkbox" id="security" value="Security">
+                                    <label for="security">Security</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="filter-actions">
+                        <button class="filter-btn secondary" onclick="clearAllFilters()">
+                            <i class="fas fa-times"></i> Clear All
+                        </button>
+                        <button class="filter-btn primary" onclick="applyFilters()">
+                            <i class="fas fa-search"></i> Apply Filters
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Active Filters Display -->
+        <div id="activeFilters" class="active-filters" style="display: none;"></div>
+        
+        <!-- Results Header -->
+        <div class="results-header">
+            <div class="results-info">
+                <span id="resultsCount">Loading properties...</span>
+            </div>
+            <div class="sort-section">
+                <div></div>
+                <select class="form-select sort-select" id="sortBy" onchange="sortProperties()">
+                    <option value="newest">Newest First</option>
+                    <option value="oldest">Oldest First</option>
+                    <option value="price-low">Price: Low to High</option>
+                    <option value="price-high">Price: High to Low</option>
+                    <option value="bedrooms">Most Bedrooms</option>
+                    <option value="location">Location A-Z</option>
+                </select>
+            </div>
         </div>
-        <div id="error" class="error" style="display: none;"></div>
-        <div id="propertiesGrid" class="properties-grid"></div>
+
+        <!-- Properties Container -->
+        <div class="properties-container">
+            <div id="loading" class="loading">
+                <i class="fas fa-spinner fa-spin"></i> 
+                <div>Loading properties...</div>
+            </div>
+            <div id="error" class="error" style="display: none;"></div>
+            <div id="propertiesGrid" class="properties-grid"></div>
+        </div>
     </main>
 
     <!-- Booking Modal -->
@@ -79,17 +680,19 @@
     <div id="viewingSuccess" class="success">
         Thank you for scheduling a viewing. We'll be in touch to confirm the time and guide you through the process!
     </div>
-<!-- WhatsApp icon on the left -->
-<div class="contact-fixed-left">
-  <a href="https://wa.me/2547XXXXXXXX" target="_blank" aria-label="Chat on WhatsApp">
-    <img src="https://img.icons8.com/color/48/000000/whatsapp--v1.png" alt="WhatsApp">
-  </a>
-</div>
 
-<!-- Phone number on the right -->
-<div class="contact-fixed-right">
-  <a href="tel:+2547XXXXXXXX" class="phone-number">CALL:+254 7XX XXX XXX</a>
-</div>
+    <!-- WhatsApp icon on the left -->
+    <div class="contact-fixed-left">
+      <a href="https://wa.me/2547XXXXXXXX" target="_blank" aria-label="Chat on WhatsApp">
+        <img src="https://img.icons8.com/color/48/000000/whatsapp--v1.png" alt="WhatsApp">
+      </a>
+    </div>
+
+    <!-- Phone number on the right -->
+    <div class="contact-fixed-right">
+      <a href="tel:+2547XXXXXXXX" class="phone-number">CALL:+254 7XX XXX XXX</a>
+    </div>
+
     <!-- Footer -->
     <footer class="new-footer">
         <div class="footer-grid">
@@ -144,25 +747,246 @@
         // Configuration
         const CONFIG = {
             API_BASE_URL: 'https://estates-1-zn1x.onrender.com/api/v1',
-            ENDPOINTS: {
-                PROPERTIES: '/properties',
-                BOOKINGS: '/bookings'
-            },
             RETRY_ATTEMPTS: 3,
             RETRY_DELAY: 1000
         };
 
         // Global variables
         let selectedPropertyId = null;
+        let allProperties = [];
+        let filteredProperties = [];
+        let currentFilters = {};
 
-        // Fetch and display properties
+        // Toggle filters dropdown
+        function toggleFilters() {
+            const filtersContent = document.getElementById('filtersContent');
+            const chevron = document.getElementById('filterChevron');
+            
+            if (filtersContent.classList.contains('show')) {
+                filtersContent.classList.remove('show');
+                chevron.style.transform = 'rotate(0deg)';
+            } else {
+                filtersContent.classList.add('show');
+                chevron.style.transform = 'rotate(180deg)';
+            }
+        }
+
+        // Build filters from form - Fixed to match backend expectations
+        function buildFiltersFromForm() {
+            const filters = {};
+            
+            // Location filter
+            const location = document.getElementById('locationFilter').value.trim();
+            if (location) filters.location = location;
+            
+            // Property type filter
+            const propertyType = document.getElementById('propertyTypeFilter').value.trim();
+            if (propertyType) filters.propertyType = propertyType;
+            
+            // Listing type filter
+            const listingType = document.getElementById('listingTypeFilter').value.trim();
+            if (listingType) filters.listingType = listingType;
+            
+            // Price range filter
+            const minPrice = document.getElementById('minPrice').value.trim();
+            const maxPrice = document.getElementById('maxPrice').value.trim();
+            if (minPrice) filters.minPrice = parseInt(minPrice);
+            if (maxPrice) filters.maxPrice = parseInt(maxPrice);
+            
+            // Bedrooms filter
+            const bedrooms = document.getElementById('bedroomsFilter').value.trim();
+            if (bedrooms) filters.bedrooms = parseInt(bedrooms);
+            
+            // Bathrooms filter
+            const bathrooms = document.getElementById('bathroomsFilter').value.trim();
+            if (bathrooms) filters.bathrooms = parseInt(bathrooms);
+            
+            // Status filter
+            const status = document.getElementById('statusFilter').value.trim();
+            if (status) filters.status = status;
+            
+            // Amenities filter - Fixed to send as comma-separated string
+            const selectedAmenities = [];
+            document.querySelectorAll('.amenity-check input[type="checkbox"]:checked').forEach(checkbox => {
+                selectedAmenities.push(checkbox.value);
+            });
+            if (selectedAmenities.length > 0) {
+                filters.amenities = selectedAmenities.join(',');
+            }
+            
+            return filters;
+        }
+
+        function buildQueryString(filters) {
+            const queryParams = new URLSearchParams();
+            
+            Object.keys(filters).forEach(key => {
+                queryParams.append(key, filters[key]);
+            });
+            
+            return queryParams.toString();
+        }
+
+        function applyFilters() {
+            currentFilters = buildFiltersFromForm();
+            fetchProperties();
+            displayActiveFilters();
+            
+            // Close filters dropdown after applying
+            const filtersContent = document.getElementById('filtersContent');
+            const chevron = document.getElementById('filterChevron');
+            filtersContent.classList.remove('show');
+            chevron.style.transform = 'rotate(0deg)';
+        }
+
+        function clearAllFilters() {
+            // Reset all form elements
+            document.getElementById('locationFilter').value = '';
+            document.getElementById('propertyTypeFilter').value = '';
+            document.getElementById('listingTypeFilter').value = '';
+            document.getElementById('minPrice').value = '';
+            document.getElementById('maxPrice').value = '';
+            document.getElementById('bedroomsFilter').value = '';
+            document.getElementById('bathroomsFilter').value = '';
+            document.getElementById('statusFilter').value = '';
+            
+            // Uncheck all amenities
+            document.querySelectorAll('.amenity-check input[type="checkbox"]').forEach(checkbox => {
+                checkbox.checked = false;
+            });
+            
+            // Clear filters and fetch all properties
+            currentFilters = {};
+            fetchProperties();
+            hideActiveFilters();
+        }
+
+      
+
+        function removeFilter(filterKey) {
+            delete currentFilters[filterKey];
+            
+            // Update form elements
+            if (filterKey === 'location') document.getElementById('locationFilter').value = '';
+            if (filterKey === 'propertyType') document.getElementById('propertyTypeFilter').value = '';
+            if (filterKey === 'listingType') document.getElementById('listingTypeFilter').value = '';
+            if (filterKey === 'minPrice') document.getElementById('minPrice').value = '';
+            if (filterKey === 'maxPrice') document.getElementById('maxPrice').value = '';
+            if (filterKey === 'bedrooms') document.getElementById('bedroomsFilter').value = '';
+            if (filterKey === 'bathrooms') document.getElementById('bathroomsFilter').value = '';
+            if (filterKey === 'status') document.getElementById('statusFilter').value = '';
+            if (filterKey === 'amenities') {
+                document.querySelectorAll('.amenities-checkboxes input[type="checkbox"]').forEach(checkbox => {
+                    checkbox.checked = false;
+                });
+            }
+            
+            fetchProperties();
+            displayActiveFilters();
+        }
+
+        function displayActiveFilters() {
+            const activeFiltersDiv = document.getElementById('activeFilters');
+            const filterKeys = Object.keys(currentFilters);
+            
+            if (filterKeys.length === 0) {
+                hideActiveFilters();
+                return;
+            }
+            
+            let filtersHTML = '<h5>Active Filters:</h5>';
+            
+            filterKeys.forEach(key => {
+                let displayValue = currentFilters[key];
+                let displayKey = key;
+                
+                // Format display names
+                if (key === 'minPrice') displayKey = 'Min Price';
+                if (key === 'maxPrice') displayKey = 'Max Price';
+                if (key === 'propertyType') displayKey = 'Property Type';
+                if (key === 'listingType') displayKey = 'Listing Type';
+                if (key === 'bedrooms') displayKey = 'Bedrooms';
+                if (key === 'bathrooms') displayKey = 'Bathrooms';
+                
+                // Format display values
+                if (key === 'minPrice' || key === 'maxPrice') {
+                    displayValue = `KSh ${displayValue.toLocaleString()}`;
+                }
+                if (Array.isArray(displayValue)) {
+                    displayValue = displayValue.join(', ');
+                }
+                
+                filtersHTML += `
+                    <span class="filter-tag" onclick="removeFilter('${key}')">
+                        ${displayKey}: ${displayValue}
+                        <span class="remove">×</span>
+                    </span>
+                `;
+            });
+            
+            activeFiltersDiv.innerHTML = filtersHTML;
+            activeFiltersDiv.style.display = 'block';
+        }
+
+        function hideActiveFilters() {
+            document.getElementById('activeFilters').style.display = 'none';
+        }
+
+        function sortProperties() {
+            const sortBy = document.getElementById('sortBy').value;
+            let sortedProperties = [...filteredProperties];
+            
+            switch (sortBy) {
+                case 'newest':
+                    sortedProperties.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+                    break;
+                case 'oldest':
+                    sortedProperties.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+                    break;
+                case 'price-low':
+                    sortedProperties.sort((a, b) => a.price - b.price);
+                    break;
+                case 'price-high':
+                    sortedProperties.sort((a, b) => b.price - a.price);
+                    break;
+                case 'bedrooms':
+                    sortedProperties.sort((a, b) => (b.bedrooms || 0) - (a.bedrooms || 0));
+                    break;
+                case 'location':
+                    sortedProperties.sort((a, b) => (a.location || '').localeCompare(b.location || ''));
+                    break;
+                default:
+                    break;
+            }
+            
+            filteredProperties = sortedProperties;
+            displayProperties(filteredProperties);
+        }
+
+        function updateResultsInfo(count, total) {
+            const resultsInfo = document.getElementById('resultsCount');
+            if (count === total) {
+                resultsInfo.textContent = `Showing all ${total} properties`;
+            } else {
+                resultsInfo.textContent = `Showing ${count} of ${total} properties`;
+            }
+        }
+
+        // Enhanced fetch function with filtering
         async function fetchProperties() {
             try {
                 document.getElementById('loading').style.display = 'block';
                 document.getElementById('error').style.display = 'none';
                 document.getElementById('propertiesGrid').innerHTML = '';
 
-                const response = await fetch('https://estates-1-zn1x.onrender.com/api/v1/properties');
+                // Build URL with query parameters
+                let url = 'https://estates-1-zn1x.onrender.com/api/v1/properties';
+                const queryString = buildQueryString(currentFilters);
+                if (queryString) {
+                    url += '?' + queryString;
+                }
+
+                const response = await fetch(url);
                 
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
@@ -170,10 +994,11 @@
                 
                 const data = await response.json();
                 
-                // Filter properties for rental listings (this can be modified if needed)
-                const properties = data.data || [];
+                allProperties = data.data || [];
+                filteredProperties = [...allProperties];
                 
-                displayProperties(properties);
+                updateResultsInfo(filteredProperties.length, allProperties.length);
+                displayProperties(filteredProperties);
                 
             } catch (error) {
                 console.error('Error fetching properties:', error);
@@ -183,7 +1008,7 @@
             }
         }
 
-        // Display properties in the UI
+        // Display properties in the UI (unchanged from original)
         function displayProperties(properties) {
             const grid = document.getElementById('propertiesGrid');
             
@@ -191,16 +1016,17 @@
                 grid.innerHTML = `
                     <div class="no-properties">
                         <i class="fas fa-home"></i>
-                        <h3>No Properties Available</h3>
-                        <p>We're currently updating our listings. Please check back soon!</p>
-                        <button onclick="fetchProperties()" class="book-btn" style="margin-top: 1rem; max-width: 200px;">
-                            <i class="fas fa-refresh"></i> Refresh
+                        <h3>No Properties Found</h3>
+                        <p>Try adjusting your filters or check back later for new listings!</p>
+                        <button onclick="clearAllFilters()" class="book-btn" style="margin-top: 1rem; max-width: 200px;">
+                            <i class="fas fa-refresh"></i> Clear Filters
                         </button>
                     </div>
                 `;
                 return;
             }
             
+               
             grid.innerHTML = properties.map(property => `
                 <div class="property-card">
                     ${property.status ? `<div class="property-status ${property.status.toLowerCase()}">${property.status}</div>` : ''}
