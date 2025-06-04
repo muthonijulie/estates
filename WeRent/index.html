@@ -895,29 +895,26 @@
 
 <section id="featured-properties" class="featured-section">
   <h2>Featured Properties</h2>
+   <h3>Rentals</h3>
+            <div class="properties rental-properties featured" id="rental-properties-container">
+                <div class="loading-message">Loading rental properties...</div>
+            </div>
+            <div class="pagination-controls rental-pagination">
+                <button id="prev-rental" class="pagination-btn disabled"><i class="fas fa-chevron-left"></i></button>
+                <button id="next-rental" class="pagination-btn"><i class="fas fa-chevron-right"></i></button>
+            </div>
 
-  <h3>Rentals</h3>
-  <div class="properties rental-properties featured" id="rental-properties-container">
-    <!-- Rental properties will be loaded here from API -->
-    <div class="loading-message">Loading rental properties...</div>
-  </div>
-  <div class="pagination-controls rental-pagination">
-    <button id="prev-rental" class="pagination-btn disabled"><i class="fas fa-chevron-left"></i></button>
-    <button id="next-rental" class="pagination-btn"><i class="fas fa-chevron-right"></i></button>
-  </div>
-
-  <h3>For Sale</h3>
-  <div class="properties sale-properties featured" id="sale-properties-container">
-    <!-- Sale properties will be loaded here from API -->
-    <div class="loading-message">Loading properties for sale...</div>
-  </div>
-  <div class="pagination-controls sale-pagination">
-    <button id="prev-sale" class="pagination-btn disabled"><i class="fas fa-chevron-left"></i></button>
-    <button id="next-sale" class="pagination-btn"><i class="fas fa-chevron-right"></i></button>
-  </div>
-</section>
-
-<section class="testimonial-section">
+            <h3>For Sale</h3>
+            <div class="properties sale-properties featured" id="sale-properties-container">
+                <div class="loading-message">Loading properties for sale...</div>
+            </div>
+            <div class="pagination-controls sale-pagination">
+                <button id="prev-sale" class="pagination-btn disabled"><i class="fas fa-chevron-left"></i></button>
+                <button id="next-sale" class="pagination-btn"><i class="fas fa-chevron-right"></i></button>
+            </div>
+        </section>
+    </div>
+    <section class="testimonial-section">
   <h2 class="section-title">What Our Clients Say</h2>
   <div class="testimonial-container">
 
@@ -995,66 +992,69 @@
   <div id="favorites-grid" class="grid"></div>
 </section>
 
-<!-- Calendar Modal -->
-<div id="calendarModal" class="calendar-modal">
-  <div class="calendar-modal-content">
-    <button class="calendar-modal-close" onclick="closeCalendarModal()">&times;</button>
-    
-    <div class="calendar-header">
-      <h3>Availability Calendar</h3>
-    </div>
-    
-    <div class="calendar-property-info">
-      <img id="calendar-property-img" src="assets/images/final.png" alt="Property">
-      <div class="calendar-property-details">
-        <h4 id="calendar-property-title">Property Title</h4>
-        <p id="calendar-property-location">Location</p>
-      </div>
-    </div>
-    
-    <div class="calendar-legend">
-      <div class="legend-item">
-        <div class="legend-color legend-available"></div>
-        <span>Available</span>
-      </div>
-      <div class="legend-item">
-        <div class="legend-color legend-booked"></div>
-        <span>Booked</span>
-      </div>
-    </div>
-    
-    <div id="property-calendar"></div>
-    
-    <div class="calendar-actions">
-      <button class="calendar-book-btn" onclick="openBookingFormFromCalendar()">Book Now</button>
-    </div>
-  </div>
-</div>
 
-<!-- Success Message Overlay -->
-<div id="successMessage">
-  <div class="success-content">
-    <div class="success-icon">
-      <i class="fas fa-check"></i>
+
+    <!-- Calendar Modal -->
+    <div id="calendarModal" class="calendar-modal">
+        <div class="calendar-modal-content">
+            <button class="calendar-modal-close" onclick="closeCalendarModal()">&times;</button>
+            
+            <div class="calendar-header">
+                <h3>Select Your Dates</h3>
+            </div>
+            
+            <div class="calendar-property-info">
+                <img id="calendar-property-img" src="https://via.placeholder.com/80x80" alt="Property">
+                <div class="calendar-property-details">
+                    <h4 id="calendar-property-title">Property Title</h4>
+                    <p id="calendar-property-location">Location</p>
+                </div>
+            </div>
+            
+            <div class="calendar-legend">
+                <div class="legend-item">
+                    <div class="legend-color legend-available"></div>
+                    <span>Available</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color legend-booked"></div>
+                    <span>Booked</span>
+                </div>
+            </div>
+            
+            <div id="property-calendar"></div>
+            
+            <div class="calendar-actions">
+                <button class="calendar-book-btn" onclick="openBookingFormFromCalendar()" disabled>Select dates to book</button>
+            </div>
+        </div>
     </div>
-    <div class="success-title">Booking Successful!</div>
-    <div class="success-message">Thank you for your booking. We will confirm your reservation shortly.</div>
-    <button class="success-button" onclick="closeSuccessMessage()">Continue</button>
-  </div>
-</div>
 
-<!-- WhatsApp icon on the left -->
-<div class="contact-fixed-left">
-  <a href="https://wa.me/2547XXXXXXXX" target="_blank" aria-label="Chat on WhatsApp">
-    <img src="https://img.icons8.com/color/48/000000/whatsapp--v1.png" alt="WhatsApp">
-  </a>
-</div>
+    <!-- Success Message Overlay -->
+    <div id="successMessage">
+        <div class="success-content">
+            <div class="success-icon">
+                <i class="fas fa-check"></i>
+            </div>
+            <div class="success-title">Booking Successful!</div>
+            <div class="success-message">Thank you for your booking. We will confirm your reservation shortly.</div>
+            <button class="success-button" onclick="closeSuccessMessage()">Continue</button>
+        </div>
+    </div>
 
-<!-- Phone number on the right -->
-<div class="contact-fixed-right">
-  <a href="tel:+2547XXXXXXXX" class="phone-number">CALL:+254 7XX XXX XXX</a>
-</div>
-<footer class="new-footer">
+    <!-- WhatsApp icon on the left -->
+    <div class="contact-fixed-left">
+        <a href="https://wa.me/+254708129949" target="_blank" aria-label="Chat on WhatsApp">
+            <img src="https://img.icons8.com/color/48/000000/whatsapp--v1.png" alt="WhatsApp">
+        </a>
+    </div>
+
+    <!-- Phone number on the right -->
+    <div class="contact-fixed-right">
+        <a href="tel:+254708129949" class="phone-number">CALL:+254708129949</a>
+    </div>
+ 
+    <footer class="new-footer">
   <div class="footer-grid">
     <!-- Brand -->
     <div class="footer-brand">
@@ -1083,8 +1083,8 @@
         <li><i class="fas fa-map-marker-alt"></i>  <a href="https://www.google.com/maps/place/Mombasa,+Kenya" target="_blank" rel="noopener noreferrer" class="location-link">
           Jacaranda road,Watamu
         </a></li>
-        <li><i class="fas fa-phone"></i> <a href="tel:+254741257885">+254 741 257 885</a></li>
-        <li><i class="fas fa-envelope"></i> <a href="mailto:info@werent.co.ke">info@werent.co.ke</a></li>
+        <li><i class="fas fa-phone"></i> <a href="tel:+254708129949">+254708129949</a></li>
+        <li><i class="fas fa-envelope"></i> <a href="mailto:werent@werentonline.com">werent@werentonline.com</a></li>
       </ul>
     </div>
 
@@ -1094,11 +1094,11 @@
       <div class="social-icons">
         <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
         <a href="#" aria-label="X"><i class="fab fa-x-twitter"></i></a>
-        <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
-        <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
-        <a href="" target="_blank" aria-label="X (Twitter)"><i class="fab fa-x-twitter"></i></a>
-        <a href="" target="_blank" aria-label="TikTok"><i class="fab fa-tiktok"></i></a>
-      </div>
+          <a href="https://www.instagram.com/we_rent_watamu?igsh=MTB4Y3Q3d2t4cnZnaw%3D%3D&utm_source=qr" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+          <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+          <a href="" target="_blank" aria-label="X (Twitter)"><i class="fab fa-x-twitter"></i></a>
+          <a href="https://www.tiktok.com/@we_rent_watamu?_t=ZM-8wvIJjEDkSW&_r=1" target="_blank" aria-label="TikTok"><i class="fab fa-tiktok"></i></a>
+        </div>
     </div>
   </div>
 
@@ -1107,359 +1107,312 @@
   </div>
 </footer>
 
-<!-- Flatpickr Calendar JS -->
-<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <!-- Flatpickr Calendar JS -->
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
-<script>
-  const menuToggle = document.getElementById('menuToggle');
-  const navLinks = document.getElementById('navLinks');
-  const openIcon = document.getElementById('openIcon');
-  const closeIcon = document.getElementById('closeIcon');
-  
-  // Global variables for calendar and property data
-  let currentPropertyId = null;
-  let currentPropertyData = null;
-  let calendarInstance = null;
-  let allRentalProperties = [];
-  let allSaleProperties = [];
-  let currentRentalPage = 0;
-  let currentSalePage = 0;
-  const propertiesPerPage = 3;
-  
-  menuToggle.addEventListener('click', () => {
-    navLinks.classList.toggle('active');
-  
-    if (navLinks.classList.contains('active')) {
-      openIcon.style.display = 'none';
-      closeIcon.style.display = 'block';
-    } else {
-      openIcon.style.display = 'block';
-      closeIcon.style.display = 'none';
-    }
-  });
-  
-  function toggleDetails(button) {
-    const card = button.closest('.rental-card, .sales-card');
-    const details = card.querySelector('.details');
-    details.classList.toggle('show');
-    
-    if (details.classList.contains('show')) {
-      button.innerHTML = '<i class="fas fa-chevron-up"></i> Hide Details';
-    } else {
-      button.innerHTML = '<i class="fas fa-chevron-down"></i> View More';
-    }
-  }
-  
-  function openBookingForm(propertyId) {
-    window.location.href = `rentals.html?property=${propertyId}&booking=true`;
-  }
-  
-  function openViewingForm() {
-    alert('Viewing form will open here');
-  }
-  
-  async function fetchProperties() {
-    try {
-      const response = await fetch('https://estates-1-zn1x.onrender.com/api/v1/properties');
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-      const result = await response.json();
-      
-      return result.data || [];
-    } catch (error) {
-      console.error('Error fetching properties:', error);
-      return [];
-    }
-  }
-  
-  function createRandomBookedDates() {
-    const bookedDates = [];
-    const today = new Date();
-    const nextThreeMonths = new Date(today);
-    nextThreeMonths.setMonth(today.getMonth() + 3);
-    
-    // Generate between 5-15 random booked date ranges
-    const numBookings = Math.floor(Math.random() * 10) + 5;
-    
-    for (let i = 0; i < numBookings; i++) {
-      // Random start date between today and next 3 months
-      const startDate = new Date(today);
-      startDate.setDate(startDate.getDate() + Math.floor(Math.random() * 90));
-      
-      // Random duration of booking (1-14 days)
-      const duration = Math.floor(Math.random() * 14) + 1;
-      
-      // Create end date
-      const endDate = new Date(startDate);
-      endDate.setDate(startDate.getDate() + duration);
-      
-      // Add to booked dates array
-      bookedDates.push({
-        from: startDate.toISOString().split('T')[0],
-        to: endDate.toISOString().split('T')[0]
-      });
-    }
-    
-    return bookedDates;
-  }
-  
-  function openCalendarModal(propertyId, propertyType) {
-    currentPropertyId = propertyId;
-    
-    // Find the property data based on type and id
-    const properties = propertyType === 'rental' ? allRentalProperties : allSaleProperties;
-    currentPropertyData = properties.find(p => p._id === propertyId);
-    
-    if (!currentPropertyData) {
-      alert('Property information not found');
-      return;
-    }
-    
-    // Set property info in modal
-    document.getElementById('calendar-property-title').textContent = currentPropertyData.title || 'Property';
-    document.getElementById('calendar-property-location').textContent = currentPropertyData.location || 'Location not specified';
-    
-    const imageUrl = currentPropertyData.mainImage || (currentPropertyData.galleryImages && currentPropertyData.galleryImages.length > 0 ? currentPropertyData.galleryImages[0] : 'assets/images/final.png');
-    document.getElementById('calendar-property-img').src = imageUrl;
-    
-    // Generate random booked dates for demo
-    const bookedDates = createRandomBookedDates();
-    
-    // Initialize or update flatpickr calendar
-    if (calendarInstance) {
-      calendarInstance.destroy();
-    }
-    
-    calendarInstance = flatpickr("#property-calendar", {
-      inline: true,
-      mode: "range",
-      minDate: "today",
-      maxDate: new Date().fp_incr(365), // Allow booking up to 1 year in advance
-      disable: bookedDates,
-      dateFormat: "Y-m-d",
-      showMonths: 2,
-      static: true,
-      onChange: function(selectedDates, dateStr) {
-        // Update booking button status based on selection
-        const bookBtn = document.querySelector('.calendar-book-btn');
-        if (selectedDates.length === 2) {
-          bookBtn.removeAttribute('disabled');
-          bookBtn.textContent = `Book (${Math.floor((selectedDates[1] - selectedDates[0]) / (1000 * 60 * 60 * 24))} nights)`;
-        } else {
-          bookBtn.setAttribute('disabled', 'disabled');
-          bookBtn.textContent = 'Select dates to book';
+    <script>
+        // Global variables for calendar and property data
+        let currentPropertyId = null;
+        let currentPropertyData = null;
+        let calendarInstance = null;
+        let allRentalProperties = [];
+        let allSaleProperties = [];
+        let currentRentalPage = 0;
+        let currentSalePage = 0;
+        const propertiesPerPage = 3;
+
+        function toggleDetails(button) {
+            const card = button.closest('.rental-card, .sales-card');
+            const details = card.querySelector('.details');
+            details.classList.toggle('show');
+            
+            if (details.classList.contains('show')) {
+                button.innerHTML = '<i class="fas fa-chevron-up"></i> Hide Details';
+            } else {
+                button.innerHTML = '<i class="fas fa-chevron-down"></i> View More';
+            }
         }
-      }
-    });
-    
-    // Show the modal
-    document.getElementById('calendarModal').style.display = 'flex';
-  }
-  
-  function closeCalendarModal() {
-    document.getElementById('calendarModal').style.display = 'none';
-    if (calendarInstance) {
-      calendarInstance.destroy();
-      calendarInstance = null;
-    }
-  }
-  
-  function openBookingFormFromCalendar() {
-    if (!currentPropertyId) return;
-    
-    // If dates are selected, get them and pass to booking form
-    let selectedDates = [];
-    if (calendarInstance && calendarInstance.selectedDates.length === 2) {
-      selectedDates = [
-        calendarInstance.selectedDates[0].toISOString().split('T')[0],
-        calendarInstance.selectedDates[1].toISOString().split('T')[0]
-      ];
-    }
-    
-    // Close the calendar modal
-    closeCalendarModal();
-    
-    // Redirect to rentals page with property ID and selected dates
-    let url = `rentals.html?property=${currentPropertyId}&booking=true`;
-    if (selectedDates.length === 2) {
-      url += `&checkin=${selectedDates[0]}&checkout=${selectedDates[1]}`;
-    }
-    
-    window.location.href = url;
-  }
-  
-  function createCalendar(propertyId, propertyType) {
-    const calendar = document.createElement('div');
-    calendar.className = 'calendar';
-    
-    const daysCount = 7; // Show 7 days
-    
-    for (let i = 1; i <= daysCount; i++) {
-      const span = document.createElement('span');
-      span.textContent = i;
-      // Randomly assign available/booked status for demo
-      span.className = Math.random() > 0.3 ? 'available' : 'booked';
-      
-      // Add click event to open calendar modal
-      span.addEventListener('click', () => {
-        openCalendarModal(propertyId, propertyType);
-      });
-      
-      calendar.appendChild(span);
-    }
-    
-    return calendar;
-  }
-  
-  function createRentalCard(property) {
-    const card = document.createElement('div');
-    card.className = 'rental-card';
-    
-    const imageUrl = property.mainImage ? property.mainImage : 'assets/images/final.png';
-    
-    const formattedPrice = new Intl.NumberFormat('en-KE').format(property.price || 35000);
-    
-    card.innerHTML = `
-          <div class="property-label">For Rent</div>
-          <img src="${property.mainImage || 'assets/images/final.png'}" alt="${property.title}" onerror="this.src='assets/images/final.png'">
-      <div class="content">
-        <h3>${property.title || 'Modern Apartment'}</h3>
-        <p><i class="fas fa-tag"></i> Ksh ${formattedPrice}/month</p>
-        <div class="property-features">
-          <span class="feature"><i class="fas fa-bed"></i> ${property.bedrooms || '2'} BD</span>
-          <span class="feature"><i class="fas fa-bath"></i> ${property.bathrooms || '1'} BA</span>
-          <span class="feature"><i class="fas fa-map-marker-alt"></i> ${property.location || 'Nairobi'}</span>
-        </div>
-        <div class="buttons">
-          <button class="book-btn" onclick="openBookingForm('${property._id}')">Book Now</button>
-          <button class="view-btn" onclick="toggleDetails(this)">View More</button>
-        </div>
-        <div class="details">
-          <img src="${property.mainImage || 'assets/images/final.png'}" alt="${property.title}" onerror="this.src='assets/images/final.png'">
-          <p><strong>Location:</strong> ${property.location || 'Not specified'}</p>
-          <p><strong>Bedrooms:</strong> ${property.bedrooms || 'Not specified'}</p>
-          <p><strong>Bathrooms:</strong> ${property.bathrooms || 'Not specified'}</p>
-          <p><strong>Amenities:</strong> ${property.amenities ? property.amenities.join(', ') : 'Not specified'}</p>
-          <p>${property.description || 'Beautiful property with great amenities.'}</p>
-        </div>
-      </div>
-    `;
-    
-    const content = card.querySelector('.content');
-    const priceElement = content.querySelector('p');
-    const calendar = createCalendar(property._id, 'rental');
-    content.insertBefore(calendar, priceElement.nextSibling);
-    
-    return card;
-  }
-  
-  function createSaleCard(property) {
-    const card = document.createElement('div');
-    card.className = 'sales-card';
-    
-    const imageUrl = property.mainImage ? property.mainImage : 'assets/images/final.png';
-    
-    const formattedPrice = new Intl.NumberFormat('en-KE').format(property.price || 12500000);
-    
-    card.innerHTML = `
-          <div class="property-label">For Sale</div>
-          <img src="${property.mainImage || 'assets/images/final.png'}" alt="${property.title}" onerror="this.src='assets/images/final.png'">
-      <div class="content">
-        <h3>${property.title || 'Elegant Villa'}</h3>
-        <p><i class="fas fa-tag"></i> Ksh ${formattedPrice}</p>
-        <div class="property-features">
-          <span class="feature"><i class="fas fa-bed"></i> ${property.bedrooms || '4'} BD</span>
-          <span class="feature"><i class="fas fa-bath"></i> ${property.bathrooms || '3'} BA</span>
-          <span class="feature"><i class="fas fa-map-marker-alt"></i> ${property.location || 'Mombasa'}</span>
-        </div>
-        <div class="buttons">
-          <button class="book-btn" onclick="openViewingForm()">Schedule Viewing</button>
-          <button class="view-btn" onclick="toggleDetails(this)">View More</button>
-        </div>
-        <div class="details">
-          <img src="${property.mainImage || 'assets/images/final.png'}" alt="${property.title}" onerror="this.src='assets/images/final.png'">
-          <p><strong>Location:</strong> ${property.location || 'Not specified'}</p>
-          <p><strong>Bedrooms:</strong> ${property.bedrooms || 'Not specified'}</p>
-          <p><strong>Bathrooms:</strong> ${property.bathrooms || 'Not specified'}</p>
-          <p><strong>Amenities:</strong> ${property.amenities ? property.amenities.join(', ') : 'Not specified'}</p>
-          <p>${property.description || 'Beautiful property with great amenities.'}</p>
-        </div>
-      </div>
-    `;
-    
-    const content = card.querySelector('.content');
-    const priceElement = content.querySelector('p');
-    const calendar = createCalendar(property._id, 'sale');
-    content.insertBefore(calendar, priceElement.nextSibling);
-    
-    return card;
-  }
-  
-  function updateRentalProperties() {
-    const rentalContainer = document.getElementById('rental-properties-container');
-    rentalContainer.innerHTML = '';
-    
-    const startIndex = currentRentalPage * propertiesPerPage;
-    const endIndex = startIndex + propertiesPerPage;
-    const currentProperties = allRentalProperties.slice(startIndex, endIndex);
-    
-    if (currentProperties.length === 0) {
-      rentalContainer.innerHTML = '<p class="loading-message">No rental properties available at the moment.</p>';
-      return;
-    }
-    
-    currentProperties.forEach(property => {
-      rentalContainer.appendChild(createRentalCard(property));
-    });
-    
-    // Update pagination buttons
-    document.getElementById('prev-rental').classList.toggle('disabled', currentRentalPage === 0);
-    document.getElementById('next-rental').classList.toggle('disabled', endIndex >= allRentalProperties.length);
-  }
-  
-  function updateSaleProperties() {
-    const saleContainer = document.getElementById('sale-properties-container');
-    saleContainer.innerHTML = '';
-    
-    const startIndex = currentSalePage * propertiesPerPage;
-    const endIndex = startIndex + propertiesPerPage;
-    const currentProperties = allSaleProperties.slice(startIndex, endIndex);
-    
-    if (currentProperties.length === 0) {
-      saleContainer.innerHTML = '<p class="loading-message">No properties for sale available at the moment.</p>';
-      return;
-    }
-    
-    currentProperties.forEach(property => {
-      saleContainer.appendChild(createSaleCard(property));
-    });
-    
-    // Update pagination buttons
-    document.getElementById('prev-sale').classList.toggle('disabled', currentSalePage === 0);
-    document.getElementById('next-sale').classList.toggle('disabled', endIndex >= allSaleProperties.length);
-  }
-  
-  async function loadProperties() {
-    const rentalContainer = document.getElementById('rental-properties-container');
-    const saleContainer = document.getElementById('sale-properties-container');
-    
-    rentalContainer.innerHTML = '<div class="loading-message"><i class="fas fa-spinner fa-spin"></i> Loading rental properties...</div>';
-    saleContainer.innerHTML = '<div class="loading-message"><i class="fas fa-spinner fa-spin"></i> Loading properties for sale...</div>';
-    
-    try {
-      const properties = await fetchProperties();
-      
-      if (properties.length === 0) {
-        // Create sample properties if API returns empty
-        allRentalProperties = [];
-        allSaleProperties = [];
-        
-        for (let i = 0; i < 6; i++) {
-          const sampleRental = {
-            _id: `rental-${i}`,
-            title: ['Modern 2-Bedroom Apartment', 'Cozy 1-Bedroom Studio', 'Spacious 3-Bedroom House', 'Luxury Penthouse', 'Garden Cottage', 'Beach Villa'][i % 6],
-            price: [35000, 25000, 50000, 120000, 40000, 80000][i % 6],
+
+        function openBookingForm(propertyId) {
+            // For rentals, open calendar modal first
+            const property = allRentalProperties.find(p => p._id === propertyId);
+            if (property) {
+                openCalendarModal(propertyId, 'rental');
+            } else {
+                // Direct booking for other cases
+                window.location.href = `rentals.html?property=${propertyId}&booking=true`;
+            }
+        }
+
+        function openViewingForm(propertyId) {
+            // For sales, you might want to show a different modal or direct to a viewing booking page
+            showSuccessMessage("Viewing request submitted! We'll contact you shortly to schedule your viewing.");
+        }
+
+        async function fetchProperties() {
+            try {
+                const response = await fetch('https://estates-1-zn1x.onrender.com/api/v1/properties');
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                const result = await response.json();
+                
+                return result.data || [];
+            } catch (error) {
+                console.error('Error fetching properties:', error);
+                return [];
+            }
+        }
+
+        function createRandomBookedDates() {
+            const bookedDates = [];
+            const today = new Date();
+            const nextThreeMonths = new Date(today);
+            nextThreeMonths.setMonth(today.getMonth() + 3);
+            
+            // Generate between 5-15 random booked date ranges
+            const numBookings = Math.floor(Math.random() * 10) + 5;
+            
+            for (let i = 0; i < numBookings; i++) {
+                // Random start date between today and next 3 months
+                const startDate = new Date(today);
+                startDate.setDate(startDate.getDate() + Math.floor(Math.random() * 90));
+                
+                // Random duration of booking (1-14 days)
+                const duration = Math.floor(Math.random() * 14) + 1;
+                
+                // Create end date
+                const endDate = new Date(startDate);
+                endDate.setDate(startDate.getDate() + duration);
+                
+                // Add to booked dates array
+                bookedDates.push({
+                    from: startDate.toISOString().split('T')[0],
+                    to: endDate.toISOString().split('T')[0]
+                });
+            }
+            
+            return bookedDates;
+        }
+
+        function openCalendarModal(propertyId, propertyType) {
+            currentPropertyId = propertyId;
+            
+            // Find the property data based on type and id
+            const properties = propertyType === 'rental' ? allRentalProperties : allSaleProperties;
+            currentPropertyData = properties.find(p => p._id === propertyId);
+            
+            if (!currentPropertyData) {
+                alert('Property information not found');
+                return;
+            }
+            
+            // Set property info in modal
+            document.getElementById('calendar-property-title').textContent = currentPropertyData.title || 'Property';
+            document.getElementById('calendar-property-location').textContent = currentPropertyData.location || 'Location not specified';
+            
+            const imageUrl = currentPropertyData.mainImage || 'https://via.placeholder.com/80x80';
+            document.getElementById('calendar-property-img').src = imageUrl;
+            
+            // Generate random booked dates for demo
+            const bookedDates = createRandomBookedDates();
+            
+            // Initialize or update flatpickr calendar
+            if (calendarInstance) {
+                calendarInstance.destroy();
+            }
+            
+            calendarInstance = flatpickr("#property-calendar", {
+                inline: true,
+                mode: "range",
+                minDate: "today",
+                maxDate: new Date().fp_incr(365), // Allow booking up to 1 year in advance
+                disable: bookedDates,
+                dateFormat: "Y-m-d",
+                showMonths: 2,
+                static: true,
+                onChange: function(selectedDates, dateStr) {
+                    // Update booking button status based on selection
+                    const bookBtn = document.querySelector('.calendar-book-btn');
+                    if (selectedDates.length === 2) {
+                        bookBtn.removeAttribute('disabled');
+                        const nights = Math.floor((selectedDates[1] - selectedDates[0]) / (1000 * 60 * 60 * 24));
+                        bookBtn.textContent = `Book Now (${nights} night${nights !== 1 ? 's' : ''})`;
+                    } else {
+                        bookBtn.setAttribute('disabled', 'disabled');
+                        bookBtn.textContent = 'Select dates to book';
+                    }
+                }
+            });
+            
+            // Show the modal
+            document.getElementById('calendarModal').style.display = 'flex';
+        }
+
+        function closeCalendarModal() {
+            document.getElementById('calendarModal').style.display = 'none';
+            if (calendarInstance) {
+                calendarInstance.destroy();
+                calendarInstance = null;
+            }
+        }
+
+        function openBookingFormFromCalendar() {
+            if (!currentPropertyId) return;
+            
+            // If dates are selected, show success message
+            if (calendarInstance && calendarInstance.selectedDates.length === 2) {
+                const startDate = calendarInstance.selectedDates[0].toLocaleDateString();
+                const endDate = calendarInstance.selectedDates[1].toLocaleDateString();
+                const nights = Math.floor((calendarInstance.selectedDates[1] - calendarInstance.selectedDates[0]) / (1000 * 60 * 60 * 24));
+                
+                closeCalendarModal();
+                showSuccessMessage(`Booking confirmed for ${startDate} to ${endDate} (${nights} night${nights !== 1 ? 's' : ''})! We'll send you a confirmation email shortly.`);
+            }
+        }
+
+        function createRentalCard(property) {
+            const card = document.createElement('div');
+            card.className = 'rental-card';
+            
+            const formattedPrice = new Intl.NumberFormat('en-KE').format(property.price || 35000);
+            
+            card.innerHTML = `
+                <div class="property-label">For Rent</div>
+                <img src="${property.mainImage || 'https://via.placeholder.com/400x250'}" alt="${property.title}" onerror="this.src='https://via.placeholder.com/400x250'">
+                <div class="content">
+                    <h3>${property.title || 'Modern Apartment'}</h3>
+                    <p><i class="fas fa-tag"></i> Ksh ${formattedPrice}/month</p>
+                    <div class="property-features">
+                        <span class="feature"><i class="fas fa-bed"></i> ${property.bedrooms || '2'} BD</span>
+                        <span class="feature"><i class="fas fa-bath"></i> ${property.bathrooms || '1'} BA</span>
+                        <span class="feature"><i class="fas fa-map-marker-alt"></i> ${property.location || 'Nairobi'}</span>
+                    </div>
+                    <div class="buttons">
+                        <button class="book-btn" onclick="openBookingForm('${property._id}')">Book Now</button>
+                        <button class="view-btn" onclick="toggleDetails(this)"><i class="fas fa-chevron-down"></i> View More</button>
+                    </div>
+                    <button class="calendar-btn" onclick="openCalendarModal('${property._id}', 'rental')">
+                        <i class="fas fa-calendar-alt"></i> Check Availability
+                    </button>
+                    <div class="details">
+                        <img src="${property.mainImage || 'https://via.placeholder.com/400x200'}" alt="${property.title}" onerror="this.src='https://via.placeholder.com/400x200'">
+                        <p><strong>Location:</strong> ${property.location || 'Not specified'}</p>
+                        <p><strong>Bedrooms:</strong> ${property.bedrooms || 'Not specified'}</p>
+                        <p><strong>Bathrooms:</strong> ${property.bathrooms || 'Not specified'}</p>
+                        <p><strong>Amenities:</strong> ${property.amenities ? property.amenities.join(', ') : 'Not specified'}</p>
+                        <p>${property.description || 'Beautiful property with great amenities.'}</p>
+                    </div>
+                </div>
+            `;
+            
+            return card;
+        }
+
+        function createSaleCard(property) {
+            const card = document.createElement('div');
+            card.className = 'sales-card';
+            
+            const formattedPrice = new Intl.NumberFormat('en-KE').format(property.price || 12500000);
+            
+            card.innerHTML = `
+                <div class="property-label">For Sale</div>
+                <img src="${property.mainImage || 'https://via.placeholder.com/400x250'}" alt="${property.title}" onerror="this.src='https://via.placeholder.com/400x250'">
+                <div class="content">
+                    <h3>${property.title || 'Elegant Villa'}</h3>
+                    <p><i class="fas fa-tag"></i> Ksh ${formattedPrice}</p>
+                    <div class="property-features">
+                        <span class="feature"><i class="fas fa-bed"></i> ${property.bedrooms || '4'} BD</span>
+                        <span class="feature"><i class="fas fa-bath"></i> ${property.bathrooms || '3'} BA</span>
+                        <span class="feature"><i class="fas fa-map-marker-alt"></i> ${property.location || 'Mombasa'}</span>
+                    </div>
+                    <div class="buttons">
+                        <button class="book-btn" onclick="openViewingForm('${property._id}')">Schedule Viewing</button>
+                        <button class="view-btn" onclick="toggleDetails(this)"><i class="fas fa-chevron-down"></i> View More</button>
+                    </div>
+                    <button class="calendar-btn" onclick="openCalendarModal('${property._id}', 'sale')">
+                        <i class="fas fa-calendar-alt"></i> Schedule Visit
+                    </button>
+                    <div class="details">
+                        <img src="${property.mainImage || 'https://via.placeholder.com/400x200'}" alt="${property.title}" onerror="this.src='https://via.placeholder.com/400x200'">
+                        <p><strong>Location:</strong> ${property.location || 'Not specified'}</p>
+                        <p><strong>Bedrooms:</strong> ${property.bedrooms || 'Not specified'}</p>
+                        <p><strong>Bathrooms:</strong> ${property.bathrooms || 'Not specified'}</p>
+                        <p><strong>Amenities:</strong> ${property.amenities ? property.amenities.join(', ') : 'Not specified'}</p>
+                        <p>${property.description || 'Beautiful property with great amenities.'}</p>
+                    </div>
+                </div>
+            `;
+            
+            return card;
+        }
+
+        function updateRentalProperties() {
+            const rentalContainer = document.getElementById('rental-properties-container');
+            rentalContainer.innerHTML = '';
+            
+            const startIndex = currentRentalPage * propertiesPerPage;
+            const endIndex = startIndex + propertiesPerPage;
+            const currentProperties = allRentalProperties.slice(startIndex, endIndex);
+            
+            if (currentProperties.length === 0) {
+                rentalContainer.innerHTML = '<p class="loading-message">No rental properties available at the moment.</p>';
+                return;
+            }
+            
+            currentProperties.forEach(property => {
+                rentalContainer.appendChild(createRentalCard(property));
+            });
+            
+            // Update pagination buttons
+            document.getElementById('prev-rental').classList.toggle('disabled', currentRentalPage === 0);
+            document.getElementById('next-rental').classList.toggle('disabled', endIndex >= allRentalProperties.length);
+        }
+
+        function updateSaleProperties() {
+            const saleContainer = document.getElementById('sale-properties-container');
+            saleContainer.innerHTML = '';
+            
+            const startIndex = currentSalePage * propertiesPerPage;
+            const endIndex = startIndex + propertiesPerPage;
+            const currentProperties = allSaleProperties.slice(startIndex, endIndex);
+            
+            if (currentProperties.length === 0) {
+                saleContainer.innerHTML = '<p class="loading-message">No properties for sale available at the moment.</p>';
+                return;
+            }
+            
+            currentProperties.forEach(property => {
+                saleContainer.appendChild(createSaleCard(property));
+            });
+            
+            // Update pagination buttons
+            document.getElementById('prev-sale').classList.toggle('disabled', currentSalePage === 0);
+            document.getElementById('next-sale').classList.toggle('disabled', endIndex >= allSaleProperties.length);
+        }
+
+        async function loadProperties() {
+            const rentalContainer = document.getElementById('rental-properties-container');
+            const saleContainer = document.getElementById('sale-properties-container');
+            
+            rentalContainer.innerHTML = '<div class="loading-message"><i class="fas fa-spinner fa-spin"></i> Loading rental properties...</div>';
+            saleContainer.innerHTML = '<div class="loading-message"><i class="fas fa-spinner fa-spin"></i> Loading properties for sale...</div>';
+            
+            try {
+                const properties = await fetchProperties();
+                
+                if (properties.length === 0) {
+                    // Create sample properties if API returns empty
+                    allRentalProperties = [];
+                    allSaleProperties = [];
+                    
+                    for (let i = 0; i < 6; i++) {
+                        const sampleRental = {
+                            _id: `rental-${i}`,
+                            title: ['Modern 2-Bedroom Apartment', 'Cozy 1-Bedroom Studio', 'Spacious 3-Bedroom House', 'Luxury Penthouse', 'Garden Cottage', 'Beach Villa'][i % 6],
+                            price: [35000, 25000, 50000, 120000, 40000, 80000][i % 6],
+
+ 
             description: ['Wi-Fi, parking, 24/7 security, near town.', 'Private balcony, smart TV, city views.', 'Garden, garage, pet-friendly, near school.', 'Panoramic views, private pool, gym access.', 'Private garden, quiet neighborhood, fully furnished.', 'Beachfront, private access, fully serviced.'][i % 6],
             mainImage: null,
             listingType: 'Rent',
