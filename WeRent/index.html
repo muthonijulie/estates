@@ -7,11 +7,13 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>WeRent - Your Dream Home</title>
   <!-- Bootstrap 5.3 CSS CDN -->
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B1xZhJ5xulwld6J7U6ZlD2+J5i9GqV" crossorigin="anonymous">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B1xZhJ5xulwld6J7U6ZlD2+J5i9GqV" crossorigin="anonymous">
   <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="assets/css/styles.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <!-- Flatpickr Calendar CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
   <style>
     body{
       font-family: 'Poppins', sans-serif !important;
@@ -526,6 +528,321 @@
             transform: translateY(-3px);
             box-shadow: 0 8px 20px rgba(255, 255, 255, 0.2);
         }
+
+        /* Pagination controls */
+        .pagination-controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: -30px;
+            margin-bottom: 40px;
+        }
+
+        .pagination-btn {
+            background: #f5f5f5;
+            border: 1px solid #ddd;
+            color: #333;
+            border-radius: 50px;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .pagination-btn:hover {
+            background: #e0e0e0;
+        }
+
+        .pagination-btn.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Calendar Modal Styling */
+        .calendar-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .calendar-modal-content {
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+            position: relative;
+        }
+
+        .calendar-modal-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 24px;
+            color: #666;
+            cursor: pointer;
+            background: none;
+            border: none;
+            padding: 0;
+            line-height: 1;
+        }
+
+        .calendar-header {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .calendar-header h3 {
+            margin: 0;
+            color: #333;
+            font-weight: 600;
+            font-size: 1.5rem;
+        }
+
+        .calendar-property-info {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .calendar-property-info img {
+            width: 70px;
+            height: 70px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-right: 15px;
+        }
+
+        .calendar-property-details h4 {
+            margin: 0 0 5px 0;
+            font-size: 1.1rem;
+            color: #333;
+        }
+
+        .calendar-property-details p {
+            margin: 0;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .calendar-legend {
+            display: flex;
+            gap: 15px;
+            margin: 15px 0;
+            justify-content: center;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        .legend-color {
+            width: 15px;
+            height: 15px;
+            border-radius: 3px;
+            margin-right: 5px;
+        }
+
+        .legend-available {
+            background: #e8f5e9;
+            border: 1px solid #a5d6a7;
+        }
+
+        .legend-booked {
+            background: #ffebee;
+            border: 1px solid #ef9a9a;
+        }
+
+        .calendar-actions {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .calendar-book-btn {
+            background: #e67e22;
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 5px;
+            font-weight: 500;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .calendar-book-btn:hover {
+            background: #d35400;
+            transform: translateY(-2px);
+        }
+
+        /* Flatpickr Customization */
+        .flatpickr-calendar {
+            font-family: 'Poppins', sans-serif !important;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1) !important;
+            border-radius: 10px !important;
+            border: none !important;
+            width: 100% !important;
+        }
+
+        .flatpickr-day {
+            border-radius: 50% !important;
+            transition: all 0.2s ease !important;
+        }
+
+        .flatpickr-day.flatpickr-disabled {
+            background-color: #ffebee !important;
+            color: #c62828 !important;
+            text-decoration: line-through !important;
+        }
+
+        .flatpickr-day.flatpickr-disabled:hover {
+            background-color: #ffebee !important;
+        }
+
+        .flatpickr-day.selected {
+            background: #e67e22 !important;
+            border-color: #e67e22 !important;
+        }
+
+        .flatpickr-day:hover {
+            background: #f5f5f5 !important;
+        }
+
+        .flatpickr-months {
+            padding-top: 10px !important;
+        }
+
+        .flatpickr-month {
+            height: 50px !important;
+        }
+
+        .flatpickr-current-month {
+            padding-top: 10px !important;
+            font-size: 1.1rem !important;
+        }
+
+        .flatpickr-weekday {
+            font-weight: 600 !important;
+            color: #666 !important;
+        }
+
+        /* Property Overlay for Swiping */
+        .property-carousel {
+            position: relative;
+            width: 100%;
+            overflow-x: auto;
+            display: flex;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none; /* Firefox */
+            margin-bottom: 20px;
+        }
+
+        .property-carousel::-webkit-scrollbar {
+            display: none; /* Chrome, Safari, Edge */
+        }
+
+        .carousel-page {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+            min-width: 100%;
+            padding: 10px;
+        }
+
+        /* Success Message Overlay */
+        #successMessage {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .success-content {
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            text-align: center;
+            max-width: 400px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        @keyframes popIn {
+            0% {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .success-icon {
+            background: #4CAF50;
+            color: white;
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px auto;
+            font-size: 2rem;
+        }
+
+        .success-title {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .success-message {
+            color: #666;
+            margin-bottom: 25px;
+        }
+
+        .success-button {
+            background: #e67e22;
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 5px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .success-button:hover {
+            background: #d35400;
+        }
     </style>
   
 </head>
@@ -584,11 +901,19 @@
     <!-- Rental properties will be loaded here from API -->
     <div class="loading-message">Loading rental properties...</div>
   </div>
+  <div class="pagination-controls rental-pagination">
+    <button id="prev-rental" class="pagination-btn disabled"><i class="fas fa-chevron-left"></i></button>
+    <button id="next-rental" class="pagination-btn"><i class="fas fa-chevron-right"></i></button>
+  </div>
 
   <h3>For Sale</h3>
   <div class="properties sale-properties featured" id="sale-properties-container">
     <!-- Sale properties will be loaded here from API -->
     <div class="loading-message">Loading properties for sale...</div>
+  </div>
+  <div class="pagination-controls sale-pagination">
+    <button id="prev-sale" class="pagination-btn disabled"><i class="fas fa-chevron-left"></i></button>
+    <button id="next-sale" class="pagination-btn"><i class="fas fa-chevron-right"></i></button>
   </div>
 </section>
 
@@ -608,7 +933,7 @@
         <p>"Finding our dream home was effortless with WeRent. The booking and viewing process was seamless!"</p>
       </div>
       <div class="testimonial-profile">
-        <img src="./assets/images/avatar" alt="Jane Mwangi">
+        <img src="https://randomuser.me/api/portraits/men/22.jpg" alt="Jane Mwangi">
         <div>
           <h4>MR ROBOT</h4>
           <span>Tenant</span>
@@ -628,7 +953,7 @@
         <p>"Excellent platform! I rented my apartment quickly. Their team is professional and helpful."</p>
       </div>
       <div class="testimonial-profile">
-        <img src="assets/images/avatar2.jpg" alt="Mark Otieno">
+        <img src="https://randomuser.me/api/portraits/men/42.jpg" alt="Mark Otieno">
         <div>
           <h4>John Snow</h4>
           <span>Landlord</span>
@@ -648,7 +973,7 @@
         <p>"A smooth property-buying experience. I found a perfect deal and had great support throughout."</p>
       </div>
       <div class="testimonial-profile">
-        <img src="assets/images/avatar3.jpg" alt="Linda Njeri">
+        <img src="https://randomuser.me/api/portraits/women/32.jpg" alt="Linda Njeri">
         <div>
           <h4>Punisher</h4>
           <span>Buyer</span>
@@ -669,6 +994,55 @@
   <h2>Your Favorite Properties</h2>
   <div id="favorites-grid" class="grid"></div>
 </section>
+
+<!-- Calendar Modal -->
+<div id="calendarModal" class="calendar-modal">
+  <div class="calendar-modal-content">
+    <button class="calendar-modal-close" onclick="closeCalendarModal()">&times;</button>
+    
+    <div class="calendar-header">
+      <h3>Availability Calendar</h3>
+    </div>
+    
+    <div class="calendar-property-info">
+      <img id="calendar-property-img" src="assets/images/final.png" alt="Property">
+      <div class="calendar-property-details">
+        <h4 id="calendar-property-title">Property Title</h4>
+        <p id="calendar-property-location">Location</p>
+      </div>
+    </div>
+    
+    <div class="calendar-legend">
+      <div class="legend-item">
+        <div class="legend-color legend-available"></div>
+        <span>Available</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color legend-booked"></div>
+        <span>Booked</span>
+      </div>
+    </div>
+    
+    <div id="property-calendar"></div>
+    
+    <div class="calendar-actions">
+      <button class="calendar-book-btn" onclick="openBookingFormFromCalendar()">Book Now</button>
+    </div>
+  </div>
+</div>
+
+<!-- Success Message Overlay -->
+<div id="successMessage">
+  <div class="success-content">
+    <div class="success-icon">
+      <i class="fas fa-check"></i>
+    </div>
+    <div class="success-title">Booking Successful!</div>
+    <div class="success-message">Thank you for your booking. We will confirm your reservation shortly.</div>
+    <button class="success-button" onclick="closeSuccessMessage()">Continue</button>
+  </div>
+</div>
+
 <!-- WhatsApp icon on the left -->
 <div class="contact-fixed-left">
   <a href="https://wa.me/2547XXXXXXXX" target="_blank" aria-label="Chat on WhatsApp">
@@ -729,15 +1103,28 @@
   </div>
 
   <div class="footer-bottom">
-    <p>&copy; <?= date('Y') ?> WeRent. All rights reserved.</p>
+    <p>&copy; 2025 WeRent. All rights reserved.</p>
   </div>
 </footer>
+
+<!-- Flatpickr Calendar JS -->
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
 <script>
   const menuToggle = document.getElementById('menuToggle');
   const navLinks = document.getElementById('navLinks');
   const openIcon = document.getElementById('openIcon');
   const closeIcon = document.getElementById('closeIcon');
+  
+  // Global variables for calendar and property data
+  let currentPropertyId = null;
+  let currentPropertyData = null;
+  let calendarInstance = null;
+  let allRentalProperties = [];
+  let allSaleProperties = [];
+  let currentRentalPage = 0;
+  let currentSalePage = 0;
+  const propertiesPerPage = 3;
   
   menuToggle.addEventListener('click', () => {
     navLinks.classList.toggle('active');
@@ -763,8 +1150,8 @@
     }
   }
   
-  function openBookingForm() {
-    alert('Booking form will open here');
+  function openBookingForm(propertyId) {
+    window.location.href = `rentals.html?property=${propertyId}&booking=true`;
   }
   
   function openViewingForm() {
@@ -786,16 +1173,139 @@
     }
   }
   
-  function createRandomCalendar() {
+  function createRandomBookedDates() {
+    const bookedDates = [];
+    const today = new Date();
+    const nextThreeMonths = new Date(today);
+    nextThreeMonths.setMonth(today.getMonth() + 3);
+    
+    // Generate between 5-15 random booked date ranges
+    const numBookings = Math.floor(Math.random() * 10) + 5;
+    
+    for (let i = 0; i < numBookings; i++) {
+      // Random start date between today and next 3 months
+      const startDate = new Date(today);
+      startDate.setDate(startDate.getDate() + Math.floor(Math.random() * 90));
+      
+      // Random duration of booking (1-14 days)
+      const duration = Math.floor(Math.random() * 14) + 1;
+      
+      // Create end date
+      const endDate = new Date(startDate);
+      endDate.setDate(startDate.getDate() + duration);
+      
+      // Add to booked dates array
+      bookedDates.push({
+        from: startDate.toISOString().split('T')[0],
+        to: endDate.toISOString().split('T')[0]
+      });
+    }
+    
+    return bookedDates;
+  }
+  
+  function openCalendarModal(propertyId, propertyType) {
+    currentPropertyId = propertyId;
+    
+    // Find the property data based on type and id
+    const properties = propertyType === 'rental' ? allRentalProperties : allSaleProperties;
+    currentPropertyData = properties.find(p => p._id === propertyId);
+    
+    if (!currentPropertyData) {
+      alert('Property information not found');
+      return;
+    }
+    
+    // Set property info in modal
+    document.getElementById('calendar-property-title').textContent = currentPropertyData.title || 'Property';
+    document.getElementById('calendar-property-location').textContent = currentPropertyData.location || 'Location not specified';
+    
+    const imageUrl = currentPropertyData.mainImage || (currentPropertyData.galleryImages && currentPropertyData.galleryImages.length > 0 ? currentPropertyData.galleryImages[0] : 'assets/images/final.png');
+    document.getElementById('calendar-property-img').src = imageUrl;
+    
+    // Generate random booked dates for demo
+    const bookedDates = createRandomBookedDates();
+    
+    // Initialize or update flatpickr calendar
+    if (calendarInstance) {
+      calendarInstance.destroy();
+    }
+    
+    calendarInstance = flatpickr("#property-calendar", {
+      inline: true,
+      mode: "range",
+      minDate: "today",
+      maxDate: new Date().fp_incr(365), // Allow booking up to 1 year in advance
+      disable: bookedDates,
+      dateFormat: "Y-m-d",
+      showMonths: 2,
+      static: true,
+      onChange: function(selectedDates, dateStr) {
+        // Update booking button status based on selection
+        const bookBtn = document.querySelector('.calendar-book-btn');
+        if (selectedDates.length === 2) {
+          bookBtn.removeAttribute('disabled');
+          bookBtn.textContent = `Book (${Math.floor((selectedDates[1] - selectedDates[0]) / (1000 * 60 * 60 * 24))} nights)`;
+        } else {
+          bookBtn.setAttribute('disabled', 'disabled');
+          bookBtn.textContent = 'Select dates to book';
+        }
+      }
+    });
+    
+    // Show the modal
+    document.getElementById('calendarModal').style.display = 'flex';
+  }
+  
+  function closeCalendarModal() {
+    document.getElementById('calendarModal').style.display = 'none';
+    if (calendarInstance) {
+      calendarInstance.destroy();
+      calendarInstance = null;
+    }
+  }
+  
+  function openBookingFormFromCalendar() {
+    if (!currentPropertyId) return;
+    
+    // If dates are selected, get them and pass to booking form
+    let selectedDates = [];
+    if (calendarInstance && calendarInstance.selectedDates.length === 2) {
+      selectedDates = [
+        calendarInstance.selectedDates[0].toISOString().split('T')[0],
+        calendarInstance.selectedDates[1].toISOString().split('T')[0]
+      ];
+    }
+    
+    // Close the calendar modal
+    closeCalendarModal();
+    
+    // Redirect to rentals page with property ID and selected dates
+    let url = `rentals.html?property=${currentPropertyId}&booking=true`;
+    if (selectedDates.length === 2) {
+      url += `&checkin=${selectedDates[0]}&checkout=${selectedDates[1]}`;
+    }
+    
+    window.location.href = url;
+  }
+  
+  function createCalendar(propertyId, propertyType) {
     const calendar = document.createElement('div');
     calendar.className = 'calendar';
     
-    const daysCount = Math.floor(Math.random() * 3) + 5;
+    const daysCount = 7; // Show 7 days
     
     for (let i = 1; i <= daysCount; i++) {
       const span = document.createElement('span');
       span.textContent = i;
-      span.className = Math.random() > 0.5 ? 'available' : 'booked';
+      // Randomly assign available/booked status for demo
+      span.className = Math.random() > 0.3 ? 'available' : 'booked';
+      
+      // Add click event to open calendar modal
+      span.addEventListener('click', () => {
+        openCalendarModal(propertyId, propertyType);
+      });
+      
       calendar.appendChild(span);
     }
     
@@ -806,7 +1316,7 @@
     const card = document.createElement('div');
     card.className = 'rental-card';
     
-    const imageUrl = property.mainImage ? `https://estates-1-zn1x.onrender.com/${property.mainImage}` : 'assets/images/final.png';
+    const imageUrl = property.mainImage ? property.mainImage : 'assets/images/final.png';
     
     const formattedPrice = new Intl.NumberFormat('en-KE').format(property.price || 35000);
     
@@ -822,7 +1332,8 @@
           <span class="feature"><i class="fas fa-map-marker-alt"></i> ${property.location || 'Nairobi'}</span>
         </div>
         <div class="buttons">
-          <button class="view-btn" onclick="toggleDetails(this)"><i class="fas fa-chevron-down"></i> View More</button>
+          <button class="book-btn" onclick="openBookingForm('${property._id}')">Book Now</button>
+          <button class="view-btn" onclick="toggleDetails(this)">View More</button>
         </div>
         <div class="details">
           <img src="${property.mainImage || 'assets/images/final.png'}" alt="${property.title}" onerror="this.src='assets/images/final.png'">
@@ -837,7 +1348,8 @@
     
     const content = card.querySelector('.content');
     const priceElement = content.querySelector('p');
-    content.insertBefore(createRandomCalendar(), priceElement.nextSibling);
+    const calendar = createCalendar(property._id, 'rental');
+    content.insertBefore(calendar, priceElement.nextSibling);
     
     return card;
   }
@@ -846,7 +1358,7 @@
     const card = document.createElement('div');
     card.className = 'sales-card';
     
-    const imageUrl = property.mainImage ? `https://estates-1-zn1x.onrender.com/${property.mainImage}` : 'assets/images/final.png';
+    const imageUrl = property.mainImage ? property.mainImage : 'assets/images/final.png';
     
     const formattedPrice = new Intl.NumberFormat('en-KE').format(property.price || 12500000);
     
@@ -862,7 +1374,8 @@
           <span class="feature"><i class="fas fa-map-marker-alt"></i> ${property.location || 'Mombasa'}</span>
         </div>
         <div class="buttons">
-          <button class="view-btn" onclick="toggleDetails(this)"><i class="fas fa-chevron-down"></i> View More</button>
+          <button class="book-btn" onclick="openViewingForm()">Schedule Viewing</button>
+          <button class="view-btn" onclick="toggleDetails(this)">View More</button>
         </div>
         <div class="details">
           <img src="${property.mainImage || 'assets/images/final.png'}" alt="${property.title}" onerror="this.src='assets/images/final.png'">
@@ -877,76 +1390,166 @@
     
     const content = card.querySelector('.content');
     const priceElement = content.querySelector('p');
-    content.insertBefore(createRandomCalendar(), priceElement.nextSibling);
+    const calendar = createCalendar(property._id, 'sale');
+    content.insertBefore(calendar, priceElement.nextSibling);
     
     return card;
+  }
+  
+  function updateRentalProperties() {
+    const rentalContainer = document.getElementById('rental-properties-container');
+    rentalContainer.innerHTML = '';
+    
+    const startIndex = currentRentalPage * propertiesPerPage;
+    const endIndex = startIndex + propertiesPerPage;
+    const currentProperties = allRentalProperties.slice(startIndex, endIndex);
+    
+    if (currentProperties.length === 0) {
+      rentalContainer.innerHTML = '<p class="loading-message">No rental properties available at the moment.</p>';
+      return;
+    }
+    
+    currentProperties.forEach(property => {
+      rentalContainer.appendChild(createRentalCard(property));
+    });
+    
+    // Update pagination buttons
+    document.getElementById('prev-rental').classList.toggle('disabled', currentRentalPage === 0);
+    document.getElementById('next-rental').classList.toggle('disabled', endIndex >= allRentalProperties.length);
+  }
+  
+  function updateSaleProperties() {
+    const saleContainer = document.getElementById('sale-properties-container');
+    saleContainer.innerHTML = '';
+    
+    const startIndex = currentSalePage * propertiesPerPage;
+    const endIndex = startIndex + propertiesPerPage;
+    const currentProperties = allSaleProperties.slice(startIndex, endIndex);
+    
+    if (currentProperties.length === 0) {
+      saleContainer.innerHTML = '<p class="loading-message">No properties for sale available at the moment.</p>';
+      return;
+    }
+    
+    currentProperties.forEach(property => {
+      saleContainer.appendChild(createSaleCard(property));
+    });
+    
+    // Update pagination buttons
+    document.getElementById('prev-sale').classList.toggle('disabled', currentSalePage === 0);
+    document.getElementById('next-sale').classList.toggle('disabled', endIndex >= allSaleProperties.length);
   }
   
   async function loadProperties() {
     const rentalContainer = document.getElementById('rental-properties-container');
     const saleContainer = document.getElementById('sale-properties-container');
     
-    rentalContainer.innerHTML = '';
-    saleContainer.innerHTML = '';
+    rentalContainer.innerHTML = '<div class="loading-message"><i class="fas fa-spinner fa-spin"></i> Loading rental properties...</div>';
+    saleContainer.innerHTML = '<div class="loading-message"><i class="fas fa-spinner fa-spin"></i> Loading properties for sale...</div>';
     
     try {
       const properties = await fetchProperties();
       
       if (properties.length === 0) {
-        for (let i = 0; i < 3; i++) {
+        // Create sample properties if API returns empty
+        allRentalProperties = [];
+        allSaleProperties = [];
+        
+        for (let i = 0; i < 6; i++) {
           const sampleRental = {
-            title: ['Modern 2-Bedroom Apartment', 'Cozy 1-Bedroom Studio', 'Spacious 3-Bedroom House'][i],
-            price: [35000, 25000, 50000][i],
-            description: ['Wi-Fi, parking, 24/7 security, near town.', 'Private balcony, smart TV, city views.', 'Garden, garage, pet-friendly, near school.'][i],
+            _id: `rental-${i}`,
+            title: ['Modern 2-Bedroom Apartment', 'Cozy 1-Bedroom Studio', 'Spacious 3-Bedroom House', 'Luxury Penthouse', 'Garden Cottage', 'Beach Villa'][i % 6],
+            price: [35000, 25000, 50000, 120000, 40000, 80000][i % 6],
+            description: ['Wi-Fi, parking, 24/7 security, near town.', 'Private balcony, smart TV, city views.', 'Garden, garage, pet-friendly, near school.', 'Panoramic views, private pool, gym access.', 'Private garden, quiet neighborhood, fully furnished.', 'Beachfront, private access, fully serviced.'][i % 6],
             mainImage: null,
             listingType: 'Rent',
-            bedrooms: [2, 1, 3][i],
-            bathrooms: [2, 1, 2][i],
-            location: ['Nairobi CBD', 'Westlands', 'Karen'][i]
+            bedrooms: [2, 1, 3, 4, 2, 3][i % 6],
+            bathrooms: [2, 1, 2, 3, 1, 2][i % 6],
+            location: ['Nairobi CBD', 'Westlands', 'Karen', 'Kilimani', 'Lavington', 'Watamu'][i % 6]
           };
-          rentalContainer.appendChild(createRentalCard(sampleRental));
-        }
-        
-        for (let i = 0; i < 3; i++) {
+          allRentalProperties.push(sampleRental);
+          
           const sampleSale = {
-            title: ['Elegant 4-Bedroom Villa', 'Cozy 3-Bedroom Bungalow', 'Modern Apartment with Balcony'][i],
-            price: [12500000, 9800000, 6300000][i],
+            _id: `sale-${i}`,
+            title: ['Elegant 4-Bedroom Villa', 'Cozy 3-Bedroom Bungalow', 'Modern Apartment with Balcony', 'Luxury Family Home', 'Investment Property', 'Beach House'][i % 6],
+            price: [12500000, 9800000, 6300000, 25000000, 8500000, 35000000][i % 6],
             description: 'Prime location with excellent amenities.',
             mainImage: null,
             listingType: 'Sale',
-            bedrooms: [4, 3, 2][i],
-            bathrooms: [3, 2, 2][i],
-            location: ['Kilimani', 'Lavington', 'Kileleshwa'][i]
+            bedrooms: [4, 3, 2, 5, 3, 4][i % 6],
+            bathrooms: [3, 2, 2, 4, 2, 3][i % 6],
+            location: ['Kilimani', 'Lavington', 'Kileleshwa', 'Runda', 'Parklands', 'Diani'][i % 6]
           };
-          saleContainer.appendChild(createSaleCard(sampleSale));
+          allSaleProperties.push(sampleSale);
         }
       } else {
-        const rentals = properties.filter(p => p.listingType === 'Rent');
-        const sales = properties.filter(p => p.listingType === 'Sale');
-        
-        const rentalProperties = rentals.slice(0, 3);
-        if (rentalProperties.length > 0) {
-          rentalProperties.forEach(property => {
-            rentalContainer.appendChild(createRentalCard(property));
-          });
-        } else {
-          rentalContainer.innerHTML = '<p class="loading-message">No rental properties available at the moment.</p>';
-        }
-        
-        const saleProperties = sales.slice(0, 3);
-        if (saleProperties.length > 0) {
-          saleProperties.forEach(property => {
-            saleContainer.appendChild(createSaleCard(property));
-          });
-        } else {
-          saleContainer.innerHTML = '<p class="loading-message">No properties for sale available at the moment.</p>';
-        }
+        // Filter and sort real properties from API
+        allRentalProperties = properties.filter(p => p.listingType === 'Rent');
+        allSaleProperties = properties.filter(p => p.listingType === 'Sale');
       }
+      
+      // Reset pagination
+      currentRentalPage = 0;
+      currentSalePage = 0;
+      
+      // Update displays
+      updateRentalProperties();
+      updateSaleProperties();
+      
     } catch (error) {
       console.error('Error loading properties:', error);
       rentalContainer.innerHTML = '<p class="loading-message">Failed to load rental properties. Please try again later.</p>';
       saleContainer.innerHTML = '<p class="loading-message">Failed to load properties for sale. Please try again later.</p>';
     }
+  }
+  
+  // Pagination event listeners
+  document.getElementById('prev-rental').addEventListener('click', function() {
+    if (currentRentalPage > 0) {
+      currentRentalPage--;
+      updateRentalProperties();
+    }
+  });
+  
+  document.getElementById('next-rental').addEventListener('click', function() {
+    const maxPage = Math.ceil(allRentalProperties.length / propertiesPerPage) - 1;
+    if (currentRentalPage < maxPage) {
+      currentRentalPage++;
+      updateRentalProperties();
+    }
+  });
+  
+  document.getElementById('prev-sale').addEventListener('click', function() {
+    if (currentSalePage > 0) {
+      currentSalePage--;
+      updateSaleProperties();
+    }
+  });
+  
+  document.getElementById('next-sale').addEventListener('click', function() {
+    const maxPage = Math.ceil(allSaleProperties.length / propertiesPerPage) - 1;
+    if (currentSalePage < maxPage) {
+      currentSalePage++;
+      updateSaleProperties();
+    }
+  });
+  
+  // Close calendar modal when clicking outside
+  document.getElementById('calendarModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+      closeCalendarModal();
+    }
+  });
+  
+  // Success message functions
+  function showSuccessMessage(message = "Thank you for your booking. We will confirm your reservation shortly.") {
+    const messageElement = document.querySelector('.success-message');
+    messageElement.textContent = message;
+    document.getElementById('successMessage').style.display = 'flex';
+  }
+  
+  function closeSuccessMessage() {
+    document.getElementById('successMessage').style.display = 'none';
   }
   
   document.addEventListener('DOMContentLoaded', loadProperties);
