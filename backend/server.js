@@ -15,11 +15,10 @@ const contactRoutes = require("./routes/contactRoutes");
 const rentalRoutes = require('./routes/rentalRoutes');
 const bookingRoutes = require('./routes/bookingRoutes');
 const blogRoutes = require('./routes/blogRoutes');
-const testEmailRoutes = require('./routes/testEmail');
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        const uploadPath = 'WeRent/admin/uploads/gallery'; // Relative path
+        const uploadPath = 'WeRent/admin/uploads/gallery';
         if (!fs.existsSync(uploadPath)) {
             fs.mkdirSync(uploadPath, { recursive: true });
         }
@@ -31,17 +30,18 @@ const storage = multer.diskStorage({
     }
 });
 
-// Fix upload controller
+const upload = multer({ storage: storage }); // ✅ Define multer instance
+
 exports.uploadGallery = [
-    upload.array('images', 10), // ✅ Use configured instance
+    upload.array('images', 10), // ✅ Now this is defined
     async (req, res) => {
         try {
             const filePaths = req.files.map(file => `/${file.filename}`);
-            
+
             await Property.findByIdAndUpdate(req.params.id, {
                 $push: { galleryImages: { $each: filePaths } }
             });
-            
+
             res.json({ success: true, uploaded: filePaths });
         } catch (error) {
             res.status(500).json({ error: error.message });
