@@ -1,4 +1,5 @@
 const Viewing = require('../models/Viewing');
+const emailService = require('../services/emailService');
 
 exports.createViewing = async (req, res) => {
     try {
@@ -7,6 +8,15 @@ exports.createViewing = async (req, res) => {
         
         // Populate the property details in the response
         const populatedViewing = await Viewing.findById(viewing._id).populate('propertyId');
+        
+        // Send viewing confirmation email
+        try {
+            await emailService.sendViewingConfirmation(populatedViewing);
+            console.log('Viewing confirmation email sent');
+        } catch (emailError) {
+            console.error('Failed to send viewing confirmation email:', emailError);
+            // Don't fail the viewing process if email fails
+        }
         
         res.status(201).json({
             success: true,

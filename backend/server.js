@@ -15,6 +15,7 @@ const contactRoutes = require("./routes/contactRoutes");
 const rentalRoutes = require('./routes/rentalRoutes');
 const bookingRoutes = require('./routes/bookingRoutes');
 const blogRoutes = require('./routes/blogRoutes');
+const testEmailRoutes = require('./routes/testEmail');
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -78,6 +79,7 @@ app.use('/api/v1', contactRoutes);
 app.use('/api/v1', rentalRoutes);
 app.use('/api/v1', bookingRoutes);
 app.use('/api/v1', blogRoutes); 
+app.use('/api/test-email', testEmailRoutes);
 
 const port_number = process.env.PORT || 5000;
 
