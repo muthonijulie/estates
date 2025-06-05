@@ -1160,7 +1160,7 @@
 
             <div class="form-group">
               <label for="mainImage">Main Image URL</label>
-              <input type="text" id="mainImage" name="mainImage" placeholder="/uploads/main.jpg">
+              <input type="text" id="mainImage" name="mainImage" placeholder="uploads/main.jpg">
             </div>
 
             <div class="form-group">
@@ -1181,8 +1181,8 @@
 
           <div class="form-group full-width">
             <label for="galleryImages">Gallery Images (comma separated paths)</label>
-            <input type="text" id="galleryImages" name="galleryImages" placeholder="/uploads/img1.jpg, /uploads/img2.jpg">
-            <small>Enter paths to images in the uploads folder (e.g., /uploads/image.jpg)</small>
+            <input type="text" id="galleryImages" name="galleryImages" placeholder="uploads/img1.jpg, uploads/img2.jpg">
+            <small>Enter paths to images in the uploads folder (e.g., uploads/image.jpg)</small>
           </div>
 
           <div class="form-group full-width">
@@ -1345,7 +1345,7 @@
           ${property.isFeatured ? '<div class="property-badge featured">Featured</div>' : ''}
           ${property.status ? `<div class="property-badge status ${property.status}">${property.status}</div>` : ''}
           
-          <img src="${property.mainImage || '/uploads/default-property.jpg'}" alt="${property.title}" class="property-img" onerror="this.src='/uploads/default-property.jpg'">
+          <img src="${property.mainImage || 'uploads/lamu-bungalow-1.jpg'}" alt="${property.title}" class="property-img" onerror="this.src='uploads/lamu-bungalow-1.jpg'">
           
           <div class="property-content">
             <h3 class="property-title">${property.title}</h3>
