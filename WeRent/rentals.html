@@ -24,6 +24,345 @@
     body {
       font-family: 'Poppins', sans-serif;
     }
+ 
+        .property-image-slider {
+            display: flex;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.3s ease;
+        }
+        .property-image-container {
+    position: relative;
+    width: 100%;
+    height: 250px;
+    overflow: hidden;
+}
+
+
+.property-image-slide {
+    min-width: 100%;
+    height: 100%;
+}
+
+.property-image-slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Navigation Buttons */
+.slider-nav-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0,0,0,0.6);
+    color: white;
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 14px;
+    z-index: 10;
+    transition: background 0.3s ease;
+}
+
+.slider-nav-btn:hover {
+    background: rgba(0,0,0,0.8);
+}
+
+.slider-nav-btn.prev {
+    left: 10px;
+}
+
+.slider-nav-btn.next {
+    right: 10px;
+}
+
+/* Image Indicators */
+.image-indicators {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 5px;
+    z-index: 10;
+}
+
+.image-indicator {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.5);
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.image-indicator.active {
+    background: white;
+}
+
+/* Image Counter */
+.image-count {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(0,0,0,0.6);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-size: 12px;
+    z-index: 10;
+}
+
+
+        .property-image-slide {
+            min-width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .image-nav-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0, 0, 0, 0.6);
+            color: white;
+            border: none;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.3s ease;
+            z-index: 2;
+        }
+
+        .image-nav-btn:hover {
+            background: rgba(0, 0, 0, 0.8);
+        }
+
+        .image-nav-btn.prev {
+            left: 10px;
+        }
+
+        .image-nav-btn.next {
+            right: 10px;
+        }
+
+        .image-indicators {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 5px;
+            z-index: 2;
+        }
+
+        .image-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .image-indicator.active {
+            background: white;
+        }
+
+        .image-count {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            z-index: 2;
+        }
+
+        /* Enhanced Gallery Modal */
+        .gallery-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 10000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .gallery-modal-content {
+            position: relative;
+            max-width: 90%;
+            max-height: 90%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .gallery-main-image {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        .gallery-nav-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            transition: background 0.3s ease;
+        }
+
+        .gallery-nav-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .gallery-nav-btn.prev {
+            left: -80px;
+        }
+
+        .gallery-nav-btn.next {
+            right: -80px;
+        }
+
+        .gallery-close-btn {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 2rem;
+            cursor: pointer;
+            z-index: 10001;
+        }
+
+        .gallery-thumbnails {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+            max-width: 80%;
+            overflow-x: auto;
+            padding: 10px;
+        }
+
+        .gallery-thumbnail {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 5px;
+            cursor: pointer;
+            opacity: 0.6;
+            transition: opacity 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .gallery-thumbnail.active {
+            opacity: 1;
+            border-color: white;
+        }
+
+        .gallery-info {
+            position: absolute;
+            top: 20px;
+            left: 30px;
+            color: white;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 10px 15px;
+            border-radius: 5px;
+        }
+
+        /* Enhanced Details Gallery */
+        .details-gallery {
+            margin: 20px 0;
+        }
+
+        .details-gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .details-gallery-item {
+            position: relative;
+            height: 150px;
+            border-radius: 8px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .details-gallery-item:hover {
+            transform: scale(1.02);
+        }
+
+        .details-gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .view-all-btn {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background 0.3s ease;
+        }
+
+        .view-all-btn:hover {
+            background: #0056b3;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .gallery-nav-btn.prev {
+                left: -60px;
+            }
+            
+            .gallery-nav-btn.next {
+                right: -60px;
+            }
+            
+            .gallery-thumbnails {
+                max-width: 90%;
+                bottom: 10px;
+            }
+            
+            .gallery-thumbnail {
+                width: 50px;
+                height: 50px;
+            }
+        }
     
     /* Form styling with Poppins */
     .modal-content input,
@@ -574,8 +913,7 @@
     <div class="find-rentals">
       <h2>Rental properties</h2>
     </div>
-
-    <!-- Loading indicator -->
+<!-- Loading indicator -->
     <div id="loading" style="text-align: center; padding: 50px; color: white; font-size: 1.2rem;">
       <i class="fas fa-spinner fa-spin"></i> Loading rental properties...
     </div>
@@ -620,6 +958,26 @@
       </div>
     </div>
   </div>
+  <div id="galleryModal" class="gallery-modal">
+    <button class="gallery-close-btn" onclick="closeGalleryModal()">&times;</button>
+    <div class="gallery-info">
+        <div id="gallery-property-title"></div>
+        <div id="gallery-image-counter"></div>
+    </div>
+    <div class="gallery-modal-content">
+        <button class="gallery-nav-btn prev" onclick="previousGalleryImage()">
+            <i class="fas fa-chevron-left"></i>
+        </button>
+        <img id="galleryMainImage" class="gallery-main-image" src="" alt="Property Image">
+        <button class="gallery-nav-btn next" onclick="nextGalleryImage()">
+            <i class="fas fa-chevron-right"></i>
+        </button>
+    </div>
+    <div class="gallery-thumbnails" id="galleryThumbnails"></div>
+</div>
+
+
+
 
   <!-- Booking Modal (Enhanced version) -->
   <div id="bookingModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; align-items: center; justify-content: center;">
@@ -729,14 +1087,14 @@
 
   <!-- WhatsApp icon on the left -->
   <div class="contact-fixed-left">
-    <a href="https://wa.me/2547XXXXXXXX" target="_blank" aria-label="Chat on WhatsApp">
+    <a href="https://wa.me/+254 708129949" target="_blank" aria-label="Chat on WhatsApp">
       <img src="https://img.icons8.com/color/48/000000/whatsapp--v1.png" alt="WhatsApp">
     </a>
   </div>
 
   <!-- Phone number on the right -->
   <div class="contact-fixed-right">
-    <a href="tel:+2547XXXXXXXX" class="phone-number">CALL:+254 7XX XXX XXX</a>
+    <a href="tel:+254 708129949" class="phone-number">CALL:+254 708129949</a>
   </div>
   
   <footer class="new-footer">
@@ -766,8 +1124,8 @@
           <li><i class="fas fa-map-marker-alt"></i>  <a href="https://www.google.com/maps/place/Mombasa,+Kenya" target="_blank" rel="noopener noreferrer" class="location-link">
             Jacaranda road,Watamu
           </a></li>
-          <li><i class="fas fa-phone"></i> <a href="tel:+254741257885">+254 741 257 885</a></li>
-          <li><i class="fas fa-envelope"></i> <a href="mailto:info@werent.co.ke">info@werent.co.ke</a></li>
+          <li><i class="fas fa-phone"></i> <a href="tel:+254 708129949">+254 708129949</a></li>
+          <li><i class="fas fa-envelope"></i> <a href="mailto:werent@werentonline.com">werent@werentonline.com</a></li>
         </ul>
       </div>
 
@@ -777,10 +1135,10 @@
         <div class="social-icons">
           <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
           <a href="#" aria-label="X"><i class="fab fa-x-twitter"></i></a>
-          <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+            <a href="https://www.instagram.com/we_rent_watamu?igsh=MTB4Y3Q3d2t4cnZnaw%3D%3D&utm_source=qr" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
           <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
           <a href="" target="_blank" aria-label="X (Twitter)"><i class="fab fa-x-twitter"></i></a>
-          <a href="" target="_blank" aria-label="TikTok"><i class="fab fa-tiktok"></i></a>
+          <a href="https://www.tiktok.com/@we_rent_watamu?_t=ZM-8wvIJjEDkSW&_r=1" target="_blank" aria-label="TikTok"><i class="fab fa-tiktok"></i></a>
         </div>
       </div>
     </div>
@@ -800,6 +1158,168 @@
     let currentPropertyId = null;
     let allProperties = [];
     let calendarInstance = null;
+
+// Enhanced Gallery Functionality
+let currentGalleryImages = [];
+let currentGalleryIndex = 0;
+let propertyImageSliders = {};
+
+// Initialize image sliders for each property card
+function initializeImageSlider(propertyId, images) {
+    if (!images || images.length <= 1) return;
+    
+    propertyImageSliders[propertyId] = {
+        images: images,
+        currentIndex: 0
+    };
+    
+    // Update indicators
+    updateImageIndicators(propertyId);
+}
+
+// Navigate property card images
+function navigatePropertyImage(propertyId, direction) {
+    if (!propertyImageSliders[propertyId]) return;
+    
+    const slider = propertyImageSliders[propertyId];
+    const totalImages = slider.images.length;
+    
+    if (direction === 'next') {
+        slider.currentIndex = (slider.currentIndex + 1) % totalImages;
+    } else {
+        slider.currentIndex = (slider.currentIndex - 1 + totalImages) % totalImages;
+    }
+    
+    // Update slider position
+    const sliderElement = document.querySelector(`#property-${propertyId} .property-image-slider`);
+    if (sliderElement) {
+        sliderElement.style.transform = `translateX(-${slider.currentIndex * 100}%)`;
+    }
+    
+    // Update indicators
+    updateImageIndicators(propertyId);
+}
+
+// Update image indicators
+function updateImageIndicators(propertyId) {
+   const indicators = document.querySelectorAll(`#property-${propertyId} .image-indicator`);
+
+
+    const currentIndex = propertyImageSliders[propertyId]?.currentIndex || 0;
+    
+    indicators.forEach((indicator, index) => {
+        indicator.classList.toggle('active', index === currentIndex);
+    });
+    
+    // Update image counter
+    const counter = document.querySelector(`#property-${propertyId} .image-count`);
+    if (counter && propertyImageSliders[propertyId]) {
+        const total = propertyImageSliders[propertyId].images.length;
+        counter.textContent = `${currentIndex + 1}/${total}`;
+
+    }
+}
+
+// Go to specific image
+function goToPropertyImage(propertyId, index) {
+    if (!propertyImageSliders[propertyId]) return;
+    
+    propertyImageSliders[propertyId].currentIndex = index;
+    
+    const sliderElement = document.querySelector(`#property-${propertyId} .property-image-slider`);
+    if (sliderElement) {
+        sliderElement.style.transform = `translateX(-${index * 100}%)`;
+    }
+    
+    updateImageIndicators(propertyId);
+}
+
+// Open gallery modal
+function openGalleryModal(propertyId, startIndex = 0) {
+    const property = allProperties.find(p => p._id === propertyId);
+    if (!property || !property.galleryImages || property.galleryImages.length === 0) {
+        alert('No images available for this property');
+        return;
+    }
+    
+    currentGalleryImages = property.galleryImages;
+    currentGalleryIndex = startIndex;
+    
+    // Set property info
+    document.getElementById('gallery-property-title').textContent = property.title || 'Property Gallery';
+    
+    // Display modal
+    const modal = document.getElementById('galleryModal');
+    modal.style.display = 'flex';
+    
+    // Load images
+    loadGalleryImage();
+    createGalleryThumbnails();
+    
+    // Prevent body scroll
+    document.body.style.overflow = 'hidden';
+}
+
+// Load gallery image
+function loadGalleryImage() {
+    const mainImage = document.getElementById('galleryMainImage');
+    const counter = document.getElementById('gallery-image-counter');
+    
+    if (currentGalleryImages.length > 0) {
+        mainImage.src = currentGalleryImages[currentGalleryIndex];
+        counter.textContent = `${currentGalleryIndex + 1} of ${currentGalleryImages.length}`;
+    }
+    
+    // Update thumbnail selection
+    updateGalleryThumbnails();
+}
+
+// Create gallery thumbnails
+function createGalleryThumbnails() {
+    const container = document.getElementById('galleryThumbnails');
+    container.innerHTML = '';
+    
+    currentGalleryImages.forEach((image, index) => {
+        const thumbnail = document.createElement('img');
+        thumbnail.src = image;
+        thumbnail.className = 'gallery-thumbnail';
+        thumbnail.onclick = () => goToGalleryImage(index);
+        thumbnail.onerror = () => thumbnail.style.display = 'none';
+        container.appendChild(thumbnail);
+    });
+    
+    updateGalleryThumbnails();
+}
+
+// Update gallery thumbnails
+function updateGalleryThumbnails() {
+    const thumbnails = document.querySelectorAll('.gallery-thumbnail');
+    thumbnails.forEach((thumb, index) => {
+        thumb.classList.toggle('active', index === currentGalleryIndex);
+    });
+}
+
+// Navigate gallery images
+function nextGalleryImage() {
+    currentGalleryIndex = (currentGalleryIndex + 1) % currentGalleryImages.length;
+    loadGalleryImage();
+}
+
+function previousGalleryImage() {
+    currentGalleryIndex = (currentGalleryIndex - 1 + currentGalleryImages.length) % currentGalleryImages.length;
+    loadGalleryImage();
+}
+
+function goToGalleryImage(index) {
+    currentGalleryIndex = index;
+    loadGalleryImage();
+}
+
+// Close gallery modal
+function closeGalleryModal() {
+    document.getElementById('galleryModal').style.display = 'none';
+    document.body.style.overflow = 'auto';
+}
     
     // Fetch and display rental properties
     async function loadRentalProperties() {
@@ -842,104 +1362,144 @@
       }
     }
     
-    // Display properties in the DOM
-    function displayProperties(properties) {
-      const container = document.getElementById('rental-properties');
-      
-      if (properties.length === 0) {
-        container.innerHTML = '<div style="text-align: center; color: white; font-size: 1.2rem; padding: 30px;"><i class="fas fa-info-circle" style="margin-right: 10px;"></i> No rental properties available at the moment.</div>';
-        return;
-      }
-      
-      container.innerHTML = properties.map(property => `
-        <div class="rental-card">
-          <img src="${property.mainImage || property.galleryImages?.[0] || 'assets/images/final.png'}" alt="${property.title}" onerror="this.src='assets/images/final.png'">
-          <div class="content">
-            <h3>${property.title}</h3>
-            <p>Ksh ${property.price.toLocaleString()}/month</p>
-
-            <div class="property-details" style="margin: 15px 0; display: flex; gap: 15px; flex-wrap: wrap;">
-              <span style="display: flex; align-items: center; gap: 5px; color: #666;">
-                <i class="fas fa-bed"></i>
-                ${property.bedrooms} Bed${property.bedrooms !== 1 ? 's' : ''}
-              </span>
-              <span style="display: flex; align-items: center; gap: 5px; color: #666;">
-                <i class="fas fa-bath"></i>
-                ${property.bathrooms} Bath${property.bathrooms !== 1 ? 's' : ''}
-              </span>
-              <span style="display: flex; align-items: center; gap: 5px; color: #666;">
-                <i class="fas fa-home"></i>
-                ${Array.isArray(property.propertyType) ? property.propertyType.join(', ') : property.propertyType}
-              </span>
+// Display properties in the DOM
+function displayProperties(properties) {
+  const container = document.getElementById('rental-properties');
+  
+  if (properties.length === 0) {
+    container.innerHTML = '<div style="text-align: center; color: white; font-size: 1.2rem; padding: 30px;"><i class="fas fa-info-circle" style="margin-right: 10px;"></i> No rental properties available at the moment.</div>';
+    return;
+  }
+  
+  container.innerHTML = properties.map(property => {
+    const images = property.galleryImages || [property.mainImage || 'assets/images/final.png'];
+    const hasMultipleImages = images.length > 1;
+    
+    return `
+      <div class="rental-card" id="property-${property._id}">
+        <div class="property-image-container">
+          ${hasMultipleImages ? `
+            <div class="property-image-slider">
+              ${images.map(img => `
+                <div class="property-image-slide">
+                   <img src="${img}" alt="${property.title}" onerror="this.src='https://via.placeholder.com/400x250'">
+                </div>
+              `).join('')}
             </div>
-
-            <div style="display: flex; align-items: center; gap: 5px; margin: 10px 0; color: #666;">
-              <i class="fas fa-map-marker-alt"></i>
-              ${property.location}
+            <button class="slider-nav-btn prev" onclick="navigatePropertyImage('${property._id}', 'prev')">
+              <i class="fas fa-chevron-left"></i>
+            </button>
+            <button class="slider-nav-btn next" onclick="navigatePropertyImage('${property._id}', 'next')">
+              <i class="fas fa-chevron-right"></i>
+            </button>
+            <div class="image-indicators">
+              ${images.map((_, index) => `
+                <div class="image-indicator ${index === 0 ? 'active' : ''}" onclick="goToPropertyImage('${property._id}', ${index})"></div>
+              `).join('')}
             </div>
+            <div class="image-count">1/${images.length}</div>
+          ` : `
+            <img src="${images[0]}" alt="${property.title}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.src='assets/images/final.png'">
+          `}
+        </div>
+        
+        <div class="content">
+          <h3>${property.title}</h3>
+          <p>Ksh ${property.price.toLocaleString()}/month</p>
 
-            ${property.status ? `<div style="margin: 10px 0; padding: 5px 10px; background: #e74c3c; color: white; border-radius: 3px; display: inline-block; font-size: 0.8rem; text-transform: uppercase; font-weight: 600;">${property.status}</div>` : ''}
+          <div class="property-details" style="margin: 15px 0; display: flex; gap: 15px; flex-wrap: wrap;">
+            <span style="display: flex; align-items: center; gap: 5px; color: #666;">
+              <i class="fas fa-bed"></i>
+              ${property.bedrooms} Bed${property.bedrooms !== 1 ? 's' : ''}
+            </span>
+            <span style="display: flex; align-items: center; gap: 5px; color: #666;">
+              <i class="fas fa-bath"></i>
+              ${property.bathrooms} Bath${property.bathrooms !== 1 ? 's' : ''}
+            </span>
+            <span style="display: flex; align-items: center; gap: 5px; color: #666;">
+              <i class="fas fa-home"></i>
+              ${Array.isArray(property.propertyType) ? property.propertyType.join(', ') : property.propertyType}
+            </span>
+          </div>
 
-            ${property.amenities && property.amenities.length > 0 ? `
-              <div style="margin: 15px 0;">
-                <strong style="color: #333;">Amenities:</strong>
-                <div style="margin-top: 5px; display: flex; flex-wrap: wrap; gap: 5px;">
-                  ${property.amenities.slice(0, 3).map(amenity => `<span style="background: #f0f0f0; padding: 3px 8px; border-radius: 12px; font-size: 0.8rem; color: #666;">${amenity}</span>`).join('')}
-                  ${property.amenities.length > 3 ? `<span style="background: #f0f0f0; padding: 3px 8px; border-radius: 12px; font-size: 0.8rem; color: #666;">+${property.amenities.length - 3} more</span>` : ''}
+          <div style="display: flex; align-items: center; gap: 5px; margin: 10px 0; color: #666;">
+            <i class="fas fa-map-marker-alt"></i>
+            ${property.location}
+          </div>
+
+          ${property.status ? `<div style="margin: 10px 0; padding: 5px 10px; background: #e74c3c; color: white; border-radius: 3px; display: inline-block; font-size: 0.8rem; text-transform: uppercase; font-weight: 600;">${property.status}</div>` : ''}
+
+          ${property.amenities && property.amenities.length > 0 ? `
+            <div style="margin: 15px 0;">
+              <strong style="color: #333;">Amenities:</strong>
+              <div style="margin-top: 5px; display: flex; flex-wrap: wrap; gap: 5px;">
+                ${property.amenities.slice(0, 3).map(amenity => `<span style="background: #f0f0f0; padding: 3px 8px; border-radius: 12px; font-size: 0.8rem; color: #666;">${amenity}</span>`).join('')}
+                ${property.amenities.length > 3 ? `<span style="background: #f0f0f0; padding: 3px 8px; border-radius: 12px; font-size: 0.8rem; color: #666;">+${property.amenities.length - 3} more</span>` : ''}
+              </div>
+            </div>
+          ` : ''}
+
+          <div class="buttons">
+            <button class="book-btn" onclick="openBookingForm('${property._id}')">Book Now</button>
+            <button class="view-btn" onclick="toggleDetails(this, '${property._id}')">View More</button>
+            <button class="calendar-btn" onclick="openCalendarModal('${property._id}')" style="background: #28a745; color: white; border: none; padding: 8px 16px; border-radius: 5px; cursor: pointer; margin-left: 5px;">
+              <i class="fas fa-calendar-alt"></i> Check Availability
+            </button>
+          </div>
+
+          <div class="details" id="details-${property._id}" style="display: none; margin-top: 20px; padding-top: 20px; border-top: 1px solid #ddd;">
+            <p style="margin-bottom: 15px; line-height: 1.6; color: #555;"><strong>Description:</strong> ${property.description}</p>
+            
+            ${property.galleryImages && property.galleryImages.length > 0 ? `
+              <div class="details-gallery" style="margin: 20px 0;">
+                <strong style="color: #333; display: block; margin-bottom: 10px;">Photo Gallery:</strong>
+                <div class="details-gallery-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin-top: 10px;">
+                  ${property.galleryImages.map((img, index) => `
+                    <div style="position: relative; overflow: hidden; border-radius: 8px; aspect-ratio: 4/3;">
+                      <img src="${img}" alt="Property Image ${index + 1}" 
+                           onerror="this.parentElement.style.display='none'" 
+                           style="width: 100%; height: 100%; object-fit: cover; cursor: pointer; transition: transform 0.3s ease;"
+                           onmouseover="this.style.transform='scale(1.05)'"
+                           onmouseout="this.style.transform='scale(1)'"
+                           onclick="openImageModal('${img}', '${property.title}')">
+                    </div>
+                  `).join('')}
                 </div>
               </div>
             ` : ''}
-
-            <div class="calendar" data-property-id="${property._id}">
-              <span class="available">1</span>
-              <span class="booked">2</span>
-              <span class="available">3</span>
-              <span class="booked">4</span>
-              <span class="available">5</span>
-              <span class="available">6</span>
-              <span class="booked">7</span>
-            </div>
-
-            <div class="buttons">
-              <button class="book-btn" onclick="openBookingForm('${property._id}')">Book Now</button>
-              <button class="view-btn" onclick="toggleDetails(this, '${property._id}')">View More</button>
-            </div>
-
-            <div class="details" id="details-${property._id}" style="display: none; margin-top: 20px; padding-top: 20px; border-top: 1px solid #ddd;">
-              <p style="margin-bottom: 15px; line-height: 1.6; color: #555;"><strong>Description:</strong> ${property.description}</p>
-              
-              ${property.galleryImages && property.galleryImages.length > 0 ? `
-                <div style="margin: 15px 0;">
-                  <strong style="color: #333;">Gallery:</strong>
-                  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-top: 10px;">
-                    ${property.galleryImages.slice(0, 4).map(img => `
-                      <img src="${img}" alt="Property Image" style="width: 100%; height: 120px; object-fit: cover; border-radius: 5px;" onerror="this.style.display='none'">
-                    `).join('')}
-                  </div>
+            
+            ${property.amenities && property.amenities.length > 0 ? `
+              <div style="margin: 15px 0;">
+                <strong style="color: #333;">All Amenities:</strong>
+                <div style="margin-top: 5px; display: flex; flex-wrap: wrap; gap: 5px;">
+                  ${property.amenities.map(amenity => `<span style="background: #f0f0f0; padding: 3px 8px; border-radius: 12px; font-size: 0.8rem; color: #666;">${amenity}</span>`).join('')}
                 </div>
-              ` : ''}
-              
-              ${property.amenities && property.amenities.length > 0 ? `
-                <div style="margin: 15px 0;">
-                  <strong style="color: #333;">All Amenities:</strong>
-                  <div style="margin-top: 5px; display: flex; flex-wrap: wrap; gap: 5px;">
-                    ${property.amenities.map(amenity => `<span style="background: #f0f0f0; padding: 3px 8px; border-radius: 12px; font-size: 0.8rem; color: #666;">${amenity}</span>`).join('')}
-                  </div>
-                </div>
-              ` : ''}
-            </div>
+              </div>
+            ` : ''}
           </div>
         </div>
-      `).join('');
-      
-      // Add click events to calendar numbers
-      document.querySelectorAll('.calendar span').forEach(span => {
-        span.addEventListener('click', (e) => {
-          const propertyId = e.target.closest('.calendar').dataset.propertyId;
-          openCalendarModal(propertyId);
-        });
-      });
+      </div>
+    `;
+  }).join('');
+  // Initialize sliders for properties with multiple images
+  properties.forEach(property => {
+    if (property.galleryImages && property.galleryImages.length > 1) {
+      initializeImageSlider(property._id, property.galleryImages);
     }
+  });
+}
+    function toggleGallery(propertyId) {
+    const gallery = document.getElementById(`gallery-${propertyId}`);
+    const button = gallery.previousElementSibling.querySelector('.view-all-btn');
+
+    if (gallery.style.display === 'none' || gallery.style.display === '') {
+        gallery.style.display = 'block';
+        button.textContent = 'Hide Photos';
+    } else {
+        gallery.style.display = 'none';
+        button.textContent = 'View All Photos';
+    }
+}
     
     // Toggle details view
     function toggleDetails(btn, propertyId) {
@@ -1111,7 +1671,7 @@
       document.getElementById('bookingForm').reset();
       currentPropertyId = null;
     }
-    
+  
     // Handle date validation
     document.getElementById('checkInDate').addEventListener('change', function() {
       const checkInDate = this.value;

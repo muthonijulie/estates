@@ -1,5 +1,6 @@
 const express = require('express');
 const { 
+    getPropertyGallery,
     createProperty, 
     getProperties, 
     getPropertyById, 
@@ -8,7 +9,7 @@ const {
 } = require('../controllers/propertyController');
 
 const router = express.Router();
-
+router.get('/properties/:id/gallery', getPropertyGallery);
 // Route to create a new property
 router.post('/properties', createProperty);
 
