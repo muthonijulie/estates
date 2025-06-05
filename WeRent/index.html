@@ -21,6 +21,7 @@
     p, h1,h2,h3,h4{
       font-family: 'Poppins', sans-serif !important;
     }
+    
  .featured-section {
             max-width: 1400px;
             margin: 80px auto;
@@ -1111,6 +1112,12 @@
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
     <script>
+
+
+        const menuToggle = document.getElementById('menuToggle');
+        const navLinks = document.getElementById('navLinks');
+        const openIcon = document.getElementById('openIcon');
+        const closeIcon = document.getElementById('closeIcon');
         // Global variables for calendar and property data
         let currentPropertyId = null;
         let currentPropertyData = null;
@@ -1120,6 +1127,20 @@
         let currentRentalPage = 0;
         let currentSalePage = 0;
         const propertiesPerPage = 3;
+
+  
+
+  menuToggle.addEventListener('click', () => {
+    navLinks.classList.toggle('active');
+  
+    if (navLinks.classList.contains('active')) {
+      openIcon.style.display = 'none';
+      closeIcon.style.display = 'block';
+    } else {
+      openIcon.style.display = 'block';
+      closeIcon.style.display = 'none';
+    }
+  });
 
         function toggleDetails(button) {
             const card = button.closest('.rental-card, .sales-card');
