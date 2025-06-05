@@ -16,10 +16,9 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
   
   <style>
-    body {
+  body{
       font-family: 'Poppins', sans-serif;
-    }
-    
+  }
     .loading {
       text-align: center;
       padding: 50px;
@@ -154,7 +153,7 @@
       border: none;
       border-radius: 5px;
       cursor: pointer;
-      font-family: 'Poppins', sans-serif !important;
+      font-family: 'Poppins', sans-serif;
       font-weight: 600;
       transition: all 0.3s ease;
     }
@@ -573,253 +572,6 @@
       font-weight: 600 !important;
       color: #666 !important;
     }
-    
-    /* GALLERY STYLES ADDED FROM RENTALS.HTML */
-    .property-image-container {
-      position: relative;
-      width: 100%;
-      height: 250px;
-      overflow: hidden;
-    }
-    
-    .property-image-slider {
-      display: flex;
-      width: 100%;
-      height: 100%;
-      transition: transform 0.3s ease;
-    }
-    
-    .property-image-slide {
-      flex: 0 0 100%;
-      width: 100%;
-      height: 100%;
-    }
-    
-    .slider-nav-btn {
-      position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
-      background: rgba(0,0,0,0.4);
-      color: white;
-      border: none;
-      width: 30px;
-      height: 30px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      z-index: 2;
-      transition: all 0.2s ease;
-    }
-    
-    .slider-nav-btn:hover {
-      background: rgba(0,0,0,0.7);
-    }
-    
-    .slider-nav-btn.prev {
-      left: 10px;
-    }
-    
-    .slider-nav-btn.next {
-      right: 10px;
-    }
-    
-    .image-indicators {
-      position: absolute;
-      bottom: 10px;
-      left: 50%;
-      transform: translateX(-50%);
-      display: flex;
-      gap: 5px;
-      z-index: 2;
-    }
-    
-    .image-indicator {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: rgba(255,255,255,0.5);
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-    
-    .image-indicator.active {
-      background: white;
-      transform: scale(1.2);
-    }
-    
-    .image-count {
-      position: absolute;
-      bottom: 10px;
-      right: 10px;
-      background: rgba(0,0,0,0.5);
-      color: white;
-      padding: 3px 8px;
-      border-radius: 12px;
-      font-size: 0.7rem;
-      z-index: 2;
-    }
-    
-    .gallery-btn {
-      background: #6c757d;
-      color: white;
-      border: none;
-      padding: 8px 16px;
-      border-radius: 5px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      font-size: 0.9rem;
-      transition: all 0.3s ease;
-    }
-    
-    .gallery-btn:hover {
-      background: #5a6268;
-    }
-    
-    .details-gallery-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-      gap: 10px;
-      margin-top: 10px;
-    }
-    
-    /* Gallery Modal */
-    #galleryModal {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0,0,0,0.9);
-      z-index: 2000;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-    }
-    
-    .gallery-modal-content {
-      width: 90%;
-      max-width: 1000px;
-      height: 90%;
-      display: flex;
-      flex-direction: column;
-      position: relative;
-    }
-    
-    .gallery-close {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      background: rgba(255,255,255,0.2);
-      border: none;
-      color: white;
-      font-size: 30px;
-      cursor: pointer;
-      width: 50px;
-      height: 50px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 10;
-    }
-    
-    .gallery-header {
-      color: white;
-      padding: 20px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    
-    .gallery-header h3 {
-      margin: 0;
-      font-size: 1.5rem;
-    }
-    
-    .gallery-counter {
-      font-size: 0.9rem;
-      color: #ccc;
-    }
-    
-    .gallery-main {
-      flex: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-      overflow: hidden;
-    }
-    
-    .gallery-main img {
-      max-width: 100%;
-      max-height: 100%;
-      object-fit: contain;
-    }
-    
-    .gallery-nav-btn {
-      position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
-      background: rgba(255,255,255,0.2);
-      color: white;
-      border: none;
-      width: 50px;
-      height: 50px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      z-index: 5;
-      font-size: 1.5rem;
-    }
-    
-    .gallery-nav-btn.prev {
-      left: 20px;
-    }
-    
-    .gallery-nav-btn.next {
-      right: 20px;
-    }
-    
-    .gallery-thumbnails {
-      display: flex;
-      gap: 10px;
-      padding: 15px;
-      overflow-x: auto;
-      scrollbar-width: thin;
-      scrollbar-color: #666 #333;
-      background: rgba(0,0,0,0.5);
-    }
-    
-    .gallery-thumbnail {
-      width: 80px;
-      height: 60px;
-      object-fit: cover;
-      border-radius: 5px;
-      cursor: pointer;
-      opacity: 0.6;
-      transition: all 0.2s ease;
-    }
-    
-    .gallery-thumbnail.active {
-      opacity: 1;
-      border: 2px solid white;
-    }
-    
-    .gallery-thumbnail:hover {
-      opacity: 0.9;
-    }
-    
-    /* Individual image modal */
-    #imageModal {
-      z-index: 2001;
-    }
   </style>
 
   
@@ -930,41 +682,6 @@
   </div>
 </div>
 
-<!-- Gallery Modal -->
-<div id="galleryModal">
-  <div class="gallery-modal-content">
-    <button class="gallery-close" onclick="closeGalleryModal()">&times;</button>
-    
-    <div class="gallery-header">
-      <h3 id="gallery-property-title">Property Gallery</h3>
-      <div id="gallery-image-counter" class="gallery-counter">1 of 5</div>
-    </div>
-    
-    <div class="gallery-main">
-      <img id="galleryMainImage" src="" alt="Gallery Image">
-      <button class="gallery-nav-btn prev" onclick="previousGalleryImage()">
-        <i class="fas fa-chevron-left"></i>
-      </button>
-      <button class="gallery-nav-btn next" onclick="nextGalleryImage()">
-        <i class="fas fa-chevron-right"></i>
-      </button>
-    </div>
-    
-    <div id="galleryThumbnails" class="gallery-thumbnails">
-      <!-- Thumbnails will be added here -->
-    </div>
-  </div>
-</div>
-
-<!-- Image Modal -->
-<div id="imageModal">
-  <div style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 2000; align-items: center; justify-content: center;">
-    <button onclick="closeImageModal()" style="position: absolute; top: 20px; right: 30px; background: rgba(255,255,255,0.2); border: none; color: white; font-size: 30px; cursor: pointer; padding: 10px; border-radius: 50%; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center;">&times;</button>
-    <img id="modalImage" style="max-width: 90%; max-height: 90%; object-fit: contain; border-radius: 8px;" src="" alt="">
-    <div id="modalImageTitle" style="position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); color: white; text-align: center; background: rgba(0,0,0,0.7); padding: 10px 20px; border-radius: 5px;"></div>
-  </div>
-</div>
-
 <!-- Viewing Success Popup -->
 <div id="viewingSuccess">
   Thank you for scheduling a viewing. We'll be in touch to confirm the time and guide you through the process!
@@ -1035,6 +752,7 @@
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
 <!-- Main JavaScript -->
+<!-- Main JavaScript -->
 <script>
 // API Base URL
 const API_BASE = 'https://estates-1-zn1x.onrender.com/api/v1';
@@ -1044,11 +762,6 @@ let selectedPropertyId = null;
 let allProperties = [];
 let calendarInstance = null;
 let propertyViewings = {};
-
-// Variables for image gallery functionality
-let currentGalleryImages = [];
-let currentGalleryIndex = 0;
-let propertyImageSliders = {};
 
 // Fetch and display properties
 async function fetchSalesProperties() {
@@ -1101,506 +814,234 @@ async function fetchAllViewingData(properties) {
   }
 }
 
-// Generate calendar dates based on viewings
-function generateCalendarDates(propertyId) {
-  // Get actual viewing data for this property
-  const viewings = propertyViewings[propertyId] || [];
-  
-  // Create a set of booked dates from viewings
-  const bookedDates = new Set();
-  viewings.forEach(viewing => {
-    if (viewing.preferredDate) {
-      bookedDates.add(viewing.preferredDate.split('T')[0]);
+function openCalendarModal(propertyId, selectedDate = null) {
+    selectedPropertyId = propertyId;
+    
+    // Find property data
+    const property = allProperties.find(p => p._id === propertyId);
+    if (!property) return;
+    
+    // Set property info in modal
+    document.getElementById('calendar-property-title').textContent = property.title;
+    document.getElementById('calendar-property-location').textContent = property.location;
+    
+    const imageUrl = property.mainImage || (property.galleryImages && property.galleryImages.length > 0 ? property.galleryImages[0] : 'assets/images/final.png');
+    document.getElementById('calendar-property-img').src = imageUrl;
+    
+    // Get booked dates from viewing data
+    const viewings = propertyViewings[propertyId] || [];
+    const bookedDates = viewings.map(viewing => {
+        if (viewing.preferredDate) {
+            return viewing.preferredDate.split('T')[0];
+        }
+        return null;
+    }).filter(date => date !== null);
+    
+    // Add some random booked ranges for demonstration
+    const bookedRanges = createRandomBookedDates();
+    
+    // Initialize calendar
+    if (calendarInstance) {
+        calendarInstance.destroy();
     }
-  });
-  
-  // Generate calendar numbers (1-7)
-  let calendarHTML = '';
-  for (let i = 1; i <= 7; i++) {
-    // Create a date for today + i days
-    const date = new Date();
-    date.setDate(date.getDate() + i);
-    const dateString = date.toISOString().split('T')[0];
     
-    // Check if this date is booked
-    const isBooked = bookedDates.has(dateString);
-    
-    calendarHTML += `<span class="${isBooked ? 'booked' : 'available'}" data-date="${dateString}">${i}</span>`;
-  }
-  
-  return calendarHTML;
-}
-
-// Initialize image sliders for each property card
-function initializeImageSlider(propertyId, images) {
-  if (!images || images.length <= 1) return;
-  
-  propertyImageSliders[propertyId] = {
-    images: images,
-    currentIndex: 0
-  };
-  
-  // Update indicators
-  updateImageIndicators(propertyId);
-}
-
-// Navigate property card images
-function navigatePropertyImage(propertyId, direction) {
-  if (!propertyImageSliders[propertyId]) return;
-  
-  const slider = propertyImageSliders[propertyId];
-  const totalImages = slider.images.length;
-  
-  if (direction === 'next') {
-    slider.currentIndex = (slider.currentIndex + 1) % totalImages;
-  } else {
-    slider.currentIndex = (slider.currentIndex - 1 + totalImages) % totalImages;
-  }
-  
-  // Update slider position
-  const sliderElement = document.querySelector(`#property-${propertyId} .property-image-slider`);
-  if (sliderElement) {
-    sliderElement.style.transform = `translateX(-${slider.currentIndex * 100}%)`;
-  }
-  
-  // Update indicators
-  updateImageIndicators(propertyId);
-}
-
-// Update image indicators
-function updateImageIndicators(propertyId) {
-  const indicators = document.querySelectorAll(`#property-${propertyId} .image-indicator`);
-  const currentIndex = propertyImageSliders[propertyId]?.currentIndex || 0;
-  
-  indicators.forEach((indicator, index) => {
-    indicator.classList.toggle('active', index === currentIndex);
-  });
-  
-  // Update image counter
-  const counter = document.querySelector(`#property-${propertyId} .image-count`);
-  if (counter && propertyImageSliders[propertyId]) {
-    const total = propertyImageSliders[propertyId].images.length;
-    counter.textContent = `${currentIndex + 1}/${total}`;
-  }
-}
-
-// Go to specific image
-function goToPropertyImage(propertyId, index) {
-  if (!propertyImageSliders[propertyId]) return;
-  
-  propertyImageSliders[propertyId].currentIndex = index;
-  
-  const sliderElement = document.querySelector(`#property-${propertyId} .property-image-slider`);
-  if (sliderElement) {
-    sliderElement.style.transform = `translateX(-${index * 100}%)`;
-  }
-  
-  updateImageIndicators(propertyId);
-}
-
-// Open gallery modal
-function openGalleryModal(propertyId, startIndex = 0) {
-  const property = allProperties.find(p => p._id === propertyId);
-  if (!property) {
-    alert('Property not found');
-    return;
-  }
-  
-  // Combine all images like in displayProperties
-  let allImages = [];
-  if (property.mainImage) allImages.push(property.mainImage);
-  if (property.galleryImages && Array.isArray(property.galleryImages)) {
-    property.galleryImages.forEach(img => {
-      if (img && !allImages.includes(img)) allImages.push(img);
+    calendarInstance = flatpickr("#property-calendar", {
+        inline: true,
+        mode: "single",
+        minDate: "today",
+        maxDate: new Date().fp_incr(90), // Extended to 3 months instead of 30 days
+        disable: [...bookedDates, ...bookedRanges],
+        dateFormat: "Y-m-d",
+        defaultDate: selectedDate || "today",
+        showMonths: 3, // Changed from 1 to 3 to show 3 months
+        static: true,
+        onChange: function(selectedDates) {
+            const bookBtn = document.querySelector('.calendar-book-btn');
+            if (selectedDates.length === 1) {
+                bookBtn.removeAttribute('disabled');
+                bookBtn.textContent = `Schedule Viewing for ${selectedDates[0].toLocaleDateString()}`;
+            } else {
+                bookBtn.setAttribute('disabled', 'disabled');
+                bookBtn.textContent = 'Select a date';
+            }
+        },
+        onReady: function() {
+            // Add custom styling after calendar is ready
+            const calendar = document.querySelector('.flatpickr-calendar');
+            if (calendar) {
+                calendar.style.boxShadow = '0 10px 40px rgba(0, 0, 0, 0.15)';
+            }
+        }
     });
-  }
-  
-  if (allImages.length === 0) {
-    alert('No images available for this property');
-    return;
-  }
-  
-  currentGalleryImages = allImages;
-  currentGalleryIndex = startIndex;
-  
-  // Set property info
-  document.getElementById('gallery-property-title').textContent = property.title || 'Property Gallery';
-  
-  // Display modal
-  const modal = document.getElementById('galleryModal');
-  modal.style.display = 'flex';
-  
-  // Load images
-  loadGalleryImage();
-  createGalleryThumbnails();
-  
-  // Prevent body scroll
-  document.body.style.overflow = 'hidden';
+    
+    // Show the modal
+    document.getElementById('calendarModal').style.display = 'flex';
 }
 
-// Load gallery image
-function loadGalleryImage() {
-  const mainImage = document.getElementById('galleryMainImage');
-  const counter = document.getElementById('gallery-image-counter');
-  
-  if (currentGalleryImages.length > 0) {
-    mainImage.src = currentGalleryImages[currentGalleryIndex];
-    counter.textContent = `${currentGalleryIndex + 1} of ${currentGalleryImages.length}`;
-  }
-  
-  // Update thumbnail selection
-  updateGalleryThumbnails();
+// Helper function to create random booked date ranges
+function createRandomBookedDates() {
+    const bookedDates = [];
+    const today = new Date();
+    
+    // Generate 3-5 random booked date ranges within the next 90 days (extended range)
+    const numBookings = Math.floor(Math.random() * 3) + 3;
+    
+    for (let i = 0; i < numBookings; i++) {
+        const startDate = new Date(today);
+        startDate.setDate(startDate.getDate() + Math.floor(Math.random() * 85) + 2); // Extended range
+        
+        const duration = Math.floor(Math.random() * 3) + 1; // 1-3 days
+        const endDate = new Date(startDate);
+        endDate.setDate(startDate.getDate() + duration);
+        
+        // Add date range
+        for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
+            bookedDates.push(d.toISOString().split('T')[0]);
+        }
+    }
+    
+    return bookedDates;
 }
 
-// Create gallery thumbnails
-function createGalleryThumbnails() {
-  const container = document.getElementById('galleryThumbnails');
-  container.innerHTML = '';
-  
-  currentGalleryImages.forEach((image, index) => {
-    const thumbnail = document.createElement('img');
-    thumbnail.src = image;
-    thumbnail.className = 'gallery-thumbnail';
-    thumbnail.onclick = () => goToGalleryImage(index);
-    thumbnail.onerror = () => thumbnail.style.display = 'none';
-    container.appendChild(thumbnail);
-  });
-  
-  updateGalleryThumbnails();
-}
-
-// Update gallery thumbnails
-function updateGalleryThumbnails() {
-  const thumbnails = document.querySelectorAll('.gallery-thumbnail');
-  thumbnails.forEach((thumb, index) => {
-    thumb.classList.toggle('active', index === currentGalleryIndex);
-  });
-}
-
-// Navigate gallery images
-function nextGalleryImage() {
-  currentGalleryIndex = (currentGalleryIndex + 1) % currentGalleryImages.length;
-  loadGalleryImage();
-}
-
-function previousGalleryImage() {
-  currentGalleryIndex = (currentGalleryIndex - 1 + currentGalleryImages.length) % currentGalleryImages.length;
-  loadGalleryImage();
-}
-
-function goToGalleryImage(index) {
-  currentGalleryIndex = index;
-  loadGalleryImage();
-}
-
-// Close gallery modal
-function closeGalleryModal() {
-  document.getElementById('galleryModal').style.display = 'none';
-  document.body.style.overflow = 'auto';
-}
-
-// Open image modal
-function openImageModal(imageSrc, propertyTitle) {
-  const modal = document.querySelector('#imageModal > div');
-  const modalImage = document.getElementById('modalImage');
-  const modalTitle = document.getElementById('modalImageTitle');
-  
-  modalImage.src = imageSrc;
-  modalTitle.textContent = propertyTitle || 'Property Image';
-  
-  modal.style.display = 'flex';
-  document.body.style.overflow = 'hidden';
-}
-
-// Close image modal
-function closeImageModal() {
-  const modal = document.querySelector('#imageModal > div');
-  if (modal) {
-    modal.style.display = 'none';
-    document.body.style.overflow = 'auto';
-  }
+// Add the missing closeCalendarModal function
+function closeCalendarModal() {
+    const modal = document.getElementById('calendarModal');
+    if (modal) {
+        modal.style.display = 'none';
+    }
+    
+    // Clean up calendar instance
+    if (calendarInstance) {
+        calendarInstance.destroy();
+        calendarInstance = null;
+    }
+    
+    // Reset selected property
+    selectedPropertyId = null;
 }
 
 // Display properties in the UI
 function displayProperties(properties) {
-  const container = document.getElementById('propertiesContainer');
-  
-  if (properties.length === 0) {
-    container.innerHTML = `
-      <div class="error">
-        <i class="fas fa-home"></i> No properties for sale found at the moment.
-      </div>
-    `;
-    return;
-  }
-  
-  container.innerHTML = properties.map(property => {
-    // Better image handling - combine mainImage with galleryImages
-    let allImages = [];
+    const container = document.getElementById('propertiesContainer');
     
-    // Add main image first if it exists
-    if (property.mainImage) {
-      allImages.push(property.mainImage);
+    if (properties.length === 0) {
+        container.innerHTML = `
+            <div class="error">
+                <i class="fas fa-home"></i> No properties for sale found at the moment.
+            </div>
+        `;
+        return;
     }
     
-    // Add gallery images, avoiding duplicates
-    if (property.galleryImages && Array.isArray(property.galleryImages)) {
-      property.galleryImages.forEach(img => {
-        if (img && !allImages.includes(img)) {
-          allImages.push(img);
-        }
-      });
-    }
-    
-    // If no images at all, use placeholder
-    if (allImages.length === 0) {
-      allImages = ['assets/images/final.png'];
-    }
-    
-    const hasMultipleImages = allImages.length > 1;
-    
-    return `
-      <div class="sales-card" id="property-${property._id}">
-        ${property.status ? `<div class="property-status ${property.status}">${property.status}</div>` : ''}
-        
-        <div class="property-image-container">
-          ${hasMultipleImages ? `
-            <div class="property-image-slider">
-              ${allImages.map(img => `
-                <div class="property-image-slide">
-                   <img src="${img}" alt="${property.title}" onerror="this.src='assets/images/final.png'">
-                </div>
-              `).join('')}
-            </div>
-            <button class="slider-nav-btn prev" onclick="navigatePropertyImage('${property._id}', 'prev')">
-              <i class="fas fa-chevron-left"></i>
-            </button>
-            <button class="slider-nav-btn next" onclick="navigatePropertyImage('${property._id}', 'next')">
-              <i class="fas fa-chevron-right"></i>
-            </button>
-            <div class="image-indicators">
-              ${allImages.map((_, index) => `
-                <div class="image-indicator ${index === 0 ? 'active' : ''}" onclick="goToPropertyImage('${property._id}', ${index})"></div>
-              `).join('')}
-            </div>
-            <div class="image-count">1/${allImages.length}</div>
-          ` : `
-            <img src="${allImages[0]}" alt="${property.title}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.src='assets/images/final.png'">
-          `}
-        </div>
-        
-        <div class="content">
-          <h3>${property.title}</h3>
-          <p><strong>Ksh ${property.price.toLocaleString()}</strong></p>
-          
-          <div class="property-details">
-            <div class="detail-item">
-              <i class="fas fa-bed"></i>
-              <span>${property.bedrooms} beds</span>
-            </div>
-            <div class="detail-item">
-              <i class="fas fa-bath"></i>
-              <span>${property.bathrooms} baths</span>
-            </div>
-            <div class="detail-item">
-              <i class="fas fa-map-marker-alt"></i>
-              <span>${property.location}</span>
-            </div>
-          </div>
-          
-          <!-- Calendar dates -->
-          <div class="calendar" data-property-id="${property._id}">
-            ${generateCalendarDates(property._id)}
-          </div>
-
-          <div class="buttons">
-            <button class="book-btn" onclick="openViewingForm('${property._id}')" ${property.status === 'sold' ? 'disabled' : ''}>
-              ${property.status === 'sold' ? 'Sold' : 'Book a Viewing'}
-            </button>
-            <button class="details-btn" onclick="toggleDetails('${property._id}')">
-              <span id="toggle-text-${property._id}">View More</span>
-            </button>
-            ${hasMultipleImages ? `
-              <button class="gallery-btn" onclick="openGalleryModal('${property._id}', 0)">
-                <i class="fas fa-images"></i> View Photos (${allImages.length})
-              </button>
-            ` : ''}
-          </div>
-          
-          <div id="details-${property._id}" class="property-expanded">
-            <p><strong>Description:</strong> ${property.description}</p>
-            <p><strong>Property Type:</strong> ${property.propertyType.join ? property.propertyType.join(', ') : property.propertyType}</p>
-            
-            ${property.amenities && property.amenities.length > 0 ? `
-              <p><strong>Amenities:</strong></p>
-              <div class="amenities-list">
-                ${property.amenities.map(amenity => `<span class="amenity-tag">${amenity}</span>`).join('')}
-              </div>
-            ` : ''}
-            
-            ${allImages.length > 0 ? `
-              <div class="details-gallery" style="margin: 20px 0;">
-                <strong style="color: #333; display: block; margin-bottom: 10px;">Photo Gallery (${allImages.length} photos):</strong>
-                <div class="details-gallery-grid">
-                  ${allImages.map((img, index) => `
-                    <div style="position: relative; overflow: hidden; border-radius: 8px; aspect-ratio: 4/3; background: #f0f0f0;">
-                      <img src="${img}" alt="Property Image ${index + 1}" 
-                           onerror="this.parentElement.style.display='none'" 
-                           style="width: 100%; height: 100%; object-fit: cover; cursor: pointer; transition: transform 0.3s ease;"
-                           onmouseover="this.style.transform='scale(1.05)'"
-                           onmouseout="this.style.transform='scale(1)'"
-                           onclick="openImageModal('${img}', '${property.title} - Image ${index + 1}')">
-                      <div style="position: absolute; bottom: 5px; right: 5px; background: rgba(0,0,0,0.7); color: white; padding: 2px 6px; border-radius: 3px; font-size: 0.7rem;">
-                        ${index + 1}/${allImages.length}
-                      </div>
+    container.innerHTML = properties.map(property => `
+        <div class="sales-card">
+            ${property.status ? `<div class="property-status ${property.status}">${property.status}</div>` : ''}
+            <img src="${property.mainImage || 'assets/images/final.png'}" alt="${property.title}" onerror="this.src='assets/images/final.png'">
+            <div class="content">
+                <h3>${property.title}</h3>
+                <p><strong>Ksh ${property.price.toLocaleString()}</strong></p>
+                
+                <div class="property-details">
+                    <div class="detail-item">
+                        <i class="fas fa-bed"></i>
+                        <span>${property.bedrooms} beds</span>
                     </div>
-                  `).join('')}
+                    <div class="detail-item">
+                        <i class="fas fa-bath"></i>
+                        <span>${property.bathrooms} baths</span>
+                    </div>
+                    <div class="detail-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>${property.location}</span>
+                    </div>
                 </div>
-                ${allImages.length > 4 ? `
-                  <button onclick="openGalleryModal('${property._id}', 0)" 
-                          style="margin-top: 10px; background: #007bff; color: white; border: none; padding: 8px 16px; border-radius: 5px; cursor: pointer;">
-                    <i class="fas fa-expand"></i> View Full Gallery
-                  </button>
-                ` : ''}
-              </div>
-            ` : ''}
-          </div>
+                
+                <div class="buttons">
+                    <button class="book-btn" onclick="openViewingForm('${property._id}')" ${property.status === 'sold' ? 'disabled' : ''}>
+                        ${property.status === 'sold' ? 'Sold' : 'Book a Viewing'}
+                    </button>
+                    <button class="details-btn" onclick="toggleDetails('${property._id}')">
+                        <span id="toggle-text-${property._id}">View More</span>
+                    </button>
+                    <button class="calendar-btn" onclick="openCalendarModal('${property._id}')" style="background: #28a745; color: white; border: none; padding: 8px 16px; border-radius: 5px; cursor: pointer; margin-left: 5px;">
+                        <i class="fas fa-calendar-alt"></i> Check Availability
+                    </button>
+                </div>
+                
+                <div id="details-${property._id}" class="property-expanded">
+                    <p><strong>Description:</strong> ${property.description}</p>
+                    <p><strong>Property Type:</strong> ${property.propertyType.join(', ')}</p>
+                    
+                    ${property.amenities && property.amenities.length > 0 ? `
+                        <p><strong>Amenities:</strong></p>
+                        <div class="amenities-list">
+                            ${property.amenities.map(amenity => `<span class="amenity-tag">${amenity}</span>`).join('')}
+                        </div>
+                    ` : ''}
+                    
+                    ${property.galleryImages && property.galleryImages.length > 0 ? `
+                        <p><strong>Gallery:</strong></p>
+                        <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px;">
+                            ${property.galleryImages.slice(0, 3).map(img => `
+                                <img src="${img}" alt="Gallery" style="width: 80px; height: 80px; object-fit: cover; border-radius: 5px;" onerror="this.style.display='none'">
+                            `).join('')}
+                        </div>
+                    ` : ''}
+                </div>
+            </div>
         </div>
-      </div>
-    `;
-  }).join('');
-  
-  // Initialize sliders for properties with multiple images
-  properties.forEach(property => {
-    let allImages = [];
-    if (property.mainImage) allImages.push(property.mainImage);
-    if (property.galleryImages && Array.isArray(property.galleryImages)) {
-      property.galleryImages.forEach(img => {
-        if (img && !allImages.includes(img)) allImages.push(img);
-      });
-    }
-    
-    if (allImages.length > 1) {
-      initializeImageSlider(property._id, allImages);
-    }
-  });
-  
-  // Add click events to calendar numbers
-  document.querySelectorAll('.calendar span').forEach(span => {
-    span.addEventListener('click', (e) => {
-      e.stopPropagation(); // Prevent triggering parent elements
-      const propertyId = e.target.closest('.calendar').dataset.propertyId;
-      openCalendarModal(propertyId, e.target.dataset.date);
-    });
-  });
+    `).join('');
 }
 
 // Toggle property details
 function toggleDetails(propertyId) {
-  const detailsDiv = document.getElementById(`details-${propertyId}`);
-  const toggleText = document.getElementById(`toggle-text-${propertyId}`);
-  
-  if (detailsDiv.style.display === 'block') {
-    detailsDiv.style.display = 'none';
-    toggleText.textContent = 'View More';
-  } else {
-    detailsDiv.style.display = 'block';
-    toggleText.textContent = 'View Less';
-  }
-}
-
-// Open calendar modal
-function openCalendarModal(propertyId, selectedDate = null) {
-  selectedPropertyId = propertyId;
-  
-  // Find property data
-  const property = allProperties.find(p => p._id === propertyId);
-  if (!property) return;
-  
-  // Set property info in modal
-  document.getElementById('calendar-property-title').textContent = property.title;
-  document.getElementById('calendar-property-location').textContent = property.location;
-  
-  const imageUrl = property.mainImage || (property.galleryImages && property.galleryImages.length > 0 ? property.galleryImages[0] : 'assets/images/final.png');
-  document.getElementById('calendar-property-img').src = imageUrl;
-  
-  // Get booked dates from viewing data
-  const viewings = propertyViewings[propertyId] || [];
-  const bookedDates = viewings.map(viewing => {
-    if (viewing.preferredDate) {
-      return viewing.preferredDate.split('T')[0];
+    const detailsDiv = document.getElementById(`details-${propertyId}`);
+    const toggleText = document.getElementById(`toggle-text-${propertyId}`);
+    
+    if (detailsDiv.style.display === 'block') {
+        detailsDiv.style.display = 'none';
+        toggleText.textContent = 'View More';
+    } else {
+        detailsDiv.style.display = 'block';
+        toggleText.textContent = 'View Less';
     }
-    return null;
-  }).filter(date => date !== null);
-  
-  // Initialize calendar
-  if (calendarInstance) {
-    calendarInstance.destroy();
-  }
-  
-  calendarInstance = flatpickr("#property-calendar", {
-    inline: true,
-    mode: "single",
-    minDate: "today",
-    maxDate: new Date().fp_incr(30), // Allow scheduling viewings up to 30 days in advance
-    disable: bookedDates,
-    dateFormat: "Y-m-d",
-    defaultDate: selectedDate || "today",
-    onChange: function(selectedDates) {
-      // Update viewing button based on selection
-      const bookBtn = document.querySelector('.calendar-book-btn');
-      if (selectedDates.length === 1) {
-        bookBtn.removeAttribute('disabled');
-        bookBtn.textContent = `Schedule Viewing for ${selectedDates[0].toLocaleDateString()}`;
-      } else {
-        bookBtn.setAttribute('disabled', 'disabled');
-        bookBtn.textContent = 'Select a date';
-      }
-    }
-  });
-  
-  // Show the modal
-  document.getElementById('calendarModal').style.display = 'flex';
-}
-
-// Close calendar modal
-function closeCalendarModal() {
-  document.getElementById('calendarModal').style.display = 'none';
-  if (calendarInstance) {
-    calendarInstance.destroy();
-    calendarInstance = null;
-  }
 }
 
 // Open viewing form
 function openViewingForm(propertyId) {
-  selectedPropertyId = propertyId;
-  document.getElementById('propertyId').value = propertyId;
-  
-  // Set minimum date to today
-  const today = new Date().toISOString().split('T')[0];
-  document.getElementById('preferredDate').min = today;
-  
-  document.getElementById('viewingModal').style.display = 'block';
+    selectedPropertyId = propertyId;
+    document.getElementById('propertyId').value = propertyId;
+    
+    // Set minimum date to today
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('preferredDate').min = today;
+    
+    document.getElementById('viewingModal').style.display = 'block';
 }
 
-// Open viewing form from calendar
+// Open viewing form from calendar - FIXED VERSION
 function openViewingFormFromCalendar() {
-  if (!selectedPropertyId || !calendarInstance) return;
-  
-  // Get selected date from calendar
-  const selectedDate = calendarInstance.selectedDates[0]?.toISOString().split('T')[0];
-  
-  // Close calendar modal
-  closeCalendarModal();
-  
-  // Open viewing form with selected date
-  openViewingForm(selectedPropertyId);
-  
-  // Set the date if one was selected
-  if (selectedDate) {
-    document.getElementById('preferredDate').value = selectedDate;
-  }
+    if (!selectedPropertyId || !calendarInstance) return;
+    
+    // Get selected date from calendar
+    const selectedDate = calendarInstance.selectedDates[0]?.toISOString().split('T')[0];
+    
+    // Close calendar modal first
+    closeCalendarModal();
+    
+    // Then open viewing form with the selected date
+    openViewingForm(selectedPropertyId);
+    
+    // Pre-fill the date if available
+    if (selectedDate) {
+        // Use setTimeout to ensure the form elements are ready
+        setTimeout(() => {
+            const dateInput = document.getElementById('preferredDate');
+            if (dateInput) {
+                dateInput.value = selectedDate;
+            }
+        }, 100);
+    }
 }
 
 // Close viewing form
@@ -1719,8 +1160,6 @@ function showError() {
 window.onclick = function(event) {
   const viewingModal = document.getElementById('viewingModal');
   const calendarModal = document.getElementById('calendarModal');
-  const galleryModal = document.getElementById('galleryModal');
-  const imageModal = document.querySelector('#imageModal > div');
   
   if (event.target === viewingModal) {
     closeViewingForm();
@@ -1728,14 +1167,6 @@ window.onclick = function(event) {
   
   if (event.target === calendarModal) {
     closeCalendarModal();
-  }
-  
-  if (event.target === galleryModal) {
-    closeGalleryModal();
-  }
-  
-  if (event.target === imageModal) {
-    closeImageModal();
   }
 }
 
@@ -1745,23 +1176,29 @@ const navLinks = document.getElementById('navLinks');
 const openIcon = document.getElementById('openIcon');
 const closeIcon = document.getElementById('closeIcon');
 
-menuToggle.addEventListener('click', () => {
-  navLinks.classList.toggle('active');
+if (menuToggle && navLinks) {
+  menuToggle.addEventListener('click', () => {
+    navLinks.classList.toggle('active');
 
-  if (navLinks.classList.contains('active')) {
-    openIcon.style.display = 'none';
-    closeIcon.style.display = 'block';
-  } else {
-    openIcon.style.display = 'block';
-    closeIcon.style.display = 'none';
-  }
-});
+    if (navLinks.classList.contains('active')) {
+      if (openIcon) openIcon.style.display = 'none';
+      if (closeIcon) closeIcon.style.display = 'block';
+    } else {
+      if (openIcon) openIcon.style.display = 'block';
+      if (closeIcon) closeIcon.style.display = 'none';
+    }
+  });
+}
 
 // Initialize the page
 document.addEventListener('DOMContentLoaded', function() {
+  // Show loading state initially
+  showLoading();
+  
+  // Fetch and display properties
   fetchSalesProperties();
 });
-</script>
+</script>>
 
  <!-- Bootstrap 5.3 JS CDN (with Popper) -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-TNbMZjwnuN+uyVXX9A++a2hQwGItV9q8OQa2k3+u7jVr8J5eG9+lGqQvFa+hmpoK" crossorigin="anonymous"></script>
