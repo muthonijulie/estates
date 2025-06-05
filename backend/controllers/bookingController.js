@@ -1,5 +1,6 @@
 const Booking = require("../models/Booking");
 const Property = require("../models/Property");
+const emailService = require("../services/emailService");
 
 // Create a new booking
 const createBooking = async (req, res) => {
@@ -66,6 +67,15 @@ const createBooking = async (req, res) => {
 
     // Populate property details in response
     await newBooking.populate('propertyId');
+
+    // Send booking confirmation email
+    try {
+      await emailService.sendBookingConfirmation(newBooking);
+      console.log('Booking confirmation email sent');
+    } catch (emailError) {
+      console.error('Failed to send booking confirmation email:', emailError);
+      // Don't fail the booking process if email fails
+    }
 
     res.status(201).json({
       success: true,
