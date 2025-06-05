@@ -256,18 +256,85 @@
       flex: 1;
     }
     
+    /* New Success Modal Styling */
     #viewingSuccess {
       display: none;
       position: fixed;
-      top: 20px;
-      right: 20px;
-      background: #28a745;
-      color: white;
-      padding: 15px 20px;
-      border-radius: 5px;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.5);
       z-index: 1001;
       font-family: 'Poppins', sans-serif;
-      max-width: 300px;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .success-content {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      text-align: center;
+      max-width: 400px;
+      width: 90%;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+      animation: fadeInUp 0.5s ease;
+    }
+    
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .success-icon {
+      width: 70px;
+      height: 70px;
+      background: #28a745;
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px;
+      font-size: 35px;
+    }
+    
+    .success-title {
+      font-size: 22px;
+      font-weight: 600;
+      margin-bottom: 15px;
+      color: #333;
+    }
+    
+    .success-message {
+      font-size: 16px;
+      color: #666;
+      margin-bottom: 25px;
+      line-height: 1.5;
+    }
+    
+    .success-button {
+      background: #e67e22;
+      color: white;
+      border: none;
+      padding: 12px 25px;
+      border-radius: 5px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-family: 'Poppins', sans-serif;
+    }
+    
+    .success-button:hover {
+      background: #0056b3;
+      transform: translateY(-2px);
     }
 
     /* Navbar styles */
@@ -682,10 +749,53 @@
   </div>
 </div>
 
-<!-- Viewing Success Popup -->
-<div id="viewingSuccess">
-  Thank you for scheduling a viewing. We'll be in touch to confirm the time and guide you through the process!
+<!-- Gallery Modal -->
+<div id="galleryModal">
+  <div class="gallery-modal-content">
+    <button class="gallery-close" onclick="closeGalleryModal()">&times;</button>
+    
+    <div class="gallery-header">
+      <h3 id="gallery-property-title">Property Gallery</h3>
+      <div id="gallery-image-counter" class="gallery-counter">1 of 5</div>
+    </div>
+    
+    <div class="gallery-main">
+      <img id="galleryMainImage" src="" alt="Gallery Image">
+      <button class="gallery-nav-btn prev" onclick="previousGalleryImage()">
+        <i class="fas fa-chevron-left"></i>
+      </button>
+      <button class="gallery-nav-btn next" onclick="nextGalleryImage()">
+        <i class="fas fa-chevron-right"></i>
+      </button>
+    </div>
+    
+    <div id="galleryThumbnails" class="gallery-thumbnails">
+      <!-- Thumbnails will be added here -->
+    </div>
+  </div>
 </div>
+
+<!-- Image Modal -->
+<div id="imageModal">
+  <div style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 2000; align-items: center; justify-content: center;">
+    <button onclick="closeImageModal()" style="position: absolute; top: 20px; right: 30px; background: rgba(255,255,255,0.2); border: none; color: white; font-size: 30px; cursor: pointer; padding: 10px; border-radius: 50%; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center;">&times;</button>
+    <img id="modalImage" style="max-width: 90%; max-height: 90%; object-fit: contain; border-radius: 8px;" src="" alt="">
+    <div id="modalImageTitle" style="position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); color: white; text-align: center; background: rgba(0,0,0,0.7); padding: 10px 20px; border-radius: 5px;"></div>
+  </div>
+</div>
+
+<!-- Viewing Success Modal -->
+<div id="viewingSuccess">
+  <div class="success-content">
+    <div class="success-icon">
+      <i class="fas fa-check"></i>
+    </div>
+    <h3 class="success-title">Booking Confirmed!</h3>
+    <p class="success-message">Thank you for scheduling a viewing. We'll be in touch to confirm the time and guide you through the process!</p>
+    <button class="success-button" onclick="closeSuccessModal()">Continue Browsing</button>
+  </div>
+</div>
+
 <!-- WhatsApp icon on the left -->
 <div class="contact-fixed-left">
   <a href="https://wa.me/+254 708129949" target="_blank" aria-label="Chat on WhatsApp">
@@ -1132,9 +1242,15 @@ function updatePropertyCalendar(propertyId) {
 
 // Show success message
 function showSuccessMessage() {
-  const popup = document.getElementById('viewingSuccess');
-  popup.style.display = 'block';
-  setTimeout(() => popup.style.display = 'none', 5000);
+  const successModal = document.getElementById('viewingSuccess');
+  successModal.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+}
+
+// Close success modal
+function closeSuccessModal() {
+  document.getElementById('viewingSuccess').style.display = 'none';
+  document.body.style.overflow = 'auto';
 }
 
 // Show loading state
@@ -1160,6 +1276,7 @@ function showError() {
 window.onclick = function(event) {
   const viewingModal = document.getElementById('viewingModal');
   const calendarModal = document.getElementById('calendarModal');
+  const successModal = document.getElementById('viewingSuccess');
   
   if (event.target === viewingModal) {
     closeViewingForm();
@@ -1167,6 +1284,10 @@ window.onclick = function(event) {
   
   if (event.target === calendarModal) {
     closeCalendarModal();
+  }
+  
+  if (event.target === successModal) {
+    closeSuccessModal();
   }
 }
 
