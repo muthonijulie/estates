@@ -1,5 +1,42 @@
 const Property = require('../models/Property');
 
+exports.getPropertyGallery = async (req, res) => {
+    try {
+        const property = await Property.findById(req.params.id)
+            .select('galleryImages imageMetadata title');
+        
+        if (!property) {
+            return res.status(404).json({
+                success: false,
+                message: 'Property not found'
+            });
+        }
+        
+        // Process gallery images with full URLs
+        const galleryWithMetadata = property.galleryImages.map((img, index) => {
+            const fullUrl = img && !img.startsWith('http') 
+                ? `${req.protocol}://${req.get('host')}/uploads/assets/${img}`
+                : img;
+            
+            return {
+                url: fullUrl,
+                index,
+                alt: `${property.title} - Image ${index + 1}`
+            };
+        });
+        
+        res.json({
+            success: true,
+            data: galleryWithMetadata
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: 'Failed to fetch gallery',
+            error: error.message
+        });
+    }
+}
 exports.createProperty = async (req, res) => {
     try {
         const property = await Property.create(req.body);

@@ -288,7 +288,81 @@ nav a:hover {
   }
 }
 
+@media (max-width: 768px) {
+    .gallery-modal-content {
+        width: 95% !important;
+        height: 95% !important;
+    }
+    
+    .gallery-header h2 {
+        font-size: 1.2rem !important;
+    }
+    
+    .gallery-main-container button {
+        width: 40px !important;
+        height: 40px !important;
+        left: 10px !important;
+        right: 10px !important;
+    }
+    
+    .gallery-thumbnails-container {
+        height: 70px !important;
+    }
+    
+    .gallery-thumbnail {
+        width: 50px !important;
+        height: 50px !important;
+    }
+}
 
+@media (max-width: 480px) {
+    .gallery-header {
+        padding: 15px 0 !important;
+    }
+    
+    .gallery-header h2 {
+        font-size: 1rem !important;
+    }
+    
+    .gallery-main-container button {
+        width: 35px !important;
+        height: 35px !important;
+        font-size: 1rem !important;
+    }
+    
+    .gallery-thumbnails-container {
+        height: 60px !important;
+    }
+    
+    .gallery-thumbnail {
+        width: 45px !important;
+        height: 45px !important;
+    }
+}
+
+/* Smooth scrolling for thumbnails */
+.gallery-thumbnails-container {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255,255,255,0.3) transparent;
+}
+
+.gallery-thumbnails-container::-webkit-scrollbar {
+    height: 6px;
+}
+
+.gallery-thumbnails-container::-webkit-scrollbar-track {
+    background: rgba(255,255,255,0.1);
+    border-radius: 3px;
+}
+
+.gallery-thumbnails-container::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.3);
+    border-radius: 3px;
+}
+
+.gallery-thumbnails-container::-webkit-scrollbar-thumb:hover {
+    background: rgba(255,255,255,0.5);
+}
 
 
 

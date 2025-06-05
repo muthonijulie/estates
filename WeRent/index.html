@@ -894,6 +894,7 @@
   </div>
 </section>
 
+
 <section id="featured-properties" class="featured-section">
   <h2>Featured Properties</h2>
    <h3>Rentals</h3>
@@ -904,6 +905,43 @@
                 <button id="prev-rental" class="pagination-btn disabled"><i class="fas fa-chevron-left"></i></button>
                 <button id="next-rental" class="pagination-btn"><i class="fas fa-chevron-right"></i></button>
             </div>
+            <div id="galleryModal" class="modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 10000; justify-content: center; align-items: center;">
+    <div class="gallery-modal-content" style="width: 90%; max-width: 1200px; height: 90%; display: flex; flex-direction: column; position: relative;">
+        <!-- Header -->
+        <div class="gallery-header" style="display: flex; justify-content: space-between; align-items: center; padding: 20px 0; color: white;">
+            <h2 id="gallery-property-title" style="margin: 0; font-size: 1.5rem;">Property Gallery</h2>
+            <div style="display: flex; align-items: center; gap: 20px;">
+                <span id="gallery-image-counter" style="font-size: 1rem;">1 of 10</span>
+                <button onclick="closeGalleryModal()" style="background: none; border: none; color: white; font-size: 2rem; cursor: pointer; padding: 0; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: background 0.3s;" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='none'">
+                    ×
+                </button>
+            </div>
+        </div>
+
+        <!-- Main Image Container -->
+        <div class="gallery-main-container" style="flex: 1; display: flex; align-items: center; justify-content: center; position: relative; margin-bottom: 20px;">
+            <!-- Previous Button -->
+            <button onclick="previousGalleryImage()" style="position: absolute; left: 20px; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.5); color: white; border: none; border-radius: 50%; width: 50px; height: 50px; cursor: pointer; font-size: 1.2rem; z-index: 2; display: flex; align-items: center; justify-content: center; transition: background 0.3s;" onmouseover="this.style.background='rgba(0,0,0,0.8)'" onmouseout="this.style.background='rgba(0,0,0,0.5)'">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+
+            <!-- Main Image -->
+            <img id="galleryMainImage" src="" alt="Gallery Image" style="max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 8px;">
+
+            <!-- Next Button -->
+            <button onclick="nextGalleryImage()" style="position: absolute; right: 20px; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.5); color: white; border: none; border-radius: 50%; width: 50px; height: 50px; cursor: pointer; font-size: 1.2rem; z-index: 2; display: flex; align-items: center; justify-content: center; transition: background 0.3s;" onmouseover="this.style.background='rgba(0,0,0,0.8)'" onmouseout="this.style.background='rgba(0,0,0,0.5)'">
+                <i class="fas fa-chevron-right"></i>
+            </button>
+        </div>
+
+        <!-- Thumbnails -->
+        <div class="gallery-thumbnails-container" style="height: 80px; overflow-x: auto; padding: 10px 0;">
+            <div id="galleryThumbnails" style="display: flex; gap: 10px; height: 60px; padding: 0 10px;">
+                <!-- Thumbnails will be populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+</div>
 
             <h3>For Sale</h3>
             <div class="properties sale-properties featured" id="sale-properties-container">
@@ -915,6 +953,7 @@
             </div>
         </section>
     </div>
+
     <section class="testimonial-section">
   <h2 class="section-title">What Our Clients Say</h2>
   <div class="testimonial-container">

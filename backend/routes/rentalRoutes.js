@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const {
+    getRentalGallery,
     createRental,
     getRentals,
     getRentalById,
@@ -10,6 +11,7 @@ const {
     searchRentals
 } = require('../controllers/rentalController');
 
+router.get('/rentals/:id/gallery', getRentalGallery);
 // GET /api/v1/rentals - Get all rentals
 router.get('/rentals', getRentals);
 

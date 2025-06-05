@@ -1,4 +1,17 @@
 const Rental = require('../models/Rental');
+// Add to your existing RentalsController
+exports.getRentalGallery=async(req, res) => {
+    try {
+        const property = await Property.findOne({
+            _id: req.params.id,
+            listingType: 'Rent' // Only rental properties
+        }).select('galleryImages imageMetadata title');
+        
+        // ... rest of the logic same as above
+    } catch (error) {
+        // ... error handling
+    }
+}
 
 exports.createRental = async (req, res) => {
     try {

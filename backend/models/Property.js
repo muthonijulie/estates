@@ -41,6 +41,14 @@ const propertySchema = new mongoose.Schema(
     galleryImages: {
       type: [String],
     },
+     imageMetadata: [{
+        url: String,
+        filename: String,
+        size: Number,
+        uploadDate: { type: Date, default: Date.now },
+        alt: String,
+        caption: String
+    }],
     amenities: {
       type: [String],
     },
