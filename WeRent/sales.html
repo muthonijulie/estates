@@ -1406,69 +1406,71 @@ function closeImageModal() {
   }
 }
 
-// Open calendar modal
+// Open calendar modal function
 function openCalendarModal(propertyId) {
-  selectedPropertyId = propertyId;
-  
-  // Find property data
-  const property = allProperties.find(p => p._id === propertyId);
-  if (!property) return;
-  
-  // Set property info in modal
-  document.getElementById('calendar-property-title').textContent = property.title;
-  document.getElementById('calendar-property-location').textContent = property.location;
-  
-  const imageUrl = property.mainImage || (property.galleryImages && property.galleryImages.length > 0 ? property.galleryImages[0] : 'assets/images/final.png');
-  document.getElementById('calendar-property-img').src = imageUrl;
-  
-  // Get booked dates from viewing data
-  const viewings = propertyViewings[propertyId] || [];
-  const bookedDates = viewings.map(viewing => {
-    if (viewing.preferredDate) {
-      return viewing.preferredDate.split('T')[0];
+    selectedPropertyId = propertyId;
+    
+    // Find property data
+    const property = allProperties.find(p => p._id === propertyId);
+    if (!property) return;
+    
+    // Set property info in modal
+    document.getElementById('calendar-property-title').textContent = property.title;
+    document.getElementById('calendar-property-location').textContent = property.location;
+    const imageUrl = property.mainImage || (property.galleryImages && property.galleryImages.length > 0 ? property.galleryImages[0] : 'assets/images/final.png');
+    document.getElementById('calendar-property-img').src = imageUrl;
+    
+    // Get booked dates from viewing data
+    const viewings = propertyViewings[propertyId] || [];
+    const bookedDates = viewings.map(viewing => {
+        if (viewing.preferredDate) {
+            return viewing.preferredDate.split('T')[0];
+        }
+        return null;
+    }).filter(date => date !== null);
+    
+    // Initialize calendar
+    if (calendarInstance) {
+        calendarInstance.destroy();
     }
-    return null;
-  }).filter(date => date !== null);
-  
-  // Initialize calendar
-  if (calendarInstance) {
-    calendarInstance.destroy();
-  }
-  
-  calendarInstance = flatpickr("#property-calendar", {
-    inline: true,
-    mode: "single",
-    minDate: "today",
-    maxDate: new Date().fp_incr(30), // Allow scheduling viewings up to 30 days in advance
-    disable: bookedDates,
-    dateFormat: "Y-m-d",
-    defaultDate: "today",
-    onChange: function(selectedDates) {
-      // Update viewing button based on selection
-      const bookBtn = document.querySelector('.calendar-book-btn');
-      if (selectedDates.length === 1) {
-        bookBtn.removeAttribute('disabled');
-        bookBtn.textContent = `Schedule Viewing for ${selectedDates[0].toLocaleDateString()}`;
-      } else {
-        bookBtn.setAttribute('disabled', 'disabled');
-        bookBtn.textContent = 'Select a date';
-      }
-    }
-  });
-  
-  // Show the modal
-  document.getElementById('calendarModal').style.display = 'flex';
+    
+    // Calculate date 12 months from now
+    const maxDate = new Date();
+    maxDate.setFullYear(maxDate.getFullYear() + 1);
+    
+    calendarInstance = flatpickr("#property-calendar", {
+        inline: true,
+        mode: "single",
+        minDate: "today",
+        maxDate: maxDate, // Now allows 12 months from today
+        disable: bookedDates,
+        dateFormat: "Y-m-d",
+        defaultDate: "today",
+        onChange: function(selectedDates) {
+            // Update viewing button based on selection
+            const bookBtn = document.querySelector('.calendar-book-btn');
+            if (selectedDates.length === 1) {
+                bookBtn.removeAttribute('disabled');
+                bookBtn.textContent = `Schedule Viewing for ${selectedDates[0].toLocaleDateString()}`;
+            } else {
+                bookBtn.setAttribute('disabled', 'disabled');
+                bookBtn.textContent = 'Select a date';
+            }
+        }
+    });
+    
+    // Show the modal
+    document.getElementById('calendarModal').style.display = 'flex';
 }
 
-// Close calendar modal
+// Close calendar modal function (unchanged)
 function closeCalendarModal() {
-  document.getElementById('calendarModal').style.display = 'none';
-  if (calendarInstance) {
-    calendarInstance.destroy();
-    calendarInstance = null;
-  }
+    document.getElementById('calendarModal').style.display = 'none';
+    if (calendarInstance) {
+        calendarInstance.destroy();
+        calendarInstance = null;
+    }
 }
-
 // Display properties in the UI
 function displayProperties(properties) {
   const container = document.getElementById('propertiesContainer');
