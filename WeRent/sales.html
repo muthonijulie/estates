@@ -257,18 +257,85 @@
       flex: 1;
     }
     
+    /* New Success Modal Styling */
     #viewingSuccess {
       display: none;
       position: fixed;
-      top: 20px;
-      right: 20px;
-      background: #28a745;
-      color: white;
-      padding: 15px 20px;
-      border-radius: 5px;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.5);
       z-index: 1001;
       font-family: 'Poppins', sans-serif;
-      max-width: 300px;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .success-content {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      text-align: center;
+      max-width: 400px;
+      width: 90%;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+      animation: fadeInUp 0.5s ease;
+    }
+    
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .success-icon {
+      width: 70px;
+      height: 70px;
+      background: #28a745;
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px;
+      font-size: 35px;
+    }
+    
+    .success-title {
+      font-size: 22px;
+      font-weight: 600;
+      margin-bottom: 15px;
+      color: #333;
+    }
+    
+    .success-message {
+      font-size: 16px;
+      color: #666;
+      margin-bottom: 25px;
+      line-height: 1.5;
+    }
+    
+    .success-button {
+      background: #e67e22;
+      color: white;
+      border: none;
+      padding: 12px 25px;
+      border-radius: 5px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-family: 'Poppins', sans-serif;
+    }
+    
+    .success-button:hover {
+      background: #0056b3;
+      transform: translateY(-2px);
     }
 
     /* Navbar styles */
@@ -965,10 +1032,18 @@
   </div>
 </div>
 
-<!-- Viewing Success Popup -->
+<!-- Viewing Success Modal -->
 <div id="viewingSuccess">
-  Thank you for scheduling a viewing. We'll be in touch to confirm the time and guide you through the process!
+  <div class="success-content">
+    <div class="success-icon">
+      <i class="fas fa-check"></i>
+    </div>
+    <h3 class="success-title">Booking Confirmed!</h3>
+    <p class="success-message">Thank you for scheduling a viewing. We'll be in touch to confirm the time and guide you through the process!</p>
+    <button class="success-button" onclick="closeSuccessModal()">Continue Browsing</button>
+  </div>
 </div>
+
 <!-- WhatsApp icon on the left -->
 <div class="contact-fixed-left">
   <a href="https://wa.me/+254 708129949" target="_blank" aria-label="Chat on WhatsApp">
@@ -1691,9 +1766,15 @@ function updatePropertyCalendar(propertyId) {
 
 // Show success message
 function showSuccessMessage() {
-  const popup = document.getElementById('viewingSuccess');
-  popup.style.display = 'block';
-  setTimeout(() => popup.style.display = 'none', 5000);
+  const successModal = document.getElementById('viewingSuccess');
+  successModal.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+}
+
+// Close success modal
+function closeSuccessModal() {
+  document.getElementById('viewingSuccess').style.display = 'none';
+  document.body.style.overflow = 'auto';
 }
 
 // Show loading state
@@ -1721,6 +1802,7 @@ window.onclick = function(event) {
   const calendarModal = document.getElementById('calendarModal');
   const galleryModal = document.getElementById('galleryModal');
   const imageModal = document.querySelector('#imageModal > div');
+  const successModal = document.getElementById('viewingSuccess');
   
   if (event.target === viewingModal) {
     closeViewingForm();
@@ -1736,6 +1818,10 @@ window.onclick = function(event) {
   
   if (event.target === imageModal) {
     closeImageModal();
+  }
+  
+  if (event.target === successModal) {
+    closeSuccessModal();
   }
 }
 
