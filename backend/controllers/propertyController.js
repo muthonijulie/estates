@@ -14,8 +14,8 @@ exports.getPropertyGallery = async (req, res) => {
         
         // Process gallery images with full URLs
         const galleryWithMetadata = property.galleryImages.map((img, index) => {
-            const fullUrl = img && !img.startsWith('http') 
-                ? `${req.protocol}://${req.get('host')}/uploads/assets/${img}`
+            const fullUrl = img && !img.startsWith('https') 
+                ? `${req.protocol}://${req.get('host')}/assets/uploads/gallery${img}`
                 : img;
             
             return {
