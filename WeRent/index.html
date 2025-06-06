@@ -37,13 +37,11 @@
             text-align: center;
             font-size: 3rem;
             margin-bottom: 50px;
-            color: #e67e22;
+            color:#f39c12;
             text-transform: uppercase;
             letter-spacing: 3px;
             position: relative;
-            background: linear-gradient(45deg, #667eea, #764ba2);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            background: #f39c12;
             background-clip: text;
             font-family: 'Poppins', sans-serif;
             font-weight: 700;
@@ -54,23 +52,11 @@
             display: block;
             width: 100px;
             height: 4px;
-            background: linear-gradient(90deg, #667eea, #764ba2);
+            background: #f39c12;
             margin: 20px auto;
             border-radius: 2px;
         }
 
-        .featured-section h3 {
-            font-size: 2.2rem;
-            margin: 60px 0 40px 0;
-            color: #34495e;
-            border-left: 6px solid #667eea;
-            padding-left: 20px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            position: relative;
-            font-family: 'Poppins', sans-serif;
-            font-weight: 600;
-        }
 
         .properties {
             display: grid;
@@ -141,51 +127,7 @@
             margin-right: 8px;
         }
 
-        .calendar {
-            display: flex;
-            gap: 6px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-            justify-content: flex-start;
-        }
-
-        .calendar span {
-            width: 30px;
-            height: 30px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-            font-weight: 600;
-            font-size: 0.8rem;
-            transition: all 0.3s ease;
-            cursor: pointer;
-            font-family: 'Poppins', sans-serif;
-        }
-
-        .calendar .available {
-            background: #e8f5e9;
-            color: #2e7d32;
-            border: 1px solid #a5d6a7;
-        }
-
-        .calendar .available:hover {
-            transform: scale(1.1);
-            background: #2e7d32;
-            color: white;
-        }
-
-        .calendar .booked {
-            background: #ffebee;
-            color: #c62828;
-            border: 1px solid #ef9a9a;
-        }
-
-        .calendar .booked:hover {
-            transform: scale(1.1);
-            background: #c62828;
-            color: white;
-        }
+        
 
         .buttons {
             display: flex;
@@ -497,38 +439,8 @@
             margin: 50px 0;
         }
         
-        /* Hero buttons */
-        .btn-custom-primary, .btn-custom-outline {
-            font-family: 'Poppins', sans-serif;
-            padding: 12px 25px;
-            font-weight: 500;
-            border-radius: 8px;
-            transition: all 0.3s ease;
-        }
+     
         
-        .btn-custom-primary {
-            background: #667eea;
-            border: none;
-            color: white;
-        }
-        
-        .btn-custom-primary:hover {
-            background: #5a70d6;
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
-        }
-        
-        .btn-custom-outline {
-            background: transparent;
-            border: 2px solid white;
-            color: white;
-        }
-        
-        .btn-custom-outline:hover {
-            background: rgba(255, 255, 255, 0.1);
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(255, 255, 255, 0.2);
-        }
 
         /* Pagination controls */
         .pagination-controls {
@@ -1192,7 +1104,6 @@
 
     <!-- Flatpickr Calendar JS -->
    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-
 <script>
     const menuToggle = document.getElementById('menuToggle');
     const navLinks = document.getElementById('navLinks');
@@ -1207,11 +1118,17 @@
     let currentRentalPage = 0;
     let currentSalePage = 0;
     const propertiesPerPage = 3;
-    let userBookings = new Map(); // Store user's bookings
 
+// Menu toggle functionality
+const menuToggle = document.getElementById('menuToggle');
+const navLinks = document.getElementById('navLinks');
+const openIcon = document.getElementById('openIcon');
+const closeIcon = document.getElementById('closeIcon');
+
+if (menuToggle) {
     menuToggle.addEventListener('click', () => {
         navLinks.classList.toggle('active');
-    
+        
         if (navLinks.classList.contains('active')) {
             openIcon.style.display = 'none';
             closeIcon.style.display = 'block';
@@ -1220,18 +1137,20 @@
             closeIcon.style.display = 'none';
         }
     });
+}
 
-    function toggleDetails(button) {
-        const card = button.closest('.rental-card, .sales-card');
-        const details = card.querySelector('.details');
-        details.classList.toggle('show');
-        
-        if (details.classList.contains('show')) {
-            button.innerHTML = '<i class="fas fa-chevron-up"></i> Hide Details';
-        } else {
-            button.innerHTML = '<i class="fas fa-chevron-down"></i> View More';
-        }
+// Toggle property details
+function toggleDetails(button) {
+    const card = button.closest('.rental-card, .sales-card');
+    const details = card.querySelector('.details');
+    details.classList.toggle('show');
+    
+    if (details.classList.contains('show')) {
+        button.innerHTML = '<i class="fas fa-chevron-up"></i> Hide Details';
+    } else {
+        button.innerHTML = '<i class="fas fa-chevron-down"></i> View More';
     }
+}
 
     function openBookingForm(propertyId) {
         // For rentals, open calendar modal first
@@ -1264,53 +1183,35 @@
         }
     }
 
-    async function fetchBookings() {
-        try {
-            // Simulate fetching bookings from backend
-            // In a real app, this would be an API call to get actual bookings
-            return [
-                {
-                    propertyId: "rental-0",
-                    startDate: "2025-06-01",
-                    endDate: "2025-06-07"
-                },
-                {
-                    propertyId: "rental-1",
-                    startDate: "2025-06-10",
-                    endDate: "2025-06-15"
-                },
-                {
-                    propertyId: "rental-2",
-                    startDate: "2025-06-20",
-                    endDate: "2025-06-25"
-                }
-            ];
-        } catch (error) {
-            console.error('Error fetching bookings:', error);
-            return [];
-        }
-    }
-
-    // Get booked dates for a specific property from backend
-    async function getBookedDatesForProperty(propertyId) {
-        try {
-            const bookings = await fetchBookings();
-            const propertyBookings = bookings.filter(booking => booking.propertyId === propertyId);
+    function createRandomBookedDates() {
+        const bookedDates = [];
+        const today = new Date();
+        const nextThreeMonths = new Date(today);
+        nextThreeMonths.setMonth(today.getMonth() + 3);
+        
+        // Generate between 5-15 random booked date ranges
+        const numBookings = Math.floor(Math.random() * 10) + 5;
+        
+        for (let i = 0; i < numBookings; i++) {
+            // Random start date between today and next 3 months
+            const startDate = new Date(today);
+            startDate.setDate(startDate.getDate() + Math.floor(Math.random() * 90));
             
-            // Format booked dates for flatpickr
-            const bookedDateRanges = [];
-            propertyBookings.forEach(booking => {
-                bookedDateRanges.push({
-                    from: booking.startDate,
-                    to: booking.endDate
-                });
+            // Random duration of booking (1-14 days)
+            const duration = Math.floor(Math.random() * 14) + 1;
+            
+            // Create end date
+            const endDate = new Date(startDate);
+            endDate.setDate(startDate.getDate() + duration);
+            
+            // Add to booked dates array
+            bookedDates.push({
+                from: startDate.toISOString().split('T')[0],
+                to: endDate.toISOString().split('T')[0]
             });
-            
-            return bookedDateRanges;
-        } catch (error) {
-            console.error('Error getting booked dates:', error);
-            return [];
         }
+        
+        return bookedDates;
     }
 
     function openCalendarModal(propertyId, propertyType) {
@@ -1332,29 +1233,10 @@
         const imageUrl = currentPropertyData.mainImage || 'https://via.placeholder.com/80x80';
         document.getElementById('calendar-property-img').src = imageUrl;
         
-        // Initialize calendar
-        initializeCalendar(propertyId);
+        // Generate random booked dates for demo
+        const bookedDates = createRandomBookedDates();
         
-        // Show the modal
-        document.getElementById('calendarModal').style.display = 'flex';
-    }
-
-    async function initializeCalendar(propertyId) {
-        // Get booked dates from backend for this property
-        const bookedDateRanges = await getBookedDatesForProperty(propertyId);
-        
-        // Add user's own bookings for this property if they exist
-        if (userBookings.has(propertyId)) {
-            userBookings.get(propertyId).forEach(booking => {
-                bookedDateRanges.push(booking);
-            });
-        }
-        
-        // Create disabled date ranges for past dates
-        const today = new Date();
-        today.setHours(0, 0, 0, 0); // Set to start of today
-        
-        // Destroy previous calendar if it exists
+        // Initialize or update flatpickr calendar
         if (calendarInstance) {
             calendarInstance.destroy();
         }
@@ -1362,9 +1244,9 @@
         calendarInstance = flatpickr("#property-calendar", {
             inline: true,
             mode: "range",
-            minDate: "today", // Cannot select dates before today
+            minDate: "today",
             maxDate: new Date().fp_incr(365), // Allow booking up to 1 year in advance
-            disable: bookedDateRanges, // Disable booked date ranges
+            disable: bookedDates,
             dateFormat: "Y-m-d",
             showMonths: 2,
             static: true,
@@ -1379,86 +1261,36 @@
                     bookBtn.setAttribute('disabled', 'disabled');
                     bookBtn.textContent = 'Select dates to book';
                 }
-            },
-            onReady: function() {
-                // Add custom class to booked dates for styling
-                setTimeout(() => {
-                    highlightBookedDates(bookedDateRanges);
-                }, 100);
-            },
-            onMonthChange: function() {
-                // Re-apply custom classes when month changes
-                setTimeout(() => {
-                    highlightBookedDates(bookedDateRanges);
-                }, 100);
             }
         });
-    }
-
-    function highlightBookedDates(bookedDateRanges) {
-        // Find all calendar day elements
-        const days = document.querySelectorAll('.flatpickr-day');
         
-        // For each booked date range
-        bookedDateRanges.forEach(range => {
-            const from = new Date(range.from);
-            const to = new Date(range.to);
-            
-            // For each day in the range
-            for (let d = new Date(from); d <= to; d.setDate(d.getDate() + 1)) {
-                const dateStr = d.toISOString().split('T')[0];
-                
-                // Find the day element and add the booked class
-                days.forEach(day => {
-                    if (day.getAttribute('aria-label')?.includes(dateStr)) {
-                        day.classList.add('booked');
-                    }
-                });
-            }
-        });
+        // Show the modal
+        document.getElementById('calendarModal').style.display = 'flex';
     }
 
-    function closeCalendarModal() {
-        document.getElementById('calendarModal').style.display = 'none';
-        if (calendarInstance) {
-            calendarInstance.destroy();
-            calendarInstance = null;
-        }
+function closeCalendarModal() {
+    const modal = document.getElementById('calendarModal');
+    if (modal) {
+        modal.style.display = 'none';
     }
+    if (calendarInstance) {
+        calendarInstance.destroy();
+        calendarInstance = null;
+    }
+}
 
     function openBookingFormFromCalendar() {
-        if (!currentPropertyId || !calendarInstance || calendarInstance.selectedDates.length !== 2) return;
+        if (!currentPropertyId) return;
         
-        // Get selected dates
-        const startDate = calendarInstance.selectedDates[0];
-        const endDate = calendarInstance.selectedDates[1];
-        const nights = Math.floor((endDate - startDate) / (1000 * 60 * 60 * 24));
-        
-        // Save the booking locally (in a real app, this would be sent to the backend)
-        if (!userBookings.has(currentPropertyId)) {
-            userBookings.set(currentPropertyId, []);
+        // If dates are selected, show success message
+        if (calendarInstance && calendarInstance.selectedDates.length === 2) {
+            const startDate = calendarInstance.selectedDates[0].toLocaleDateString();
+            const endDate = calendarInstance.selectedDates[1].toLocaleDateString();
+            const nights = Math.floor((calendarInstance.selectedDates[1] - calendarInstance.selectedDates[0]) / (1000 * 60 * 60 * 24));
+            
+            closeCalendarModal();
+            showSuccessMessage(`Booking confirmed for ${startDate} to ${endDate} (${nights} night${nights !== 1 ? 's' : ''})! We'll send you a confirmation email shortly.`);
         }
-        
-        userBookings.get(currentPropertyId).push({
-            from: startDate.toISOString().split('T')[0],
-            to: endDate.toISOString().split('T')[0]
-        });
-        
-        // Close the calendar modal
-        closeCalendarModal();
-        
-        // Show success message
-        showSuccessMessage(`Booking confirmed for ${startDate.toLocaleDateString()} to ${endDate.toLocaleDateString()} (${nights} night${nights !== 1 ? 's' : ''})! We'll send you a confirmation email shortly.`);
-        
-        // Update property cards to reflect the new booking
-        updatePropertyCards();
-    }
-
-    // Update property cards to reflect bookings
-    function updatePropertyCards() {
-        // Refresh both rental and sale properties
-        updateRentalProperties();
-        updateSaleProperties();
     }
 
     // Generate multiple property images for the gallery
@@ -1477,23 +1309,20 @@
             'https://via.placeholder.com/800x600/eaeaea/666666?text=Dining+Area'
         ];
 
-        // Create image array with main image as first if available
-        const images = [];
-        if (mainImage) {
-            images.push(mainImage);
-        }
-
-        // Add random placeholder images to reach desired count
-        while (images.length < count) {
-            const randomIndex = Math.floor(Math.random() * placeholderImages.length);
-            // Avoid duplicates
-            if (!images.includes(placeholderImages[randomIndex])) {
-                images.push(placeholderImages[randomIndex]);
-            }
-        }
-
-        return images;
+    const images = [];
+    if (mainImage) {
+        images.push(mainImage);
     }
+
+    while (images.length < count) {
+        const randomIndex = Math.floor(Math.random() * placeholderImages.length);
+        if (!images.includes(placeholderImages[randomIndex])) {
+            images.push(placeholderImages[randomIndex]);
+        }
+    }
+
+    return images;
+}
 
     function createRentalCard(property) {
         const card = document.createElement('div');
@@ -1511,20 +1340,14 @@
                     ${propertyImages.map(img => `<img src="${img}" alt="${property.title}" onerror="this.src='https://via.placeholder.com/800x600'">`).join('')}
                 </div>
                 <div class="gallery-controls">
+                    
                     <div class="gallery-indicator">
                         ${propertyImages.map((_, index) => `<span class="dot ${index === 0 ? 'active' : ''}"></span>`).join('')}
                     </div>
+                   
                 </div>
             </div>
         `;
-        
-        // Check if property has bookings
-        const hasBookings = userBookings.has(property._id) && userBookings.get(property._id).length > 0;
-        
-        // Create availability status text
-        let availabilityText = hasBookings ? 
-            '<span class="availability-tag booked">You have a booking</span>' : 
-            '<span class="availability-tag available">Available Now</span>';
         
         card.innerHTML = `
             <div class="property-label">For Rent</div>
@@ -1537,7 +1360,6 @@
                     <span class="feature"><i class="fas fa-bath"></i> ${property.bathrooms || '1'} BA</span>
                     <span class="feature"><i class="fas fa-map-marker-alt"></i> ${property.location || 'Nairobi'}</span>
                 </div>
-                ${availabilityText}
                 <div class="buttons">
                     <button class="book-btn" onclick="openBookingForm('${property._id}')">Book Now</button>
                     <button class="view-btn" onclick="toggleDetails(this)"><i class="fas fa-chevron-down"></i> View More</button>
@@ -1556,65 +1378,61 @@
             </div>
         `;
 
-        return card;
-    }
+    return card;
+}
 
-    function createSaleCard(property) {
-        const card = document.createElement('div');
-        card.className = 'sales-card';
-        
-        const formattedPrice = new Intl.NumberFormat('en-KE').format(property.price || 12500000);
-        
-        // Generate random property images
-        const propertyImages = generatePropertyImages(property);
-        
-        // Create image gallery HTML
-        const galleryHTML = `
-            <div class="property-gallery">
-                <div class="gallery-container">
-                    ${propertyImages.map(img => `<img src="${img}" alt="${property.title}" onerror="this.src='https://via.placeholder.com/800x600'">`).join('')}
-                </div>
-                <div class="gallery-controls">
-                    <button class="gallery-control prev" onclick="prevImage(this)"><i class="fas fa-chevron-left"></i></button>
-                    <div class="gallery-indicator">
-                        ${propertyImages.map((_, index) => `<span class="dot ${index === 0 ? 'active' : ''}"></span>`).join('')}
-                    </div>
-                    <button class="gallery-control next" onclick="nextImage(this)"><i class="fas fa-chevron-right"></i></button>
+function createSaleCard(property) {
+    const card = document.createElement('div');
+    card.className = 'sales-card';
+    
+    const formattedPrice = new Intl.NumberFormat('en-KE').format(property.price || 12500000);
+    const propertyImages = generatePropertyImages(property);
+    
+    const galleryHTML = `
+        <div class="property-gallery">
+            <div class="gallery-container">
+                ${propertyImages.map(img => `<img src="${img}" alt="${property.title}" onerror="this.src='https://via.placeholder.com/800x600'">`).join('')}
+            </div>
+            <div class="gallery-controls">
+                <div class="gallery-indicator">
+                    ${propertyImages.map((_, index) => `<span class="dot ${index === 0 ? 'active' : ''}"></span>`).join('')}
                 </div>
             </div>
-        `;
-        
-        card.innerHTML = `
-            <div class="property-label">For Sale</div>
-            <img src="${property.mainImage || 'https://via.placeholder.com/400x250'}" alt="${property.title}" onerror="this.src='https://via.placeholder.com/400x250'">
-            <div class="content">
-                <h3>${property.title || 'Elegant Villa'}</h3>
-                <p><i class="fas fa-tag"></i> Ksh ${formattedPrice}</p>
-                <div class="property-features">
-                    <span class="feature"><i class="fas fa-bed"></i> ${property.bedrooms || '4'} BD</span>
-                    <span class="feature"><i class="fas fa-bath"></i> ${property.bathrooms || '3'} BA</span>
-                    <span class="feature"><i class="fas fa-map-marker-alt"></i> ${property.location || 'Mombasa'}</span>
-                </div>
-                <div class="buttons">
-                    <button class="book-btn" onclick="openViewingForm('${property._id}')">Schedule Viewing</button>
-                    <button class="view-btn" onclick="toggleDetails(this)"><i class="fas fa-chevron-down"></i> View More</button>
-                </div>
-                <button class="calendar-btn" onclick="openCalendarModal('${property._id}', 'sale')">
-                    <i class="fas fa-calendar-alt"></i> Schedule Visit
-                </button>
-                <div class="details">
-                    ${galleryHTML}
-                    <p><strong>Location:</strong> ${property.location || 'Not specified'}</p>
-                    <p><strong>Bedrooms:</strong> ${property.bedrooms || 'Not specified'}</p>
-                    <p><strong>Bathrooms:</strong> ${property.bathrooms || 'Not specified'}</p>
-                    <p><strong>Amenities:</strong> ${property.amenities ? property.amenities.join(', ') : 'Not specified'}</p>
-                    <p>${property.description || 'Beautiful property with great amenities.'}</p>
-                </div>
+        </div>
+    `;
+    
+    card.innerHTML = `
+        <div class="property-label">For Sale</div>
+        <img src="${property.mainImage || 'https://via.placeholder.com/400x250'}" alt="${property.title}" onerror="this.src='https://via.placeholder.com/400x250'">
+        <div class="content">
+            <h3>${property.title || 'Elegant Villa'}</h3>
+            <p><i class="fas fa-tag"></i> Ksh ${formattedPrice}</p>
+            <div class="property-features">
+                <span class="feature"><i class="fas fa-bed"></i> ${property.bedrooms || '4'} BD</span>
+                <span class="feature"><i class="fas fa-bath"></i> ${property.bathrooms || '3'} BA</span>
+                <span class="feature"><i class="fas fa-map-marker-alt"></i> ${property.location || 'Mombasa'}</span>
             </div>
-        `;
-        
-        return card;
-    }
+            <div class="buttons">
+                <button class="book-btn" onclick="openViewingForm('${property._id}')">Schedule Viewing</button>
+                <button class="view-btn" onclick="toggleDetails(this)"><i class="fas fa-chevron-down"></i> View More</button>
+            </div>
+            <button class="calendar-btn" onclick="openCalendarModal('${property._id}', 'sale')" style="background: #2e7d32; color: white; border: none; padding: 8px 16px; border-radius: 5px; cursor: pointer; margin-top: 10px;">
+                <i class="fas fa-calendar-alt"></i> Check Availability
+            </button>
+            <div class="details">
+                ${galleryHTML}
+                <p><strong>Location:</strong> ${property.location || 'Not specified'}</p>
+                <p><strong>Bedrooms:</strong> ${property.bedrooms || 'Not specified'}</p>
+                <p><strong>Bathrooms:</strong> ${property.bathrooms || 'Not specified'}</p>
+                <p><strong>Amenities:</strong> ${property.amenities ? property.amenities.join(', ') : 'Not specified'}</p>
+                <p>${property.description || 'Beautiful property with great amenities.'}</p>
+            </div>
+        </div>
+    `;
+    
+    return card;
+}
+    
 
     // Gallery navigation functions
     function prevImage(button) {
