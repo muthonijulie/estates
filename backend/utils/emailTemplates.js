@@ -23,13 +23,11 @@ const bookingConfirmationTemplate = (data) => {
             <p><strong>Reference:</strong> ${data.bookingReference}</p>
             <p><strong>Date Booked:</strong> ${data.bookingDate}</p>
             <p><strong>Property:</strong> ${data.propertyName}</p>
-            <p><strong>Type:</strong> ${data.propertyType}</p>
-            <p><strong>Address:</strong> ${data.propertyAddress}</p>
             <p><strong>Check-in:</strong> ${data.checkInDate}</p>
             <p><strong>Check-out:</strong> ${data.checkOutDate}</p>
             <p><strong>Duration:</strong> ${data.nights} night(s)</p>
             <p><strong>Guests:</strong> ${data.adults} adult(s)${data.children > 0 ? `, ${data.children} child(ren)` : ''}</p>
-            <p><strong>Total Price:</strong> $${data.totalPrice.toFixed(2)}</p>
+            <p><strong>Total Price:</strong> Ksh ${data.totalPrice.toFixed(2)}</p>
           </div>
   
           <p>We look forward to welcoming you. If you have any questions or need to make changes to your booking, please contact us.</p>

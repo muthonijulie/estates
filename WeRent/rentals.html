@@ -657,6 +657,7 @@
       gap: 15px;
       margin: 15px 0;
       justify-content: center;
+      flex-wrap: wrap;
     }
     
     .legend-item {
@@ -681,6 +682,21 @@
     .legend-booked {
       background: #ffebee;
       border: 1px solid #ef9a9a;
+    }
+    
+    .legend-past {
+      background: #f5f5f5;
+      border: 1px solid #e0e0e0;
+    }
+    
+    .legend-selected {
+      background: #e3f2fd;
+      border: 1px solid #90caf9;
+    }
+    
+    .legend-your-booking {
+      background: #fff8e1;
+      border: 1px solid #ffecb3;
     }
     
     .calendar-actions {
@@ -721,18 +737,70 @@
     }
     
     .flatpickr-day.flatpickr-disabled {
+      background-color: #f5f5f5 !important;
+      color: #bdbdbd !important;
+      text-decoration: line-through !important;
+      cursor: not-allowed !important;
+    }
+    
+    .flatpickr-day.notAllowed,
+    .flatpickr-day.notAllowed:hover {
       background-color: #ffebee !important;
       color: #c62828 !important;
       text-decoration: line-through !important;
+      border-color: #ef9a9a !important;
+      cursor: not-allowed !important;
+    }
+    
+    .flatpickr-day.today {
+      background-color: #fff8e1 !important;
+      border-color: #ffecb3 !important;
+      color: #f57c00 !important;
+      font-weight: 600 !important;
+    }
+    
+    .flatpickr-day.past-day {
+      background-color: #f5f5f5 !important;
+      color: #bdbdbd !important;
+      cursor: not-allowed !important;
+      pointer-events: none !important;
+    }
+    
+    .flatpickr-day.booked-day {
+      background-color: #ffebee !important;
+      color: #c62828 !important;
+      border-color: #ef9a9a !important;
+      cursor: not-allowed !important;
+    }
+    
+    .flatpickr-day.your-booking-day {
+      background-color: #e3f2fd !important;
+      color: #1976d2 !important;
+      border-color: #90caf9 !important;
+      font-weight: 600 !important;
     }
     
     .flatpickr-day.flatpickr-disabled:hover {
-      background-color: #ffebee !important;
+      background-color: #f5f5f5 !important;
     }
     
     .flatpickr-day.selected {
       background: #e67e22 !important;
       border-color: #e67e22 !important;
+      color: white !important;
+    }
+    
+    .flatpickr-day.startRange,
+    .flatpickr-day.endRange {
+      background: #e67e22 !important;
+      border-color: #e67e22 !important;
+      color: white !important;
+    }
+    
+    .flatpickr-day.inRange {
+      background: #fdf2e9 !important;
+      border-color: #f8d9c1 !important;
+      color: #e67e22 !important;
     }
     
     .flatpickr-day:hover {
@@ -949,6 +1017,18 @@
           <div class="legend-color legend-booked"></div>
           <span>Booked</span>
         </div>
+        <div class="legend-item">
+          <div class="legend-color legend-past"></div>
+          <span>Past Dates</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color legend-selected"></div>
+          <span>Selected</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color legend-your-booking"></div>
+          <span>Your Booking</span>
+        </div>
       </div>
       
       <div id="property-calendar"></div>
@@ -1154,10 +1234,13 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-TNbMZjwnuN+uyVXX9A++a2hQwGItV9q8OQa2k3+u7jVr8J5eG9+lGqQvFa+hmpoK" crossorigin="anonymous"></script>
   
   <script>
-    const API_BASE_URL = 'https://estates-1-zn1x.onrender.com/api/v1';
+    const API_BASE_URL = 'https://estates-qmk8.onrender.com/api/v1';
     let currentPropertyId = null;
     let allProperties = [];
     let calendarInstance = null;
+    let propertyBookings = {}; // Store bookings data by property ID
+    let userCurrentBooking = null; // Store the user's current booking dates
+    let currentUserEmail = null; // Store user's email for matching their bookings
 
 // Enhanced Gallery Functionality
 let currentGalleryImages = [];
@@ -1321,46 +1404,157 @@ function closeGalleryModal() {
     document.body.style.overflow = 'auto';
 }
     
-    // Fetch and display rental properties
-    async function loadRentalProperties() {
-      try {
+// Fetch and display rental properties
+async function loadRentalProperties() {
+    try {
+        // Show loading indicator
+        document.getElementById('loading').style.display = 'block';
+        
+        // Fetch properties
         const response = await fetch(`${API_BASE_URL}/properties`);
         if (!response.ok) throw new Error('Failed to fetch properties');
         
         const data = await response.json();
         allProperties = data.data.filter(property => property.listingType === 'Rent');
         
+        // Fetch bookings for all properties
+        await loadAllBookings();
+        
+        // Display properties
         displayProperties(allProperties);
         document.getElementById('loading').style.display = 'none';
         
         // Check URL params for direct booking
         checkUrlParameters();
-      } catch (error) {
+    } catch (error) {
         console.error('Error loading properties:', error);
         document.getElementById('loading').innerHTML = '<div style="text-align: center; color: white; font-size: 1.2rem; padding: 30px;"><i class="fas fa-exclamation-triangle" style="margin-right: 10px;"></i> Failed to load properties. Please try again later.</div>';
-      }
+    }
+}
+
+// Fetch all bookings from the backend
+async function loadAllBookings() {
+    try {
+        const response = await fetch(`${API_BASE_URL}/bookings`);
+        if (!response.ok) throw new Error('Failed to fetch bookings');
+        
+        const data = await response.json();
+        const bookings = data.data;
+        
+        // Organize bookings by property ID
+        bookings.forEach(booking => {
+            const propertyId = booking.propertyId;
+            if (!propertyBookings[propertyId]) {
+                propertyBookings[propertyId] = [];
+            }
+            
+            // Add booking date range to the property's bookings
+            if (booking.checkInDate && booking.checkOutDate) {
+                // Store email with booking for matching user bookings
+                propertyBookings[propertyId].push({
+                    from: booking.checkInDate.split('T')[0],
+                    to: booking.checkOutDate.split('T')[0],
+                    email: booking.email || null
+                });
+            }
+        });
+        
+        console.log('Loaded property bookings:', propertyBookings);
+    } catch (error) {
+        console.error('Error loading bookings:', error);
+        // Continue without bookings data - calendar will show all dates as available
+    }
+}
+
+// Get stored user email from form field or localStorage
+function getUserEmail() {
+    // Try to get from form first
+    const emailField = document.getElementById('email');
+    if (emailField && emailField.value) {
+        currentUserEmail = emailField.value;
+        // Store for future use
+        localStorage.setItem('userEmail', currentUserEmail);
+        return currentUserEmail;
     }
     
-    // Check URL parameters for direct booking
-    function checkUrlParameters() {
-      const urlParams = new URLSearchParams(window.location.search);
-      const propertyId = urlParams.get('property');
-      const openBooking = urlParams.get('booking');
-      const checkinDate = urlParams.get('checkin');
-      const checkoutDate = urlParams.get('checkout');
-      
-      if (propertyId && openBooking === 'true') {
-        setTimeout(() => {
-          openBookingForm(propertyId);
-          
-          // Set dates if provided
-          if (checkinDate && checkoutDate) {
-            document.getElementById('checkInDate').value = checkinDate;
-            document.getElementById('checkOutDate').value = checkoutDate;
-          }
-        }, 500);
-      }
+    // Otherwise try localStorage
+    const storedEmail = localStorage.getItem('userEmail');
+    if (storedEmail) {
+        currentUserEmail = storedEmail;
+        return currentUserEmail;
     }
+    
+    // No email found
+    return null;
+}
+
+// Check if a date is a user's booking
+function isUserBooking(propertyId, dateStr) {
+    const userEmail = getUserEmail();
+    if (!userEmail || !propertyBookings[propertyId]) return false;
+    
+    // Check if date is within any booking period for this user
+    return propertyBookings[propertyId].some(booking => {
+        const bookingStart = new Date(booking.from);
+        const bookingEnd = new Date(booking.to);
+        const date = new Date(dateStr);
+        
+        return booking.email === userEmail && 
+               date >= bookingStart && 
+               date <= bookingEnd;
+    });
+}
+
+// Helper to check if a date is booked by anyone
+function isDateBooked(propertyId, dateStr) {
+    if (!propertyBookings[propertyId]) return false;
+    
+    return propertyBookings[propertyId].some(booking => {
+        const bookingStart = new Date(booking.from);
+        const bookingEnd = new Date(booking.to);
+        const date = new Date(dateStr);
+        
+        return date >= bookingStart && date <= bookingEnd;
+    });
+}
+
+// Helper to create date range for user booking
+function getUserBookingRange(propertyId) {
+    const userEmail = getUserEmail();
+    if (!userEmail || !propertyBookings[propertyId]) return null;
+    
+    // Find the user's booking for this property
+    const userBooking = propertyBookings[propertyId].find(booking => booking.email === userEmail);
+    if (userBooking) {
+        return {
+            from: userBooking.from,
+            to: userBooking.to
+        };
+    }
+    
+    return null;
+}
+    
+// Check URL parameters for direct booking
+function checkUrlParameters() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const propertyId = urlParams.get('property');
+    const openBooking = urlParams.get('booking');
+    const checkinDate = urlParams.get('checkin');
+    const checkoutDate = urlParams.get('checkout');
+    
+    if (propertyId && openBooking === 'true') {
+        setTimeout(() => {
+            openBookingForm(propertyId);
+            
+            // Set dates if provided
+            if (checkinDate && checkoutDate) {
+                document.getElementById('checkInDate').value = checkinDate;
+                document.getElementById('checkOutDate').value = checkoutDate;
+            }
+        }, 500);
+    }
+}
     
 // Add this function for opening individual images in a modal
 function openImageModal(imageSrc, propertyTitle) {
@@ -1637,129 +1831,181 @@ function openGalleryModal(propertyId, startIndex = 0) {
       }
     }
     
-    // Open calendar modal
-    function openCalendarModal(propertyId) {
-      currentPropertyId = propertyId;
-      
-      // Find the property data
-      const property = allProperties.find(p => p._id === propertyId);
-      
-      if (!property) {
+// Open calendar modal with enhanced features
+function openCalendarModal(propertyId) {
+    currentPropertyId = propertyId;
+    
+    // Find the property data
+    const property = allProperties.find(p => p._id === propertyId);
+    
+    if (!property) {
         alert('Property information not found');
         return;
-      }
-      
-      // Set property info in modal
-      document.getElementById('calendar-property-title').textContent = property.title || 'Property';
-      document.getElementById('calendar-property-location').textContent = property.location || 'Location not specified';
-      
-      const imageUrl = property.mainImage || (property.galleryImages && property.galleryImages.length > 0 ? property.galleryImages[0] : 'assets/images/final.png');
-      document.getElementById('calendar-property-img').src = imageUrl;
-      
-      // Generate random booked dates for demo
-      const bookedDates = createRandomBookedDates();
-      
-      // Initialize or update flatpickr calendar
-      if (calendarInstance) {
+    }
+    
+    // Set property info in modal
+    document.getElementById('calendar-property-title').textContent = property.title || 'Property';
+    document.getElementById('calendar-property-location').textContent = property.location || 'Location not specified';
+    
+    const imageUrl = property.mainImage || (property.galleryImages && property.galleryImages.length > 0 ? property.galleryImages[0] : 'assets/images/final.png');
+    document.getElementById('calendar-property-img').src = imageUrl;
+    
+    // Get booked dates from backend data
+    const bookedDates = propertyBookings[propertyId] || [];
+    console.log(`Booked dates for property ${propertyId}:`, bookedDates);
+    
+    // Get any user bookings
+    const userBookingRange = getUserBookingRange(propertyId);
+    console.log("User booking range:", userBookingRange);
+    
+    // Get today's date for disabling past dates
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    // Initialize or update flatpickr calendar
+    if (calendarInstance) {
         calendarInstance.destroy();
-      }
-      
-      calendarInstance = flatpickr("#property-calendar", {
+    }
+    
+    // Custom date formatting and display
+    calendarInstance = flatpickr("#property-calendar", {
         inline: true,
         mode: "range",
         minDate: "today",
         maxDate: new Date().fp_incr(365), // Allow booking up to 1 year in advance
-        disable: bookedDates,
-        dateFormat: "Y-m-d",
         showMonths: 2,
         static: true,
+        dateFormat: "Y-m-d",
+        
+        // Handle custom styling for different types of dates
+        onDayCreate: function(dObj, dStr, fp, dayElem) {
+            const dateStr = dayElem.dateObj.toISOString().split('T')[0];
+            const dateObj = dayElem.dateObj;
+            
+            // Check if date is in the past
+            if (dateObj < today) {
+                dayElem.classList.add('past-day');
+                return;
+            }
+            
+            // Check if date is already booked by anyone
+            if (isDateBooked(propertyId, dateStr)) {
+                // Check if it's the user's own booking
+                if (isUserBooking(propertyId, dateStr)) {
+                    dayElem.classList.add('your-booking-day');
+                } else {
+                    dayElem.classList.add('booked-day');
+                }
+            }
+        },
+        
+        // Disable dates that are already booked by others
+        onReady: function(selectedDates, dateStr, instance) {
+            // Get all days in the calendar
+            const allDays = instance.days.childNodes;
+            
+            // Loop through all days
+            allDays.forEach(day => {
+                if (!day.dateObj) return;
+                
+                const dateStr = day.dateObj.toISOString().split('T')[0];
+                
+                // If the date is booked by someone else, disable it
+                if (isDateBooked(propertyId, dateStr) && !isUserBooking(propertyId, dateStr)) {
+                    day.classList.add('flatpickr-disabled');
+                    day.classList.add('notAllowed');
+                }
+                
+                // If date is in the past, also disable it
+                if (day.dateObj < today) {
+                    day.classList.add('flatpickr-disabled');
+                    day.classList.add('past-day');
+                }
+            });
+            
+            // Highlight user's existing booking if any
+            if (userBookingRange) {
+                const userStartDate = new Date(userBookingRange.from);
+                const userEndDate = new Date(userBookingRange.to);
+                
+                // Pre-select the user's booking dates
+                instance.setDate([userStartDate, userEndDate], true);
+                
+                // Update button text to show existing booking
+                const bookBtn = document.querySelector('.calendar-book-btn');
+                const nights = Math.floor((userEndDate - userStartDate) / (1000 * 60 * 60 * 24));
+                bookBtn.textContent = `Your Booking (${nights} nights)`;
+                
+                // Optionally disable booking button for existing bookings
+                // bookBtn.disabled = true;
+            }
+        },
+        
+        // Update booking button when dates are selected
         onChange: function(selectedDates, dateStr) {
-          // Update booking button status based on selection
-          const bookBtn = document.querySelector('.calendar-book-btn');
-          if (selectedDates.length === 2) {
-            bookBtn.removeAttribute('disabled');
-            bookBtn.textContent = `Book (${Math.floor((selectedDates[1] - selectedDates[0]) / (1000 * 60 * 60 * 24))} nights)`;
-          } else {
-            bookBtn.setAttribute('disabled', 'disabled');
-            bookBtn.textContent = 'Select dates to book';
-          }
+            const bookBtn = document.querySelector('.calendar-book-btn');
+            
+            if (selectedDates.length === 2) {
+                const nights = Math.floor((selectedDates[1] - selectedDates[0]) / (1000 * 60 * 60 * 24));
+                
+                // Check if these are the user's existing booking dates
+                if (userBookingRange && 
+                    selectedDates[0].toISOString().split('T')[0] === userBookingRange.from &&
+                    selectedDates[1].toISOString().split('T')[0] === userBookingRange.to) {
+                    bookBtn.textContent = `Your Booking (${nights} nights)`;
+                } else {
+                    bookBtn.textContent = `Book Now (${nights} nights)`;
+                }
+                bookBtn.removeAttribute('disabled');
+            } else {
+                bookBtn.textContent = 'Select dates to book';
+                bookBtn.setAttribute('disabled', 'disabled');
+            }
         }
-      });
-      
-      // Show the modal
-      document.getElementById('calendarModal').style.display = 'flex';
-    }
+    });
     
-    // Close calendar modal
-    function closeCalendarModal() {
-      document.getElementById('calendarModal').style.display = 'none';
-      if (calendarInstance) {
+    // Show the modal
+    document.getElementById('calendarModal').style.display = 'flex';
+}
+    
+// Close calendar modal
+function closeCalendarModal() {
+    document.getElementById('calendarModal').style.display = 'none';
+    if (calendarInstance) {
         calendarInstance.destroy();
         calendarInstance = null;
-      }
     }
+}
     
-    // Create random booked dates
-    function createRandomBookedDates() {
-      const bookedDates = [];
-      const today = new Date();
-      const nextThreeMonths = new Date(today);
-      nextThreeMonths.setMonth(today.getMonth() + 3);
-      
-      // Generate between 5-15 random booked date ranges
-      const numBookings = Math.floor(Math.random() * 10) + 5;
-      
-      for (let i = 0; i < numBookings; i++) {
-        // Random start date between today and next 3 months
-        const startDate = new Date(today);
-        startDate.setDate(startDate.getDate() + Math.floor(Math.random() * 90));
-        
-        // Random duration of booking (1-14 days)
-        const duration = Math.floor(Math.random() * 14) + 1;
-        
-        // Create end date
-        const endDate = new Date(startDate);
-        endDate.setDate(startDate.getDate() + duration);
-        
-        // Add to booked dates array
-        bookedDates.push({
-          from: startDate.toISOString().split('T')[0],
-          to: endDate.toISOString().split('T')[0]
-        });
-      }
-      
-      return bookedDates;
-    }
+// Open booking form from calendar
+function openBookingFormFromCalendar() {
+    if (!currentPropertyId) return;
     
-    // Open booking form from calendar
-    function openBookingFormFromCalendar() {
-      if (!currentPropertyId) return;
-      
-      // If dates are selected, get them
-      let selectedDates = [];
-      if (calendarInstance && calendarInstance.selectedDates.length === 2) {
+    // If dates are selected, get them
+    let selectedDates = [];
+    if (calendarInstance && calendarInstance.selectedDates.length === 2) {
         selectedDates = [
-          calendarInstance.selectedDates[0].toISOString().split('T')[0],
-          calendarInstance.selectedDates[1].toISOString().split('T')[0]
+            calendarInstance.selectedDates[0].toISOString().split('T')[0],
+            calendarInstance.selectedDates[1].toISOString().split('T')[0]
         ];
-      }
-      
-      // Close the calendar modal
-      closeCalendarModal();
-      
-      // Open booking form with selected dates
-      openBookingForm(currentPropertyId, selectedDates);
     }
     
-    // Open booking form
-    function openBookingForm(propertyId, selectedDates = null) {
-      currentPropertyId = propertyId;
-      document.getElementById('propertyId').value = propertyId;
-      
-      // Find property in our data
-      const property = allProperties.find(p => p._id === propertyId);
-      
-      if (property) {
+    // Close the calendar modal
+    closeCalendarModal();
+    
+    // Open booking form with selected dates
+    openBookingForm(currentPropertyId, selectedDates);
+}
+    
+// Open booking form
+function openBookingForm(propertyId, selectedDates = null) {
+    currentPropertyId = propertyId;
+    document.getElementById('propertyId').value = propertyId;
+    
+    // Find property in our data
+    const property = allProperties.find(p => p._id === propertyId);
+    
+    if (property) {
         // Set property details in booking form
         document.getElementById('booking-property-title').textContent = property.title || 'Property';
         document.getElementById('booking-property-location').textContent = property.location || 'Location not specified';
@@ -1770,58 +2016,64 @@ function openGalleryModal(propertyId, startIndex = 0) {
         
         // Set number of bedrooms to match property (if available)
         if (property.bedrooms) {
-          document.getElementById('numberOfBedrooms').value = property.bedrooms;
-          document.getElementById('numberOfBedrooms').max = property.bedrooms;
+            document.getElementById('numberOfBedrooms').value = property.bedrooms;
+            document.getElementById('numberOfBedrooms').max = property.bedrooms;
         }
-      }
-      
-      // Set minimum dates to today
-      const today = new Date().toISOString().split('T')[0];
-      document.getElementById('checkInDate').min = today;
-      document.getElementById('checkOutDate').min = today;
-      
-      // If dates were selected in calendar, set them
-      if (selectedDates && selectedDates.length === 2) {
+    }
+    
+    // Set minimum dates to today
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('checkInDate').min = today;
+    document.getElementById('checkOutDate').min = today;
+    
+    // If dates were selected in calendar, set them
+    if (selectedDates && selectedDates.length === 2) {
         document.getElementById('checkInDate').value = selectedDates[0];
         document.getElementById('checkOutDate').value = selectedDates[1];
-      }
-      
-      document.getElementById('bookingModal').style.display = 'flex';
     }
     
-    // Close booking form
-    function closeBookingForm() {
-      document.getElementById('bookingModal').style.display = 'none';
-      document.getElementById('bookingForm').reset();
-      currentPropertyId = null;
+    // Check if user has saved email in localStorage
+    const savedEmail = localStorage.getItem('userEmail');
+    if (savedEmail) {
+        document.getElementById('email').value = savedEmail;
     }
+    
+    document.getElementById('bookingModal').style.display = 'flex';
+}
+    
+// Close booking form
+function closeBookingForm() {
+    document.getElementById('bookingModal').style.display = 'none';
+    document.getElementById('bookingForm').reset();
+    currentPropertyId = null;
+}
   
-    // Handle date validation
-    document.getElementById('checkInDate').addEventListener('change', function() {
-      const checkInDate = this.value;
-      const checkOutDateInput = document.getElementById('checkOutDate');
-      checkOutDateInput.min = checkInDate;
-      
-      if (checkOutDateInput.value && checkOutDateInput.value <= checkInDate) {
-        checkOutDateInput.value = '';
-      }
-    });
+// Handle date validation
+document.getElementById('checkInDate').addEventListener('change', function() {
+    const checkInDate = this.value;
+    const checkOutDateInput = document.getElementById('checkOutDate');
+    checkOutDateInput.min = checkInDate;
     
-    // Submit booking
-    document.getElementById('bookingForm').addEventListener('submit', async function(e) {
-      e.preventDefault();
-      
-      const submitBtn = e.target.querySelector('button[type="submit"]');
-      const btnText = document.getElementById('bookingBtnText');
-      const spinner = document.getElementById('bookingSpinner');
-      
-      // Show loading state
-      btnText.style.display = 'inline-block';
-      spinner.style.display = 'inline-block';
-      submitBtn.disabled = true;
-      
-      const formData = new FormData(e.target);
-      const bookingData = {
+    if (checkOutDateInput.value && checkOutDateInput.value <= checkInDate) {
+        checkOutDateInput.value = '';
+    }
+});
+    
+// Submit booking
+document.getElementById('bookingForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const submitBtn = e.target.querySelector('button[type="submit"]');
+    const btnText = document.getElementById('bookingBtnText');
+    const spinner = document.getElementById('bookingSpinner');
+    
+    // Show loading state
+    btnText.style.display = 'inline-block';
+    spinner.style.display = 'inline-block';
+    submitBtn.disabled = true;
+    
+    const formData = new FormData(e.target);
+    const bookingData = {
         propertyId: formData.get('propertyId'),
         fullName: formData.get('fullName'),
         contact: formData.get('contact'),
@@ -1832,96 +2084,129 @@ function openGalleryModal(propertyId, startIndex = 0) {
         numberOfChildren: parseInt(formData.get('numberOfChildren')) || 0,
         numberOfBedrooms: parseInt(formData.get('numberOfBedrooms')),
         specialRequests: formData.get('specialRequests') || ''
-      };
-      
-      try {
+    };
+    
+    // Save user email for future use
+    localStorage.setItem('userEmail', bookingData.email);
+    currentUserEmail = bookingData.email;
+    
+    try {
         const response = await fetch(`${API_BASE_URL}/bookings`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(bookingData)
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(bookingData)
         });
         
         if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.message || 'Booking failed');
+            const errorData = await response.json();
+            throw new Error(errorData.message || 'Booking failed');
         }
         
         const result = await response.json();
+        
+        // Update the bookings data to include this new booking
+        if (!propertyBookings[bookingData.propertyId]) {
+            propertyBookings[bookingData.propertyId] = [];
+        }
+        
+        // Add the new booking with user's email
+        propertyBookings[bookingData.propertyId].push({
+            from: bookingData.checkInDate,
+            to: bookingData.checkOutDate,
+            email: bookingData.email
+        });
+        
+        // Store the current booking for reference
+        userCurrentBooking = {
+            propertyId: bookingData.propertyId,
+            from: bookingData.checkInDate,
+            to: bookingData.checkOutDate
+        };
         
         // Close modal and show success
         closeBookingForm();
         showSuccessPopup();
         
-      } catch (error) {
+    } catch (error) {
         console.error('Booking error:', error);
         showErrorPopup(error.message);
-      } finally {
+    } finally {
         // Reset button state
         btnText.style.display = 'inline-block';
         spinner.style.display = 'none';
         submitBtn.disabled = false;
-      }
-    });
-    
-    // Show success popup
-    function showSuccessPopup() {
-      document.getElementById('successPopup').style.display = 'flex';
     }
+});
     
-    // Close success popup
-    function closeSuccessPopup() {
-      document.getElementById('successPopup').style.display = 'none';
-      
-      // Optionally refresh the page or redirect
-      // window.location.href = 'rentals.html';
+// Show success popup
+function showSuccessPopup() {
+    document.getElementById('successPopup').style.display = 'flex';
+}
+    
+// Close success popup
+function closeSuccessPopup() {
+    document.getElementById('successPopup').style.display = 'none';
+    
+    // If user just made a booking, show the calendar with their booking highlighted
+    if (userCurrentBooking) {
+        setTimeout(() => {
+            openCalendarModal(userCurrentBooking.propertyId);
+        }, 500);
     }
+}
     
-    // Show error popup
-    function showErrorPopup(message) {
-      document.getElementById('errorMessage').textContent = message || 'Something went wrong with your booking. Please try again.';
-      document.getElementById('errorPopup').style.display = 'flex';
-    }
+// Show error popup
+function showErrorPopup(message) {
+    document.getElementById('errorMessage').textContent = message || 'Something went wrong with your booking. Please try again.';
+    document.getElementById('errorPopup').style.display = 'flex';
+}
     
-    // Close error popup
-    function closeErrorPopup() {
-      document.getElementById('errorPopup').style.display = 'none';
-    }
+// Close error popup
+function closeErrorPopup() {
+    document.getElementById('errorPopup').style.display = 'none';
+}
     
-    // Menu toggle functionality
-    const menuToggle = document.getElementById('menuToggle');
-    const navLinks = document.getElementById('navLinks');
-    const openIcon = document.getElementById('openIcon');
-    const closeIcon = document.getElementById('closeIcon');
+// Menu toggle functionality
+const menuToggle = document.getElementById('menuToggle');
+const navLinks = document.getElementById('navLinks');
+const openIcon = document.getElementById('openIcon');
+const closeIcon = document.getElementById('closeIcon');
     
-    menuToggle.addEventListener('click', () => {
-      navLinks.classList.toggle('active');
-    
-      if (navLinks.classList.contains('active')) {
+menuToggle.addEventListener('click', () => {
+    navLinks.classList.toggle('active');
+
+    if (navLinks.classList.contains('active')) {
         openIcon.style.display = 'none';
         closeIcon.style.display = 'block';
-      } else {
+    } else {
         openIcon.style.display = 'block';
         closeIcon.style.display = 'none';
-      }
-    });
+    }
+});
     
-    // Close modal when clicking outside
-    document.getElementById('bookingModal').addEventListener('click', function(e) {
-      if (e.target === this) {
+// Close modal when clicking outside
+document.getElementById('bookingModal').addEventListener('click', function(e) {
+    if (e.target === this) {
         closeBookingForm();
-      }
-    });
+    }
+});
     
-    document.getElementById('calendarModal').addEventListener('click', function(e) {
-      if (e.target === this) {
+document.getElementById('calendarModal').addEventListener('click', function(e) {
+    if (e.target === this) {
         closeCalendarModal();
-      }
-    });
+    }
+});
+
+// Get stored email on page load
+document.addEventListener('DOMContentLoaded', function() {
+    // Try to get saved email
+    getUserEmail();
     
-    // Load properties when page loads
-    document.addEventListener('DOMContentLoaded', loadRentalProperties);
+    // Load properties
+    loadRentalProperties();
+});
   </script>
   
   <script type="text/javascript">

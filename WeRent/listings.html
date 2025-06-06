@@ -537,7 +537,7 @@
     <script>
         // Configuration
         const CONFIG = {
-            API_BASE_URL: 'https://estates-1-zn1x.onrender.com/api/v1',
+            API_BASE_URL: 'https://estates-qmk8.onrender.com/api/v1',
             RETRY_ATTEMPTS: 3,
             RETRY_DELAY: 1000
         };
@@ -771,7 +771,7 @@
                 document.getElementById('propertiesGrid').innerHTML = '';
 
                 // Build URL with query parameters
-                let url = 'https://estates-1-zn1x.onrender.com/api/v1/properties';
+                let url = 'https://estates-qmk8.onrender.com/api/v1/properties';
                 const queryString = buildQueryString(currentFilters);
                 if (queryString) {
                     url += '?' + queryString;
@@ -931,7 +931,7 @@
                     comments: formData.get('comments') || ''
                 };
                 
-                const response = await fetch('https://estates-1-zn1x.onrender.com/api/v1/viewings', {
+                const response = await fetch('https://estates-qmk8.onrender.com/api/v1/viewings', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
