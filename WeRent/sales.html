@@ -344,7 +344,7 @@
       justify-content: space-between;
       align-items: center;
       padding: 1rem 2rem;
-      background:#FAF0E6;
+      background: white;
       box-shadow: 0 2px 10px rgba(0,0,0,0.1);
     }
 
@@ -352,7 +352,22 @@
       height: 40px;
     }
 
-  
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      align-items: center;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      color: #333;
+      font-weight: 500;
+      transition: color 0.3s ease;
+    }
+
+    .nav-links a:hover {
+      color: #007bff;
+    }
 
     .menu-toggle {
       display: none;
@@ -925,9 +940,115 @@
     #imageModal {
       z-index: 2001;
     }
-  </style>
 
-  
+    /* New Check Availability button */
+    .check-availability-btn {
+      width: 100%;
+      padding: 10px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-weight: 600;
+      cursor: pointer;
+      margin: 10px 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.3s ease;
+    }
+    
+    .check-availability-btn:hover {
+      background-color: #388E3C;
+      transform: translateY(-2px);
+    }
+
+    .photos-btn {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      background: transparent;
+      border: none;
+      color: #666;
+      font-size: 0.9rem;
+      padding: 5px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    
+    .photos-btn:hover {
+      color: #333;
+    }
+    
+    /* Contact fixed elements */
+    .contact-fixed-left {
+      position: fixed;
+      left: 20px;
+      bottom: 20px;
+      z-index: 999;
+    }
+    
+    .contact-fixed-left img {
+      width: 50px;
+      height: 50px;
+      transition: transform 0.3s ease;
+    }
+    
+    .contact-fixed-left img:hover {
+      transform: scale(1.1);
+    }
+    
+    .contact-fixed-right {
+      position: fixed;
+      right: 20px;
+      bottom: 20px;
+      z-index: 999;
+    }
+    
+    .phone-number {
+      display: inline-block;
+      background: #e67e22;
+      color: white;
+      padding: 10px 15px;
+      border-radius: 25px;
+      text-decoration: none;
+      font-weight: 600;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      transition: all 0.3s ease;
+    }
+    
+    .phone-number:hover {
+      background: #d35400;
+      transform: translateY(-3px);
+      box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+      color: white;
+    }
+   
+    
+    @media (max-width: 768px) {
+      .footer-grid {
+        grid-template-columns: 1fr;
+        text-align: center;
+      }
+      
+      .footer-links h4:after, 
+      .footer-contact h4:after, 
+      .footer-social h4:after {
+        left: 50%;
+        transform: translateX(-50%);
+      }
+      
+      .footer-contact li {
+        justify-content: center;
+      }
+      
+      .social-icons {
+        justify-content: center;
+      }
+    }
+   
+  </style>  
 </head>
 <body>
   
@@ -1243,34 +1364,38 @@ async function fetchAllViewingData(properties) {
   }
 }
 
-// Generate calendar dates based on viewings
-function generateCalendarDates(propertyId) {
-  // Get actual viewing data for this property
-  const viewings = propertyViewings[propertyId] || [];
-  
-  // Create a set of booked dates from viewings
-  const bookedDates = new Set();
-  viewings.forEach(viewing => {
-    if (viewing.preferredDate) {
-      bookedDates.add(viewing.preferredDate.split('T')[0]);
+// Refresh calendar data when new viewing is added
+async function refreshViewingData() {
+  try {
+    await fetchAllViewingData(allProperties);
+    console.log('Viewing data refreshed');
+    
+    // If calendar is open, refresh it
+    if (calendarInstance && selectedPropertyId) {
+      updateCalendarWithBookedDates(selectedPropertyId);
     }
-  });
-  
-  // Generate calendar numbers (1-7)
-  let calendarHTML = '';
-  for (let i = 1; i <= 7; i++) {
-    // Create a date for today + i days
-    const date = new Date();
-    date.setDate(date.getDate() + i);
-    const dateString = date.toISOString().split('T')[0];
-    
-    // Check if this date is booked
-    const isBooked = bookedDates.has(dateString);
-    
-    calendarHTML += `<span class="${isBooked ? 'booked' : 'available'}" data-date="${dateString}">${i}</span>`;
+  } catch (error) {
+    console.error('Error refreshing viewing data:', error);
   }
+}
+
+// Update calendar with current booked dates
+function updateCalendarWithBookedDates(propertyId) {
+  if (!calendarInstance) return;
   
-  return calendarHTML;
+  // Get booked dates for this property
+  const bookedDates = globalBookedDates[propertyId] || [];
+  
+  // Update calendar's disabled dates
+  calendarInstance.set('disable', bookedDates);
+  
+  // Reapply custom styling
+  setTimeout(() => {
+    customizePastDates(calendarInstance);
+    customizeBookedDates(calendarInstance, bookedDates);
+  }, 100);
+  
+  console.log(`Calendar updated with booked dates for property ${propertyId}:`, bookedDates);
 }
 
 // Initialize image sliders for each property card
@@ -1640,71 +1765,6 @@ function closeCalendarModal() {
   }
 }
 
-// Open calendar modal function
-function openCalendarModal(propertyId) {
-    selectedPropertyId = propertyId;
-    
-    // Find property data
-    const property = allProperties.find(p => p._id === propertyId);
-    if (!property) return;
-    
-    // Set property info in modal
-    document.getElementById('calendar-property-title').textContent = property.title;
-    document.getElementById('calendar-property-location').textContent = property.location;
-    const imageUrl = property.mainImage || (property.galleryImages && property.galleryImages.length > 0 ? property.galleryImages[0] : 'assets/images/final.png');
-    document.getElementById('calendar-property-img').src = imageUrl;
-    
-    // Get booked dates from viewing data
-    const viewings = propertyViewings[propertyId] || [];
-    const bookedDates = viewings.map(viewing => {
-        if (viewing.preferredDate) {
-            return viewing.preferredDate.split('T')[0];
-        }
-        return null;
-    }).filter(date => date !== null);
-    
-    // Initialize calendar
-    if (calendarInstance) {
-        calendarInstance.destroy();
-    }
-    
-    // Calculate date 12 months from now
-    const maxDate = new Date();
-    maxDate.setFullYear(maxDate.getFullYear() + 1);
-    
-    calendarInstance = flatpickr("#property-calendar", {
-        inline: true,
-        mode: "single",
-        minDate: "today",
-        maxDate: maxDate, // Now allows 12 months from today
-        disable: bookedDates,
-        dateFormat: "Y-m-d",
-        defaultDate: "today",
-        onChange: function(selectedDates) {
-            // Update viewing button based on selection
-            const bookBtn = document.querySelector('.calendar-book-btn');
-            if (selectedDates.length === 1) {
-                bookBtn.removeAttribute('disabled');
-                bookBtn.textContent = `Schedule Viewing for ${selectedDates[0].toLocaleDateString()}`;
-            } else {
-                bookBtn.setAttribute('disabled', 'disabled');
-                bookBtn.textContent = 'Select a date';
-            }
-        }
-    });
-    
-    // Show the modal
-    document.getElementById('calendarModal').style.display = 'flex';
-}
-
-// Close calendar modal function (unchanged)
-function closeCalendarModal() {
-    document.getElementById('calendarModal').style.display = 'none';
-    if (calendarInstance) {
-        calendarInstance.destroy();
-        calendarInstance = null;
-    }
-}
 // Display properties in the UI
 function displayProperties(properties) {
   const container = document.getElementById('propertiesContainer');
@@ -1792,10 +1852,10 @@ function displayProperties(properties) {
             </div>
           </div>
           
-          <!-- Calendar dates -->
-          <div class="calendar" data-property-id="${property._id}">
-            ${generateCalendarDates(property._id)}
-          </div>
+          <!-- Check Availability Button with calendar icon -->
+          <button class="check-availability-btn" onclick="openCalendarModal('${property._id}')" ${property.status === 'sold' ? 'disabled' : ''}>
+            <i class="far fa-calendar-alt"></i> Check Availability
+          </button>
 
           <div class="buttons">
             <button class="book-btn" onclick="openViewingForm('${property._id}')" ${property.status === 'sold' ? 'disabled' : ''}>
@@ -1986,10 +2046,18 @@ async function submitViewing(e) {
     if (!propertyViewings[propertyId]) {
       propertyViewings[propertyId] = [];
     }
-    propertyViewings[viewingData.propertyId].push(result.data);
+    propertyViewings[propertyId].push(result.data);
     
-    // Update the calendar buttons on the property card
-    updatePropertyCalendar(viewingData.propertyId);
+    // Update our booked dates for this property
+    if (!globalBookedDates[propertyId]) {
+      globalBookedDates[propertyId] = [];
+    }
+    globalBookedDates[propertyId].push(bookedDate);
+    
+    console.log(`Added booking for ${bookedDate} to property ${propertyId}`);
+    
+    // Refresh viewing data from server to ensure we have the latest
+    await refreshViewingData();
     
     // Close modal and show success
     closeViewingForm();

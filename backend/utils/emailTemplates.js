@@ -27,7 +27,7 @@ const bookingConfirmationTemplate = (data) => {
             <p><strong>Check-out:</strong> ${data.checkOutDate}</p>
             <p><strong>Duration:</strong> ${data.nights} night(s)</p>
             <p><strong>Guests:</strong> ${data.adults} adult(s)${data.children > 0 ? `, ${data.children} child(ren)` : ''}</p>
-            <p><strong>Total Price:</strong> ksh${data.totalPrice.toFixed(2)}</p>
+            <p><strong>Total Price:</strong> $${data.totalPrice.toFixed(2)}</p>
           </div>
   
           <p>We look forward to welcoming you. If you have any questions or need to make changes to your booking, please contact us.</p>

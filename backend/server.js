@@ -15,10 +15,11 @@ const contactRoutes = require("./routes/contactRoutes");
 const rentalRoutes = require('./routes/rentalRoutes');
 const bookingRoutes = require('./routes/bookingRoutes');
 const blogRoutes = require('./routes/blogRoutes');
+const testEmailRoutes = require('./routes/testEmail');
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        const uploadPath = 'WeRent/admin/uploads/gallery';
+        const uploadPath = 'uploads/properties';
         if (!fs.existsSync(uploadPath)) {
             fs.mkdirSync(uploadPath, { recursive: true });
         }
@@ -30,26 +31,23 @@ const storage = multer.diskStorage({
     }
 });
 
-const upload = multer({ storage: storage }); // ✅ Define multer instance
-
-exports.uploadGallery = [
-    upload.array('images', 10), // ✅ Now this is defined
-    async (req, res) => {
-        try {
-            const filePaths = req.files.map(file => `/${file.filename}`);
-
-            await Property.findByIdAndUpdate(req.params.id, {
-                $push: { galleryImages: { $each: filePaths } }
-            });
-
-            res.json({ success: true, uploaded: filePaths });
-        } catch (error) {
-            res.status(500).json({ error: error.message });
+const upload = multer({
+    storage: storage,
+    limits: {
+        fileSize: 5 * 1024 * 1024 // 5MB limit per file
+    },
+    fileFilter: function (req, file, cb) {
+        const allowedTypes = /jpeg|jpg|png|gif|webp/;
+        const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
+        const mimetype = allowedTypes.test(file.mimetype);
+        
+        if (mimetype && extname) {
+            return cb(null, true);
+        } else {
+            cb(new Error('Only image files are allowed'));
         }
     }
-];
-
-
+})
 
 // CORS configuration - MUST come before routes
 app.use(cors());
@@ -82,7 +80,6 @@ app.use('/api/v1', rentalRoutes);
 app.use('/api/v1', bookingRoutes);
 app.use('/api/v1', blogRoutes); 
 app.use('/api/test-email', testEmailRoutes);
-app.use('/WeRent/admin/uploads/gallery', express.static('WeRent/admin/uploads/gallery'));
 
 const port_number = process.env.PORT || 5000;
 
