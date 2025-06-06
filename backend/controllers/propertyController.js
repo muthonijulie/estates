@@ -147,6 +147,47 @@ exports.updateProperty = async (req, res) => {
     }
 };
 
+// ADD THIS NEW PATCH ENDPOINT FOR STATUS UPDATES
+exports.updatePropertyStatus = async (req, res) => {
+    try {
+        const { status } = req.body;
+        
+        // Validate status
+        const validStatuses = ['available', 'booked', 'rented', 'sold'];
+        if (status && !validStatuses.includes(status)) {
+            return res.status(400).json({
+                success: false,
+                error: 'Invalid status. Must be one of: available, booked, rented, sold'
+            });
+        }
+        
+        const updatedProperty = await Property.findByIdAndUpdate(
+            req.params.id,
+            { status: status || 'available' },
+            { new: true, runValidators: true }
+        );
+        
+        if (!updatedProperty) {
+            return res.status(404).json({
+                success: false,
+                error: 'Property not found'
+            });
+        }
+        
+        res.status(200).json({
+            success: true,
+            data: updatedProperty,
+            message: 'Property status updated successfully'
+        });
+        
+    } catch (error) {
+        res.status(400).json({
+            success: false,
+            error: error.message
+        });
+    }
+};
+
 exports.deleteProperty = async (req, res) => {
     try {
         const property = await Property.findById(req.params.id);

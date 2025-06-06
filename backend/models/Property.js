@@ -58,8 +58,8 @@ const propertySchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ['booked', 'rented', 'sold'],
-      default: null,
+      enum: ['available', 'booked', 'rented', 'sold'],
+      default: 'available',
     }
   },
   { timestamps: true }
