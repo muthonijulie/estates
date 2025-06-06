@@ -78,26 +78,68 @@ exports.updateProperty = async (req, res) => {
             });
         }
         
-        // Process gallery images with full URLs
-        const galleryWithMetadata = property.galleryImages.map((img, index) => {
-            const fullUrl = img && !img.startsWith('https') 
-                ? `${req.protocol}://${req.get('host')}/assets/uploads/gallery${img}`
-                : img;
-            
-            return {
-                url: fullUrl,
-                index,
-                alt: `${property.title} - Image ${index + 1}`
-            };
-        });
+        // Prepare update data
+        const updateData = { ...req.body };
+        const imagesToDelete = [];
         
-        res.json({
+        // Handle main image update
+        if (req.files && req.files.mainImage) {
+            // Delete old main image if it exists
+            if (existingProperty.mainImage) {
+                imagesToDelete.push(existingProperty.mainImage);
+            }
+            updateData.mainImage = req.files.mainImage[0].path;
+        }
+        
+        // Handle gallery images update
+        if (req.files && req.files.galleryImages) {
+            // Delete old gallery images if they exist
+            if (existingProperty.galleryImages && existingProperty.galleryImages.length > 0) {
+                imagesToDelete.push(...existingProperty.galleryImages);
+            }
+            
+            updateData.galleryImages = req.files.galleryImages.map(file => file.path);
+            
+            // Create new image metadata
+            updateData.imageMetadata = req.files.galleryImages.map(file => ({
+                url: file.path,
+                filename: file.filename,
+                size: file.size,
+                uploadDate: new Date(),
+                alt: `${updateData.title || existingProperty.title} - Gallery Image`,
+                caption: ''
+            }));
+        }
+        
+        // Update the property in the database
+        const updatedProperty = await Property.findByIdAndUpdate(
+            req.params.id,
+            updateData,
+            { new: true, runValidators: true }
+        );
+        
+        // Delete old images from Cloudinary after successful update
+        if (imagesToDelete.length > 0) {
+            await deleteCloudinaryImages(imagesToDelete);
+        }
+        
+        res.status(200).json({
             success: true,
-            data: property,
+            data: updatedProperty,
             message: 'Property updated successfully'
         });
         
     } catch (error) {
+        // If update fails and new images were uploaded, clean them up
+        if (req.files) {
+            const newImagesToDelete = [];
+            if (req.files.mainImage) newImagesToDelete.push(req.files.mainImage[0].path);
+            if (req.files.galleryImages) {
+                newImagesToDelete.push(...req.files.galleryImages.map(f => f.path));
+            }
+            await deleteCloudinaryImages(newImagesToDelete);
+        }
+        
         res.status(400).json({
             success: false,
             error: error.message
