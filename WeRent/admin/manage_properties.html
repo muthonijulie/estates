@@ -851,6 +851,114 @@
       display: block;
     }
 
+    /* File upload styles */
+    .file-upload {
+      position: relative;
+      width: 100%;
+      margin-bottom: 1rem;
+    }
+
+    .file-upload-label {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1rem;
+      border: 2px dashed #cbd5e1;
+      border-radius: 12px;
+      background: #f8fafc;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .file-upload-label:hover {
+      border-color: #667eea;
+      background: #f1f5f9;
+    }
+
+    .file-upload-label i {
+      font-size: 2rem;
+      color: #667eea;
+      margin-bottom: 1rem;
+    }
+
+    .file-upload-label span {
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: #64748b;
+      text-align: center;
+    }
+
+    .file-upload-input {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      opacity: 0;
+      cursor: pointer;
+    }
+
+    .upload-preview {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .preview-item {
+      position: relative;
+      width: 100px;
+      height: 100px;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .preview-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .preview-remove {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      width: 20px;
+      height: 20px;
+      background: rgba(239, 68, 68, 0.8);
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .preview-remove:hover {
+      background: #ef4444;
+      transform: scale(1.1);
+    }
+
+    .gallery-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .main-image-preview {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      border-radius: 12px;
+      margin-top: 1rem;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
     @keyframes spin {
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
@@ -955,6 +1063,7 @@
       <a href="dashboard.html"><i class="fas fa-home"></i> Dashboard</a>
       <a href="manage_properties.html" class="active"><i class="fas fa-building"></i> Manage Properties</a>
       <a href="bookings.html"><i class="fas fa-calendar-check"></i> View Bookings</a>
+      <a href="viewings.html"><i class="fa fa-eye"></i>Property Viewings</a>
       <a href="contact.html"><i class="fas fa-envelope"></i> Contact Messages</a>
       <a href="blogs.html"><i class="fas fa-pen-nib"></i> Manage Blogs</a>
     </div>
@@ -1116,7 +1225,7 @@
         </button>
       </div>
       <div class="modal-body">
-        <form id="propertyForm" class="property-form">
+        <form id="propertyForm" class="property-form" enctype="multipart/form-data">
           <input type="hidden" id="propertyId">
           <div class="form-grid">
             <div class="form-group">
@@ -1159,11 +1268,6 @@
             </div>
 
             <div class="form-group">
-              <label for="mainImage">Main Image URL</label>
-              <input type="text" id="mainImage" name="mainImage" placeholder="uploads/main.jpg">
-            </div>
-
-            <div class="form-group">
               <label for="status">Status</label>
               <select id="status" name="status">
                 <option value="">Available</option>
@@ -1179,10 +1283,32 @@
             </div>
           </div>
 
+          <!-- Main Image Upload -->
           <div class="form-group full-width">
-            <label for="galleryImages">Gallery Images (comma separated paths)</label>
-            <input type="text" id="galleryImages" name="galleryImages" placeholder="uploads/img1.jpg, uploads/img2.jpg">
-            <small>Enter paths to images in the uploads folder (e.g., uploads/image.jpg)</small>
+            <label for="mainImageUpload">Main Property Image *</label>
+            <div class="file-upload">
+              <label for="mainImageUpload" class="file-upload-label">
+                <i class="fas fa-cloud-upload-alt"></i>
+                <span>Click or drag to upload main property image</span>
+                <span class="text-sm">Recommended: 1200 x 800px, Max: 5MB</span>
+              </label>
+              <input type="file" id="mainImageUpload" name="mainImage" class="file-upload-input" accept="image/jpeg, image/png, image/webp">
+            </div>
+            <img id="mainImagePreview" class="main-image-preview" style="display: none;" alt="Main image preview">
+          </div>
+
+          <!-- Gallery Images Upload -->
+          <div class="form-group full-width">
+            <label for="galleryImagesUpload">Gallery Images (up to 10)</label>
+            <div class="file-upload">
+              <label for="galleryImagesUpload" class="file-upload-label">
+                <i class="fas fa-images"></i>
+                <span>Click or drag to upload gallery images</span>
+                <span class="text-sm">Select multiple files. Max: 3MB each</span>
+              </label>
+              <input type="file" id="galleryImagesUpload" name="galleryImages" class="file-upload-input" accept="image/jpeg, image/png, image/webp" multiple>
+            </div>
+            <div id="galleryImagesPreview" class="gallery-container"></div>
           </div>
 
           <div class="form-group full-width">
@@ -1239,7 +1365,11 @@
     const propertiesPerPage = 6;
     let totalPages = 0;
     let currentPropertyId = null;
-    const apiBaseUrl = 'https://estates-1-zn1x.onrender.com/api/v1';
+    const apiBaseUrl = 'http://localhost:5000/api/v1';
+    
+    // Variables to store selected files
+    let selectedMainImage = null;
+    let selectedGalleryImages = [];
 
     // DOM elements
     const propertyModal = document.getElementById('propertyModal');
@@ -1285,6 +1415,104 @@
         if (e.key === 'Enter') {
           searchProperties();
         }
+      });
+      
+      // Main image upload
+      document.getElementById('mainImageUpload').addEventListener('change', handleMainImageUpload);
+      
+      // Gallery images upload
+      document.getElementById('galleryImagesUpload').addEventListener('change', handleGalleryImagesUpload);
+    }
+
+    // Handle main image upload
+    function handleMainImageUpload(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      
+      // Check file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        showAlert('Main image must be less than 5MB', 'error');
+        event.target.value = '';
+        return;
+      }
+      
+      // Check file type
+      if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
+        showAlert('Only JPG, PNG, and WebP images are allowed', 'error');
+        event.target.value = '';
+        return;
+      }
+      
+      // Store selected file
+      selectedMainImage = file;
+      
+      // Show preview
+      const preview = document.getElementById('mainImagePreview');
+      preview.style.display = 'block';
+      
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        preview.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    // Handle gallery images upload
+    function handleGalleryImagesUpload(event) {
+      const files = event.target.files;
+      if (!files || files.length === 0) return;
+      
+      // Check if too many files were selected
+      if (files.length > 10) {
+        showAlert('You can upload a maximum of 10 gallery images', 'error');
+        event.target.value = '';
+        return;
+      }
+      
+      // Clear existing previews
+      document.getElementById('galleryImagesPreview').innerHTML = '';
+      selectedGalleryImages = [];
+      
+      // Process each file
+      Array.from(files).forEach((file, index) => {
+        // Check file size (max 3MB)
+        if (file.size > 3 * 1024 * 1024) {
+          showAlert(`Image "${file.name}" is too large. Maximum size is 3MB.`, 'error');
+          return;
+        }
+        
+        // Check file type
+        if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
+          showAlert(`Image "${file.name}" is not a valid format. Only JPG, PNG, and WebP are allowed.`, 'error');
+          return;
+        }
+        
+        // Add to selected files
+        selectedGalleryImages.push(file);
+        
+        // Create preview
+        const preview = document.createElement('div');
+        preview.className = 'preview-item';
+        
+        const img = document.createElement('img');
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+        
+        const removeBtn = document.createElement('div');
+        removeBtn.className = 'preview-remove';
+        removeBtn.innerHTML = '<i class="fas fa-times"></i>';
+        removeBtn.addEventListener('click', function() {
+          // Remove from array and DOM
+          selectedGalleryImages = selectedGalleryImages.filter(f => f !== file);
+          preview.remove();
+        });
+        
+        preview.appendChild(img);
+        preview.appendChild(removeBtn);
+        document.getElementById('galleryImagesPreview').appendChild(preview);
       });
     }
 
@@ -1481,6 +1709,14 @@
       document.getElementById('propertyId').value = '';
       currentPropertyId = null;
       
+      // Clear file inputs and previews
+      document.getElementById('mainImageUpload').value = '';
+      document.getElementById('galleryImagesUpload').value = '';
+      document.getElementById('mainImagePreview').style.display = 'none';
+      document.getElementById('galleryImagesPreview').innerHTML = '';
+      selectedMainImage = null;
+      selectedGalleryImages = [];
+      
       propertyModal.classList.add('active');
       document.body.style.overflow = 'hidden';
     }
@@ -1514,18 +1750,46 @@
           document.getElementById('bedrooms').value = property.bedrooms;
           document.getElementById('bathrooms').value = property.bathrooms;
           document.getElementById('location').value = property.location;
-          document.getElementById('mainImage').value = property.mainImage || '';
           document.getElementById('isFeatured').checked = property.isFeatured;
           document.getElementById('status').value = property.status || '';
           
-          // Handle arrays
-          if (property.galleryImages && Array.isArray(property.galleryImages)) {
-            document.getElementById('galleryImages').value = property.galleryImages.join(', ');
-          }
-          
+          // Handle amenities
           if (property.amenities && Array.isArray(property.amenities)) {
             document.getElementById('amenities').value = property.amenities.join(', ');
           }
+          
+          // Show current main image preview
+          if (property.mainImage) {
+            const mainImagePreview = document.getElementById('mainImagePreview');
+            mainImagePreview.src = property.mainImage;
+            mainImagePreview.style.display = 'block';
+          } else {
+            document.getElementById('mainImagePreview').style.display = 'none';
+          }
+          
+          // Show current gallery images
+          const galleryPreview = document.getElementById('galleryImagesPreview');
+          galleryPreview.innerHTML = '';
+          
+          if (property.galleryImages && property.galleryImages.length > 0) {
+            property.galleryImages.forEach((imageUrl, index) => {
+              const preview = document.createElement('div');
+              preview.className = 'preview-item';
+              
+              const img = document.createElement('img');
+              img.src = imageUrl;
+              img.alt = `Gallery image ${index + 1}`;
+              
+              preview.appendChild(img);
+              galleryPreview.appendChild(preview);
+            });
+          }
+          
+          // Reset file inputs
+          document.getElementById('mainImageUpload').value = '';
+          document.getElementById('galleryImagesUpload').value = '';
+          selectedMainImage = null;
+          selectedGalleryImages = [];
           
           // Open modal
           propertyModal.classList.add('active');
@@ -1566,53 +1830,74 @@
         const propertyId = document.getElementById('propertyId').value;
         const isEdit = !!propertyId;
         
-        // Get form values
-        const title = document.getElementById('title').value;
-        const description = document.getElementById('description').value;
-        const propertyTypeString = document.getElementById('propertyType').value;
-        const propertyType = propertyTypeString.split(',').map(type => type.trim());
-        const listingType = document.getElementById('listingType').value;
-        const price = parseFloat(document.getElementById('price').value);
-        const bedrooms = parseInt(document.getElementById('bedrooms').value);
-        const bathrooms = parseInt(document.getElementById('bathrooms').value);
-        const location = document.getElementById('location').value;
-        const mainImage = document.getElementById('mainImage').value;
-        const isFeatured = document.getElementById('isFeatured').checked;
-        const status = document.getElementById('status').value || null;
-        
-        // Handle comma-separated values
-        const galleryImagesString = document.getElementById('galleryImages').value;
-        const galleryImages = galleryImagesString ? galleryImagesString.split(',').map(img => img.trim()) : [];
-        
-        const amenitiesString = document.getElementById('amenities').value;
-        const amenities = amenitiesString ? amenitiesString.split(',').map(item => item.trim()) : [];
-        
-        // Validate required fields
-        if (!title || !description || !propertyType.length || !listingType || !price || !bedrooms || !bathrooms || !location) {
-          showAlert('Please fill all required fields', 'error');
-          return;
-        }
-        
-        // Prepare data object
-        const propertyData = {
-          title,
-          description,
-          propertyType,
-          listingType,
-          price,
-          bedrooms,
-          bathrooms,
-          location,
-          mainImage,
-          galleryImages,
-          amenities,
-          isFeatured,
-          status
-        };
-        
         // Show loading
         document.getElementById('savePropertyBtn').innerHTML = '<div class="loading-spinner"></div> Saving...';
         document.getElementById('savePropertyBtn').disabled = true;
+        
+        // Create FormData object for file uploads
+        const formData = new FormData();
+        
+        // Get form values
+        formData.append('title', document.getElementById('title').value);
+        formData.append('description', document.getElementById('description').value);
+        
+        // Handle property type (comma-separated to array)
+        const propertyTypeString = document.getElementById('propertyType').value;
+        const propertyTypes = propertyTypeString.split(',').map(type => type.trim());
+        propertyTypes.forEach(type => {
+          formData.append('propertyType', type);
+        });
+        
+        formData.append('listingType', document.getElementById('listingType').value);
+        formData.append('price', document.getElementById('price').value);
+        formData.append('bedrooms', document.getElementById('bedrooms').value);
+        formData.append('bathrooms', document.getElementById('bathrooms').value);
+        formData.append('location', document.getElementById('location').value);
+        formData.append('isFeatured', document.getElementById('isFeatured').checked);
+        
+        const status = document.getElementById('status').value;
+        if (status) {
+          formData.append('status', status);
+        }
+        
+        // Handle amenities (comma-separated to array)
+        const amenitiesString = document.getElementById('amenities').value;
+        if (amenitiesString) {
+          const amenities = amenitiesString.split(',').map(item => item.trim());
+          amenities.forEach(amenity => {
+            formData.append('amenities', amenity);
+          });
+        }
+        
+        // Add main image if selected
+        if (selectedMainImage) {
+          formData.append('mainImage', selectedMainImage);
+        }
+        
+        // Add gallery images if selected
+        if (selectedGalleryImages.length > 0) {
+          selectedGalleryImages.forEach(file => {
+            formData.append('galleryImages', file);
+          });
+        }
+        
+        // Validate required fields
+        if (!formData.get('title') || !formData.get('description') || !formData.get('propertyType') || 
+            !formData.get('listingType') || !formData.get('price') || !formData.get('bedrooms') || 
+            !formData.get('bathrooms') || !formData.get('location')) {
+          showAlert('Please fill all required fields', 'error');
+          document.getElementById('savePropertyBtn').innerHTML = '<i class="fas fa-save"></i> Save Property';
+          document.getElementById('savePropertyBtn').disabled = false;
+          return;
+        }
+        
+        // For new properties, main image is required
+        if (!isEdit && !selectedMainImage) {
+          showAlert('Please upload a main property image', 'error');
+          document.getElementById('savePropertyBtn').innerHTML = '<i class="fas fa-save"></i> Save Property';
+          document.getElementById('savePropertyBtn').disabled = false;
+          return;
+        }
         
         let response;
         
@@ -1620,19 +1905,13 @@
           // Update existing property
           response = await fetch(`${apiBaseUrl}/properties/${propertyId}`, {
             method: 'PUT',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(propertyData)
+            body: formData
           });
         } else {
           // Create new property
           response = await fetch(`${apiBaseUrl}/properties`, {
             method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(propertyData)
+            body: formData
           });
         }
         
