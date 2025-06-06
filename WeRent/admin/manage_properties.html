@@ -1173,7 +1173,7 @@
             <label for="statusFilter">Status</label>
             <select id="statusFilter">
               <option value="">All Statuses</option>
-              <option value="null">Available</option>
+              <option value="available">Available</option>
               <option value="booked">Booked</option>
               <option value="rented">Rented</option>
               <option value="sold">Sold</option>
@@ -1611,7 +1611,7 @@
                   <i class="fas fa-tag"></i> Status
                 </button>
                 <div class="status-menu" id="statusMenu_${property._id}">
-                  <div class="status-item null" onclick="updatePropertyStatus('${property._id}', null)">
+                  <div class="status-item null" onclick="updatePropertyStatus('${property._id}', available)">
                     <i class="fas fa-circle"></i> Available
                   </div>
                   <div class="status-item booked" onclick="updatePropertyStatus('${property._id}', 'booked')">
@@ -1707,7 +1707,7 @@
       document.getElementById('modalTitle').textContent = 'Add New Property';
       propertyForm.reset();
       document.getElementById('propertyId').value = '';
-      currentPropertyId = null;
+      currentPropertyId = available;
       
       // Clear file inputs and previews
       document.getElementById('mainImageUpload').value = '';
