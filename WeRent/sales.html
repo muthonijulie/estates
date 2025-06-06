@@ -338,7 +338,37 @@
       transform: translateY(-2px);
     }
 
-   
+    /* Navbar styles */
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2rem;
+      background: white;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    .logo img {
+      height: 40px;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      align-items: center;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      color: #333;
+      font-weight: 500;
+      transition: color 0.3s ease;
+    }
+
+    .nav-links a:hover {
+      color: #007bff;
+    }
+
     .menu-toggle {
       display: none;
       cursor: pointer;
@@ -378,7 +408,7 @@
     .find-sales h2 {
       font-size: 2.5rem;
       font-weight: 600;
-      color: #f39c12;;
+      color: #333;
       margin: 0;
     }
     
@@ -1245,7 +1275,7 @@
 <!-- Main JavaScript -->
 <script>
 // API Base URL
-const API_BASE = 'https://estates-qmk8.onrender.com/api/v1';
+const API_BASE = 'https://estates-1-zn1x.onrender.com/api/v1';
 
 // Global variables
 let selectedPropertyId = null;
