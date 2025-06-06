@@ -1548,100 +1548,100 @@
 
     // Render properties to the grid
     function renderProperties() {
-      if (properties.length === 0) {
-        propertiesGrid.innerHTML = `
-          <div class="no-properties">
-            <i class="fas fa-building"></i>
-            <p>No properties found. Try adjusting your filters or add a new property.</p>
-          </div>
-        `;
-        return;
-      }
+  if (properties.length === 0) {
+    propertiesGrid.innerHTML = `
+      <div class="no-properties">
+        <i class="fas fa-building"></i>
+        <p>No properties found. Try adjusting your filters or add a new property.</p>
+      </div>
+    `;
+    return;
+  }
+  
+  // Calculate pagination
+  const startIndex = (currentPage - 1) * propertiesPerPage;
+  const endIndex = Math.min(startIndex + propertiesPerPage, properties.length);
+  const paginatedProperties = properties.slice(startIndex, endIndex);
+  
+  propertiesGrid.innerHTML = '';
+  
+  paginatedProperties.forEach(property => {
+    const card = document.createElement('div');
+    card.className = 'property-card';
+    card.innerHTML = `
+      <div class="property-badge ${property.listingType.toLowerCase()}">${property.listingType}</div>
+      ${property.isFeatured ? '<div class="property-badge featured">Featured</div>' : ''}
+      ${property.status ? `<div class="property-badge status ${property.status}">${property.status}</div>` : ''}
       
-      // Calculate pagination
-      const startIndex = (currentPage - 1) * propertiesPerPage;
-      const endIndex = Math.min(startIndex + propertiesPerPage, properties.length);
-      const paginatedProperties = properties.slice(startIndex, endIndex);
+      <img src="${property.mainImage || 'uploads/lamu-bungalow-1.jpg'}" alt="${property.title}" class="property-img" onerror="this.src='uploads/lamu-bungalow-1.jpg'">
       
-      propertiesGrid.innerHTML = '';
-      
-      paginatedProperties.forEach(property => {
-        const card = document.createElement('div');
-        card.className = 'property-card';
-        card.innerHTML = `
-          <div class="property-badge ${property.listingType.toLowerCase()}">${property.listingType}</div>
-          ${property.isFeatured ? '<div class="property-badge featured">Featured</div>' : ''}
-          ${property.status ? `<div class="property-badge status ${property.status}">${property.status}</div>` : ''}
-          
-          <img src="${property.mainImage || 'uploads/lamu-bungalow-1.jpg'}" alt="${property.title}" class="property-img" onerror="this.src='uploads/lamu-bungalow-1.jpg'">
-          
-          <div class="property-content">
-            <h3 class="property-title">${property.title}</h3>
-            <div class="property-price">KES ${property.price.toLocaleString()}</div>
-            
-            <div class="property-details">
-              <div class="property-detail">
-                <i class="fas fa-bed"></i>
-                <span>${property.bedrooms} Beds</span>
-              </div>
-              <div class="property-detail">
-                <i class="fas fa-bath"></i>
-                <span>${property.bathrooms} Baths</span>
-              </div>
-              <div class="property-detail">
-                <i class="fas fa-home"></i>
-                <span>${Array.isArray(property.propertyType) ? property.propertyType[0] : property.propertyType}</span>
-              </div>
-            </div>
-            
-            <div class="property-location">
-              <i class="fas fa-map-marker-alt"></i>
-              <span>${property.location}</span>
-            </div>
-            
-            <div class="property-actions">
-              <button class="property-action-btn edit-btn" data-id="${property._id}" onclick="openEditPropertyModal('${property._id}')">
-                <i class="fas fa-edit"></i> Edit
-              </button>
-              <button class="property-action-btn delete-btn" data-id="${property._id}" onclick="openDeleteModal('${property._id}')">
-                <i class="fas fa-trash-alt"></i> Delete
-              </button>
-              <div class="status-dropdown" id="statusDropdown_${property._id}">
-                <button class="property-action-btn status-btn" onclick="toggleStatusMenu('${property._id}')">
-                  <i class="fas fa-tag"></i> Status
-                </button>
-                <div class="status-menu" id="statusMenu_${property._id}">
-                  <div class="status-item null" onclick="updatePropertyStatus('${property._id}', available)">
-                    <i class="fas fa-circle"></i> Available
-                  </div>
-                  <div class="status-item booked" onclick="updatePropertyStatus('${property._id}', 'booked')">
-                    <i class="fas fa-calendar-check"></i> Booked
-                  </div>
-                  <div class="status-item rented" onclick="updatePropertyStatus('${property._id}', 'rented')">
-                    <i class="fas fa-key"></i> Rented
-                  </div>
-                  <div class="status-item sold" onclick="updatePropertyStatus('${property._id}', 'sold')">
-                    <i class="fas fa-money-bill-wave"></i> Sold
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        `;
+      <div class="property-content">
+        <h3 class="property-title">${property.title}</h3>
+        <div class="property-price">KES ${property.price.toLocaleString()}</div>
         
-        propertiesGrid.appendChild(card);
-      });
+        <div class="property-details">
+          <div class="property-detail">
+            <i class="fas fa-bed"></i>
+            <span>${property.bedrooms} Beds</span>
+          </div>
+          <div class="property-detail">
+            <i class="fas fa-bath"></i>
+            <span>${property.bathrooms} Baths</span>
+          </div>
+          <div class="property-detail">
+            <i class="fas fa-home"></i>
+            <span>${Array.isArray(property.propertyType) ? property.propertyType[0] : property.propertyType}</span>
+          </div>
+        </div>
+        
+        <div class="property-location">
+          <i class="fas fa-map-marker-alt"></i>
+          <span>${property.location}</span>
+        </div>
+        
+        <div class="property-actions">
+          <button class="property-action-btn edit-btn" data-id="${property._id}" onclick="openEditPropertyModal('${property._id}')">
+            <i class="fas fa-edit"></i> Edit
+          </button>
+          <button class="property-action-btn delete-btn" data-id="${property._id}" onclick="openDeleteModal('${property._id}')">
+            <i class="fas fa-trash-alt"></i> Delete
+          </button>
+          <div class="status-dropdown" id="statusDropdown_${property._id}">
+            <button class="property-action-btn status-btn" onclick="toggleStatusMenu('${property._id}')">
+              <i class="fas fa-tag"></i> Status
+            </button>
+            <div class="status-menu" id="statusMenu_${property._id}">
+              <div class="status-item available" onclick="updatePropertyStatus('${property._id}', 'available')">
+                <i class="fas fa-circle"></i> Available
+              </div>
+              <div class="status-item booked" onclick="updatePropertyStatus('${property._id}', 'booked')">
+                <i class="fas fa-calendar-check"></i> Booked
+              </div>
+              <div class="status-item rented" onclick="updatePropertyStatus('${property._id}', 'rented')">
+                <i class="fas fa-key"></i> Rented
+              </div>
+              <div class="status-item sold" onclick="updatePropertyStatus('${property._id}', 'sold')">
+                <i class="fas fa-money-bill-wave"></i> Sold
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+    
+    propertiesGrid.appendChild(card);
+  });
 
-      // Add click outside listener for status dropdown
-      document.addEventListener('click', function(event) {
-        const dropdowns = document.querySelectorAll('.status-dropdown');
-        dropdowns.forEach(dropdown => {
-          if (!dropdown.contains(event.target)) {
-            dropdown.classList.remove('open');
-          }
-        });
-      });
-    }
+  // Add click outside listener for status dropdown
+  document.addEventListener('click', function(event) {
+    const dropdowns = document.querySelectorAll('.status-dropdown');
+    dropdowns.forEach(dropdown => {
+      if (!dropdown.contains(event.target)) {
+        dropdown.classList.remove('open');
+      }
+    });
+  });
+}
 
     // Render pagination
     function renderPagination() {
@@ -1704,22 +1704,22 @@
 
     // Open add property modal
     function openAddPropertyModal() {
-      document.getElementById('modalTitle').textContent = 'Add New Property';
-      propertyForm.reset();
-      document.getElementById('propertyId').value = '';
-      currentPropertyId = available;
-      
-      // Clear file inputs and previews
-      document.getElementById('mainImageUpload').value = '';
-      document.getElementById('galleryImagesUpload').value = '';
-      document.getElementById('mainImagePreview').style.display = 'none';
-      document.getElementById('galleryImagesPreview').innerHTML = '';
-      selectedMainImage = null;
-      selectedGalleryImages = [];
-      
-      propertyModal.classList.add('active');
-      document.body.style.overflow = 'hidden';
-    }
+  document.getElementById('modalTitle').textContent = 'Add New Property';
+  propertyForm.reset();
+  document.getElementById('propertyId').value = '';
+  currentPropertyId = null; // Fixed: was "available", should be null
+  
+  // Clear file inputs and previews
+  document.getElementById('mainImageUpload').value = '';
+  document.getElementById('galleryImagesUpload').value = '';
+  document.getElementById('mainImagePreview').style.display = 'none';
+  document.getElementById('galleryImagesPreview').innerHTML = '';
+  selectedMainImage = null;
+  selectedGalleryImages = [];
+  
+  propertyModal.classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
 
     // Open edit property modal
     async function openEditPropertyModal(propertyId) {
@@ -1972,28 +1972,37 @@
 
     // Update property status
     async function updatePropertyStatus(propertyId, status) {
-      try {
-        const response = await fetch(`${apiBaseUrl}/properties/${propertyId}`, {
-          method: 'PATCH',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ status })
-        });
-        
-        const result = await response.json();
-        
-        if (response.ok) {
-          showAlert('Property status updated successfully!', 'success');
-          fetchProperties();
-        } else {
-          showAlert(result.message || 'Failed to update property status', 'error');
-        }
-      } catch (error) {
-        console.error('Error:', error);
-        showAlert('Network error while updating status', 'error');
-      }
+  try {
+    console.log('Updating status:', { propertyId, status }); // Debug log
+    
+    const response = await fetch(`${apiBaseUrl}/properties/${propertyId}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ status: status })
+    });
+    
+    const result = await response.json();
+    console.log('Response:', result); // Debug log
+    
+    if (response.ok) {
+      showAlert('Property status updated successfully!', 'success');
+      // Close any open dropdown menus
+      document.querySelectorAll('.status-dropdown').forEach(dropdown => {
+        dropdown.classList.remove('open');
+      });
+      // Refresh the properties list
+      fetchProperties();
+    } else {
+      console.error('Update failed:', result);
+      showAlert(result.error || 'Failed to update property status', 'error');
     }
+  } catch (error) {
+    console.error('Network error:', error);
+    showAlert('Network error while updating status', 'error');
+  }
+}
 
     // Apply filters
     function applyFilters() {

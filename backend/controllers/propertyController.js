@@ -162,51 +162,51 @@ exports.updateProperty = async (req, res) => {
 };
 
 // UPDATED STATUS UPDATE ENDPOINT
-exports.updatePropertyStatus = async (req, res) => {
-    try {
-        const { status } = req.body;
+// exports.updatePropertyStatus = async (req, res) => {
+//     try {
+//         const { status } = req.body;
         
-        // Validate status
-        const validStatuses = ['available', 'booked', 'rented', 'sold'];
-        if (!status || !validStatuses.includes(status)) {
-            return res.status(400).json({
-                success: false,
-                error: 'Invalid status. Must be one of: available, booked, rented, sold'
-            });
-        }
+//         // Validate status
+//         const validStatuses = ['available', 'booked', 'rented', 'sold'];
+//         if (!status || !validStatuses.includes(status)) {
+//             return res.status(400).json({
+//                 success: false,
+//                 error: 'Invalid status. Must be one of: available, booked, rented, sold'
+//             });
+//         }
         
-        // Use direct MongoDB update to bypass schema restrictions
-        const updatedProperty = await Property.findOneAndUpdate(
-            { _id: req.params.id },
-            { $set: { status: status } },
-            { 
-                new: true, 
-                runValidators: false,  // Skip validation for this update
-                strict: false
-            }
-        );
+//         // Use direct MongoDB update to bypass schema restrictions
+//         const updatedProperty = await Property.findOneAndUpdate(
+//             { _id: req.params.id },
+//             { $set: { status: status } },
+//             { 
+//                 new: true, 
+//                 runValidators: false,  // Skip validation for this update
+//                 strict: false
+//             }
+//         );
         
-        if (!updatedProperty) {
-            return res.status(404).json({
-                success: false,
-                error: 'Property not found'
-            });
-        }
+//         if (!updatedProperty) {
+//             return res.status(404).json({
+//                 success: false,
+//                 error: 'Property not found'
+//             });
+//         }
         
-        res.status(200).json({
-            success: true,
-            data: updatedProperty,
-            message: 'Property status updated successfully'
-        });
+//         res.status(200).json({
+//             success: true,
+//             data: updatedProperty,
+//             message: 'Property status updated successfully'
+//         });
         
-    } catch (error) {
-        console.error('Status update error:', error);
-        res.status(400).json({
-            success: false,
-            error: error.message
-        });
-    }
-};
+//     } catch (error) {
+//         console.error('Status update error:', error);
+//         res.status(400).json({
+//             success: false,
+//             error: error.message
+//         });
+//     }
+// };
 
 exports.deleteProperty = async (req, res) => {
     try {
@@ -396,6 +396,57 @@ exports.getPropertyGallery = async (req, res) => {
         res.status(500).json({
             success: false,
             message: 'Failed to fetch gallery',
+            error: error.message
+        });
+    }
+};
+
+// Add this method to your controller to handle status updates properly
+exports.updatePropertyStatus = async (req, res) => {
+    try {
+        const { status } = req.body;
+        const propertyId = req.params.id;
+        
+        console.log('Updating property status:', { propertyId, status }); // Debug log
+        
+        // Validate status
+        const validStatuses = ['available', 'booked', 'rented', 'sold'];
+        if (!status || !validStatuses.includes(status)) {
+            return res.status(400).json({
+                success: false,
+                error: 'Invalid status. Must be one of: available, booked, rented, sold'
+            });
+        }
+        
+        // Update the property
+        const updatedProperty = await Property.findByIdAndUpdate(
+            propertyId,
+            { status: status },
+            { 
+                new: true, 
+                runValidators: true
+            }
+        );
+        
+        if (!updatedProperty) {
+            return res.status(404).json({
+                success: false,
+                error: 'Property not found'
+            });
+        }
+        
+        console.log('Property updated successfully:', updatedProperty.status); // Debug log
+        
+        res.status(200).json({
+            success: true,
+            data: updatedProperty,
+            message: 'Property status updated successfully'
+        });
+        
+    } catch (error) {
+        console.error('Status update error:', error);
+        res.status(400).json({
+            success: false,
             error: error.message
         });
     }
