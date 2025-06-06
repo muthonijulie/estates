@@ -703,7 +703,7 @@ nav a:hover {
     transform: translateX(0);
   }
 }
-* Phone number on the right */Add commentMore actions
+* Phone number on the right */
 .contact-fixed-right {
   position: fixed;
   right: 20px;
