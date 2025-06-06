@@ -1167,7 +1167,7 @@ nav a:hover {
   z-index: 10000;
   box-shadow: 0 4px 10px rgba(0,0,0,0.2);
 }
-/* Phone number on the right */Add commentMore actions
+/* Phone number on the right */
 .contact-fixed-right {
   position: fixed;
   right: 20px;
