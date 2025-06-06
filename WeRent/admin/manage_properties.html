@@ -1826,112 +1826,124 @@
 
     // Save property (create or update)
     async function saveProperty() {
-      try {
-        const propertyId = document.getElementById('propertyId').value;
-        const isEdit = !!propertyId;
-        
-        // Show loading
-        document.getElementById('savePropertyBtn').innerHTML = '<div class="loading-spinner"></div> Saving...';
-        document.getElementById('savePropertyBtn').disabled = true;
-        
-        // Create FormData object for file uploads
-        const formData = new FormData();
-        
-        // Get form values
-        formData.append('title', document.getElementById('title').value);
-        formData.append('description', document.getElementById('description').value);
-        
-        // Handle property type (comma-separated to array)
-        const propertyTypeString = document.getElementById('propertyType').value;
-        const propertyTypes = propertyTypeString.split(',').map(type => type.trim());
-        propertyTypes.forEach(type => {
-          formData.append('propertyType', type);
-        });
-        
-        formData.append('listingType', document.getElementById('listingType').value);
-        formData.append('price', document.getElementById('price').value);
-        formData.append('bedrooms', document.getElementById('bedrooms').value);
-        formData.append('bathrooms', document.getElementById('bathrooms').value);
-        formData.append('location', document.getElementById('location').value);
-        formData.append('isFeatured', document.getElementById('isFeatured').checked);
-        
-        const status = document.getElementById('status').value;
-        if (status) {
-          formData.append('status', status);
-        }
-        
-        // Handle amenities (comma-separated to array)
-        const amenitiesString = document.getElementById('amenities').value;
-        if (amenitiesString) {
-          const amenities = amenitiesString.split(',').map(item => item.trim());
-          amenities.forEach(amenity => {
-            formData.append('amenities', amenity);
-          });
-        }
-        
-        // Add main image if selected
-        if (selectedMainImage) {
-          formData.append('mainImage', selectedMainImage);
-        }
-        
-        // Add gallery images if selected
-        if (selectedGalleryImages.length > 0) {
-          selectedGalleryImages.forEach(file => {
-            formData.append('galleryImages', file);
-          });
-        }
-        
-        // Validate required fields
-        if (!formData.get('title') || !formData.get('description') || !formData.get('propertyType') || 
-            !formData.get('listingType') || !formData.get('price') || !formData.get('bedrooms') || 
-            !formData.get('bathrooms') || !formData.get('location')) {
-          showAlert('Please fill all required fields', 'error');
-          document.getElementById('savePropertyBtn').innerHTML = '<i class="fas fa-save"></i> Save Property';
-          document.getElementById('savePropertyBtn').disabled = false;
-          return;
-        }
-        
-        // For new properties, main image is required
-        if (!isEdit && !selectedMainImage) {
-          showAlert('Please upload a main property image', 'error');
-          document.getElementById('savePropertyBtn').innerHTML = '<i class="fas fa-save"></i> Save Property';
-          document.getElementById('savePropertyBtn').disabled = false;
-          return;
-        }
-        
-        let response;
-        
-        if (isEdit) {
-          // Update existing property
-          response = await fetch(`${apiBaseUrl}/properties/${propertyId}`, {
-            method: 'PUT',
-            body: formData
-          });
-        } else {
-          // Create new property
-          response = await fetch(`${apiBaseUrl}/properties`, {
-            method: 'POST',
-            body: formData
-          });
-        }
-        
-        const result = await response.json();
-        
-        if (response.ok) {
-          showAlert(`Property ${isEdit ? 'updated' : 'added'} successfully!`, 'success');
-          closePropertyModal();
-          fetchProperties();
-        } else {
-          showAlert(result.message || `Failed to ${isEdit ? 'update' : 'add'} property`, 'error');
-        }
-      } catch (error) {
-        console.error('Error:', error);
-        showAlert(`Network error while ${propertyId ? 'updating' : 'adding'} property`, 'error');
-      } finally {
-        document.getElementById('savePropertyBtn').innerHTML = '<i class="fas fa-save"></i> Save Property';
-        document.getElementById('savePropertyBtn').disabled = false;
-      }
+  try {
+    const propertyId = document.getElementById('propertyId').value;
+    const isEdit = !!propertyId;
+    
+    // Show loading
+    const saveBtn = document.getElementById('savePropertyBtn');
+    const originalBtnText = saveBtn.innerHTML;
+    saveBtn.innerHTML = '<div class="loading-spinner"></div> Saving...';
+    saveBtn.disabled = true;
+    
+    // Create FormData object for file uploads
+    const formData = new FormData();
+    
+    // Get form values and validate
+    const title = document.getElementById('title').value.trim();
+    const description = document.getElementById('description').value.trim();
+    const propertyTypeString = document.getElementById('propertyType').value.trim();
+    const listingType = document.getElementById('listingType').value;
+    const price = document.getElementById('price').value;
+    const bedrooms = document.getElementById('bedrooms').value;
+    const bathrooms = document.getElementById('bathrooms').value;
+    const location = document.getElementById('location').value.trim();
+    
+    // Validate required fields
+    if (!title || !description || !propertyTypeString || !listingType || 
+        !price || !bedrooms || !bathrooms || !location) {
+      showAlert('Please fill all required fields', 'error');
+      saveBtn.innerHTML = originalBtnText;
+      saveBtn.disabled = false;
+      return;
     }
+    
+    // For new properties, main image is required
+    if (!isEdit && !selectedMainImage) {
+      showAlert('Please upload a main property image', 'error');
+      saveBtn.innerHTML = originalBtnText;
+      saveBtn.disabled = false;
+      return;
+    }
+    
+    // Add form data
+    formData.append('title', title);
+    formData.append('description', description);
+    formData.append('listingType', listingType);
+    formData.append('price', price);
+    formData.append('bedrooms', bedrooms);
+    formData.append('bathrooms', bathrooms);
+    formData.append('location', location);
+    formData.append('isFeatured', document.getElementById('isFeatured').checked);
+    
+    // Handle property type (comma-separated to array)
+    const propertyTypes = propertyTypeString.split(',').map(type => type.trim()).filter(type => type);
+    propertyTypes.forEach(type => {
+      formData.append('propertyType', type);
+    });
+    
+    // Handle status
+    const status = document.getElementById('status').value;
+    if (status) {
+      formData.append('status', status);
+    }
+    
+    // Handle amenities (comma-separated to array)
+    const amenitiesString = document.getElementById('amenities').value.trim();
+    if (amenitiesString) {
+      const amenities = amenitiesString.split(',').map(item => item.trim()).filter(item => item);
+      amenities.forEach(amenity => {
+        formData.append('amenities', amenity);
+      });
+    }
+    
+    // Add main image if selected
+    if (selectedMainImage) {
+      formData.append('mainImage', selectedMainImage);
+    }
+    
+    // Add gallery images if selected
+    if (selectedGalleryImages.length > 0) {
+      selectedGalleryImages.forEach(file => {
+        formData.append('galleryImages', file);
+      });
+    }
+    
+    let response;
+    
+    if (isEdit) {
+      // Update existing property
+      response = await fetch(`${apiBaseUrl}/properties/${propertyId}`, {
+        method: 'PUT',
+        body: formData
+      });
+    } else {
+      // Create new property
+      response = await fetch(`${apiBaseUrl}/properties`, {
+        method: 'POST',
+        body: formData
+      });
+    }
+    
+    const result = await response.json();
+    
+    if (response.ok) {
+      showAlert(`Property ${isEdit ? 'updated' : 'added'} successfully!`, 'success');
+      closePropertyModal();
+      fetchProperties();
+    } else {
+      console.error('Save failed:', result);
+      showAlert(result.error || `Failed to ${isEdit ? 'update' : 'add'} property`, 'error');
+    }
+  } catch (error) {
+    console.error('Network error:', error);
+    showAlert(`Network error while ${propertyId ? 'updating' : 'adding'} property`, 'error');
+  } finally {
+    const saveBtn = document.getElementById('savePropertyBtn');
+    saveBtn.innerHTML = '<i class="fas fa-save"></i> Save Property';
+    saveBtn.disabled = false;
+  }
+}
 
     // Delete property
     async function deleteProperty() {
@@ -1971,23 +1983,19 @@
     }
 
     // Update property status
-// Update property status
-async function updatePropertyStatus(propertyId, status) {
+    async function updatePropertyStatus(propertyId, status) {
   try {
-    // Create FormData object to match how your controller expects data
-    const formData = new FormData();
+    // Use JSON for PATCH request instead of FormData
+    const requestBody = {
+      status: status === null ? null : status
+    };
     
-    // Add status to FormData (or null for available)
-    if (status) {
-      formData.append('status', status);
-    } else {
-      // If null is passed, explicitly set empty string to clear the status
-      formData.append('status', '');
-    }
-    
-    const response = await fetch(`${apiBaseUrl}/properties/${propertyId}`, {
-      method: 'PUT', // Change to PUT to match your controller's expected method
-      body: formData
+    const response = await fetch(`${apiBaseUrl}/properties/${propertyId}/status`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(requestBody)
     });
     
     const result = await response.json();
@@ -1995,11 +2003,18 @@ async function updatePropertyStatus(propertyId, status) {
     if (response.ok) {
       showAlert('Property status updated successfully!', 'success');
       fetchProperties();
+      
+      // Close the dropdown menu
+      const dropdown = document.getElementById(`statusDropdown_${propertyId}`);
+      if (dropdown) {
+        dropdown.classList.remove('open');
+      }
     } else {
-      showAlert(result.message || 'Failed to update property status', 'error');
+      console.error('Update failed:', result);
+      showAlert(result.error || 'Failed to update property status', 'error');
     }
   } catch (error) {
-    console.error('Error:', error);
+    console.error('Network error:', error);
     showAlert('Network error while updating status', 'error');
   }
 }

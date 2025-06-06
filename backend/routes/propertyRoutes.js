@@ -5,7 +5,8 @@ const {
     getProperties,
     getPropertyById,
     updateProperty,
-    deleteProperty
+    deleteProperty,
+    updatePropertyStatus
 } = require('../controllers/propertyController');
 const { uploadMainImage, uploadGalleryImages } = require('../middleware/uploadMiddleware');
 
@@ -38,6 +39,7 @@ router.put('/properties/:id',
     updateProperty
 );
 
+router.patch('/properties/:id/status', updatePropertyStatus);
 // Route to delete a property by ID
 router.delete('/properties/:id', deleteProperty);
 

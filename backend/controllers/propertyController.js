@@ -78,18 +78,50 @@ exports.updateProperty = async (req, res) => {
             });
         }
         
-        // Process gallery images with full URLs
-        const galleryWithMetadata = property.galleryImages.map((img, index) => {
-            const fullUrl = img && !img.startsWith('https') 
-                ? `${req.protocol}://${req.get('host')}/assets/uploads/gallery${img}`
-                : img;
+        const updateData = { ...req.body };
+        
+        // Handle new main image upload
+        if (req.files && req.files.mainImage) {
+            // Delete old main image if it exists
+            if (existingProperty.mainImage) {
+                await deleteCloudinaryImages([existingProperty.mainImage]);
+            }
+            updateData.mainImage = req.files.mainImage[0].path;
+        }
+        
+        // Handle new gallery images upload
+        if (req.files && req.files.galleryImages) {
+            // Delete old gallery images if they exist
+            if (existingProperty.galleryImages && existingProperty.galleryImages.length > 0) {
+                await deleteCloudinaryImages(existingProperty.galleryImages);
+            }
             
-            return {
-                url: fullUrl,
-                index,
-                alt: `${property.title} - Image ${index + 1}`
-            };
-        });
+            updateData.galleryImages = req.files.galleryImages.map(file => file.path);
+            
+            // Create image metadata
+            updateData.imageMetadata = req.files.galleryImages.map(file => ({
+                url: file.path,
+                filename: file.filename,
+                size: file.size,
+                uploadDate: new Date(),
+                alt: `${updateData.title || existingProperty.title} - Gallery Image`,
+                caption: ''
+            }));
+        }
+        
+        // Handle status field - allow empty string to clear status
+        if (updateData.status === '') {
+            updateData.status = null;
+        }
+        
+        const property = await Property.findByIdAndUpdate(
+            req.params.id,
+            updateData,
+            {
+                new: true,
+                runValidators: true
+            }
+        );
         
         res.json({
             success: true,
@@ -98,6 +130,50 @@ exports.updateProperty = async (req, res) => {
         });
         
     } catch (error) {
+        console.error('Update property error:', error);
+        res.status(400).json({
+            success: false,
+            error: error.message
+        });
+    }
+};
+
+// New PATCH method specifically for status updates
+exports.updatePropertyStatus = async (req, res) => {
+    try {
+        const { status } = req.body;
+        
+        const existingProperty = await Property.findById(req.params.id);
+        if (!existingProperty) {
+            return res.status(404).json({
+                success: false,
+                error: 'Property not found'
+            });
+        }
+        
+        // Handle status - allow null, empty string, or valid status values
+        let statusValue = status;
+        if (status === '' || status === 'null' || status === null) {
+            statusValue = null;
+        }
+        
+        const property = await Property.findByIdAndUpdate(
+            req.params.id,
+            { status: statusValue },
+            {
+                new: true,
+                runValidators: false // Skip validation for status-only updates
+            }
+        );
+        
+        res.json({
+            success: true,
+            data: property,
+            message: 'Property status updated successfully'
+        });
+        
+    } catch (error) {
+        console.error('Update property status error:', error);
         res.status(400).json({
             success: false,
             error: error.message
