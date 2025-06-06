@@ -1209,40 +1209,19 @@ button.innerHTML = '<i class="fas fa-chevron-down"></i> View More';
 }
 }
 
-// UPDATED: Book Now button now opens booking form instead of calendar
 function openBookingForm(propertyId) {
-console.log('Opening booking form for property:', propertyId);
-
-// Find the property data
-const property = allRentalProperties.find(p => p._id === propertyId);
-
-if (!property) {
-console.error('Property not found:', propertyId);
-alert('Property information not found');
-return;
+    console.log('Navigating to rentals page for property:', propertyId);
+    
+    // Navigate to rentals page
+    window.location.href = 'rentals.html';
 }
 
-// Create and show booking form modal
-showBookingModal(property);
-}
-
-// UPDATED: Schedule Viewing button opens viewing form
 function openViewingForm(propertyId) {
-console.log('Opening viewing form for property:', propertyId);
-
-// Find the property data
-const property = allSaleProperties.find(p => p._id === propertyId);
-
-if (!property) {
-console.error('Property not found:', propertyId);
-alert('Property information not found');
-return;
+    console.log('Navigating to sales page for property:', propertyId);
+    
+    // Navigate to sales page
+    window.location.href = 'sales.html';
 }
-
-// Show viewing form modal
-showViewingModal(property);
-}
-
 // NEW: Show booking form modal
 function showBookingModal(property) {
 console.log('Showing booking modal for:', property.title);
