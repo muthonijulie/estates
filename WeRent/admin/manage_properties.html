@@ -1971,30 +1971,38 @@
     }
 
     // Update property status
-    async function updatePropertyStatus(propertyId, status) {
-      try {
-        const response = await fetch(`${apiBaseUrl}/properties/${propertyId}`, {
-          method: 'PATCH',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ status })
-        });
-        
-        const result = await response.json();
-        
-        if (response.ok) {
-          showAlert('Property status updated successfully!', 'success');
-          fetchProperties();
-        } else {
-          showAlert(result.message || 'Failed to update property status', 'error');
-        }
-      } catch (error) {
-        console.error('Error:', error);
-        showAlert('Network error while updating status', 'error');
-      }
+// Update property status
+async function updatePropertyStatus(propertyId, status) {
+  try {
+    // Create FormData object to match how your controller expects data
+    const formData = new FormData();
+    
+    // Add status to FormData (or null for available)
+    if (status) {
+      formData.append('status', status);
+    } else {
+      // If null is passed, explicitly set empty string to clear the status
+      formData.append('status', '');
     }
-
+    
+    const response = await fetch(`${apiBaseUrl}/properties/${propertyId}`, {
+      method: 'PUT', // Change to PUT to match your controller's expected method
+      body: formData
+    });
+    
+    const result = await response.json();
+    
+    if (response.ok) {
+      showAlert('Property status updated successfully!', 'success');
+      fetchProperties();
+    } else {
+      showAlert(result.message || 'Failed to update property status', 'error');
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    showAlert('Network error while updating status', 'error');
+  }
+}
     // Apply filters
     function applyFilters() {
       const filters = {
