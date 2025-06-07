@@ -520,14 +520,16 @@ nav a:hover {
 /* Hero Heading */
 .hero h1 {
   font-weight: 700;
-  font-size: 2.75rem;
+  font-size: 3.75rem;
   margin-bottom: 20px;
 }
 
 /* Hero Paragraph */
 .hero p {
-  font-size: 1.25rem;
+  font-size: 2.25rem;
   margin-bottom: 30px;
+  color: #f39c12;
+  font-weight: bold;
 }
 
 /* Primary Button Style */

@@ -71,163 +71,6 @@ nav a:hover {
 
 
 
-/* Section Base */
-.services-section {
-  padding: 80px 20px;
-  background: #ffffff;
-   color: #333;
-}
-
-
-
-.container {
-  max-width: 1200px;
-  margin: auto;
-  text-align: center;
-}
-
-/* Headings */
-.section-title {
-  font-size: 2.8rem;
-  color: #e67e22;
-  margin-bottom: 10px;
-}
-
-.section-subtitle {
-  font-size: 1.1rem;
-  color: #666;
-  margin-bottom: 50px;
-}
-
-/* Grid */
-.services-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 30px;
-}
-
-/* Service Card */
-.service-card {
-  background-color: #fff;
-  border-radius: 16px;
-  padding: 30px;
-  box-shadow: 0 12px 25px rgba(0, 0, 0, 0.06);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  position: relative;
-  animation: fadeInUp 0.6s ease forwards;
-  opacity: 0;
-}
-
-.service-card .icon {
-  font-size: 2.5rem;
-  margin-bottom: 20px;
-  color: #0a84ff;
-}
-
-.service-card h3 {
-  font-size: 1.5rem;
-  margin-bottom: 15px;
-  color: #e67e22;
-}
-
-.service-card p {
-  color: #555;
-  font-size: 1rem;
-  margin-bottom: 20px;
-}
-
-/* Buttons */
-.btn {
-  display: inline-block;
-  background-color: #0a84ff;
-  color: #fff;
-  padding: 10px 20px;
-  border-radius: 25px;
-  text-decoration: none;
-  font-size: 0.95rem;
-  transition: background-color 0.3s ease, transform 0.2s;
-}
-
-.btn:hover {
-  background-color: #006edc;
-  transform: translateY(-2px);
-}
-
-/* Hover Effects */
-.service-card:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.1);
-}
-
-/* Animations */
-@keyframes fadeInUp {
-  from {
-    transform: translateY(30px);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
-
-/* Animation delays */
-.service-card:nth-child(1) { animation-delay: 0.1s; }
-.service-card:nth-child(2) { animation-delay: 0.2s; }
-.service-card:nth-child(3) { animation-delay: 0.3s; }
-.service-card:nth-child(4) { animation-delay: 0.4s; }
-.service-card:nth-child(5) { animation-delay: 0.5s; }
-.service-card:nth-child(6) { animation-delay: 0.6s; }
-
-/* Responsive */
-@media (max-width: 600px) {
-  .section-title {
-    font-size: 2rem;
-  }
-  .btn {
-    font-size: 0.9rem;
-  }
-}
-.service-card {
-  background-color: #fff;
-  border-radius: 16px;
-  padding: 25px;
-  box-shadow: 0 12px 25px rgba(0, 0, 0, 0.06);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  animation: fadeInUp 0.6s ease forwards;
-  opacity: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-}
-
-.service-img {
-  width: 100%;
-  height: 180px;
-  object-fit: cover;
-  border-radius: 12px;
-  margin-bottom: 20px;
-  transition: transform 0.3s ease;
-}
-
-.service-card:hover .service-img {
-  transform: scale(1.05);
-}
-
-.service-card h3 {
-  font-size: 1.5rem;
-  margin-bottom: 15px;
-  color: #111;
-}
-
-.service-card p {
-  color: #555;
-  font-size: 1rem;
-  margin-bottom: 10px;
-}
-
-
 
 
 /* Responsive */
@@ -596,3 +439,103 @@ body {
 
 
 
+
+.services-section {
+  padding: 80px 20px;
+  background-color: #f9f9f9;
+  font-family: 'Segoe UI', sans-serif;
+  text-align: center;
+}
+
+.section-title {
+  font-size: 2.5rem;
+  color: #e67e22;
+  margin-bottom: 10px;
+  font-weight: bold;
+}
+
+.section-subtitle {
+  font-size: 1.1rem;
+  color: #555;
+  margin-bottom: 50px;
+  max-width: 600px;
+  margin-inline: auto;
+}
+
+.services-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 30px;
+  justify-items: center;
+}
+
+.service-card {
+  background: #fff;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+  opacity: 0;
+  transform: translateY(50px);
+  animation: fadeUp 1s forwards;
+}
+
+.service-card:nth-child(2) { animation-delay: 0.2s; }
+.service-card:nth-child(3) { animation-delay: 0.4s; }
+.service-card:nth-child(4) { animation-delay: 0.6s; }
+.service-card:nth-child(5) { animation-delay: 0.8s; }
+.service-card:nth-child(6) { animation-delay: 1s; }
+
+.service-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15);
+}
+
+.service-icon {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.4s ease;
+}
+
+.service-card:hover .service-icon {
+  transform: scale(1.05);
+}
+
+.service-card h3 {
+  font-size: 1.3rem;
+  color: #333;
+  margin: 20px 0 10px;
+  padding: 0 15px;
+}
+
+.service-card p {
+  font-size: 1rem;
+  color: #666;
+  padding: 0 20px 25px;
+  line-height: 1.6;
+}
+
+/* Fade up animation */
+@keyframes fadeUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive text scaling */
+@media (max-width: 600px) {
+  .section-title {
+    font-size: 2rem;
+  }
+
+  .section-subtitle {
+    font-size: 1rem;
+  }
+
+  .service-icon {
+    height: 180px;
+  }
+}

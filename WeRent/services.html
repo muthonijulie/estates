@@ -18,7 +18,9 @@
     </div>
     <nav class="nav-links" id="navLinks">
       <a href="index.html">Home</a>
-      <a href="listings.html">Listings</a>
+       <a href="rentals.html">Rentals</a>
+        <a href="sales.html">sales</a>
+      <a href="listings.html">Property</a>
       <a href="contact.html">Contact</a>
       <a href="blog.html">Blog</a>
       <a href="aboutus.html">AboutUs</a>
@@ -31,69 +33,93 @@
 
 
 
-  <!-- Services Section -->
-  <section class="services-section">
-    <div class="container">
-      <h2 class="section-title">Discover Our Services</h2>
-      <p class="section-subtitle">Premium solutions for renters, owners, and travelers in Watamu.</p>
+<!-- Services Section -->
+<section class="services-section">
+  <div class="container">
+    <h2 class="section-title">Discover Our Services</h2>
+    <p class="section-subtitle">Premium solutions for renters, owners, and travelers in Watamu.</p>
 
-      <div class="services-grid">
+    <div class="services-grid">
+      <!-- Service Card -->
+      <div class="service-card">
+        <img src="assets/images/Property rentals.jpeg" alt="Property Rentals" class="service-icon">
+        <h3>Property Rentals</h3>
+        <p>Handpicked villas, cottages, and vacation homes tailored for your dream stay in Watamu—from beach escapes to peaceful gardens.</p>
+      </div>
 
-        <!-- Service Card -->
-        <div class="service-card">
-          <div class="icon">🏡</div>
-          <h3>Property Rentals</h3>
-          <p>Handpicked villas, cottages, and vacation homes tailored for your dream stay in Watamu—from beach escapes to peaceful gardens.</p>
-        
-        </div>
+      <div class="service-card">
+        <img src="assets/images/Quad Bike.jpeg" alt="Bike Ride" class="service-icon">
+        <h3>Book your dream ride today</h3>
+        <p>Discover Watamu like never before with our off-road bikes. Enjoy flexible rates and guaranteed adventure.</p>
+      </div>
 
-        <div class="service-card">
-          <div class="icon">📞</div>
-          <h3>Booking Assistance</h3>
-          <p>Let our experts help you find the perfect fit. From accommodations to activities, we handle the logistics—so you don’t have to.</p>
-        
-        </div>
+      <div class="service-card">
+        <img src="assets/images/Airport.jpeg" alt="Airport Transfers" class="service-icon">
+        <h3>Airport Transfers</h3>
+        <p>Enjoy stress-free travel with reliable airport pickups and drop-offs. We get you from runway to relaxation in comfort.</p>
+      </div>
 
-        <div class="service-card">
-          <div class="icon">✈️</div>
-          <h3>Airport Transfers</h3>
-          <p>Enjoy stress-free travel with reliable airport pickups and drop-offs. We get you from runway to relaxation in comfort.</p>
-        
-        </div>
+      
+      <div class="service-card">
+        <img src="assets/images/Safari_excursions.jpeg" alt="Safaris" class="service-icon">
+        <h3>Safaris & Excursions</h3>
+        <p>Unforgettable experiences from Arabuko Forest to Mida Creek and Tsavo safaris. Let us plan your next adventure.</p>
+      </div>
 
-        <div class="service-card">
-          <div class="icon">🧹</div>
-          <h3>Housekeeping & Maintenance</h3>
-          <p>Daily cleaning, quick repairs, and full villa maintenance to keep your space spotless and guest-ready at all times.</p>
-       
-        </div>
-
-        <div class="service-card">
-          <div class="icon">🐘</div>
-          <h3>Safaris & Excursions</h3>
-          <p>Unforgettable experiences from Arabuko Forest to Mida Creek and Tsavo safaris. Let us plan your next adventure.</p>
-        
-        </div>
-
-        <div class="service-card">
-          <div class="icon">🏠</div>
-          <h3>Property Management</h3>
-          <p>Own a home in Watamu? We handle guest hosting, repairs, and full property care so you can enjoy hands-free income.</p>
-        
-        </div>
-
+      <div class="service-card">
+        <img src="assets/images/Booking_assistance.jpeg" alt="Booking Help" class="service-icon">
+        <h3>Booking Assistance</h3>
+        <p>Let our experts help you find the perfect fit. From accommodations to activities, we handle the logistics—so you don’t have to.</p>
+      </div>
+      <div class="service-card">
+        <img src="assets/images/Property_management.jpeg" alt="Booking Help" class="service-icon">
+        <h3>Property Management</h3>
+        <p>Own a home in Watamu? We handle guest hosting, repairs, and full property care so you can enjoy hands-free income.</p>
       </div>
     </div>
-  </section>
+  </div>
+</section>  
+
+
+<script>
+  const cards = document.querySelectorAll('.service-card');
+
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.style.animationPlayState = 'running';
+        observer.unobserve(entry.target);
+      }
+    });
+  }, {
+    threshold: 0.1
+  });
+
+  cards.forEach(card => {
+    card.style.animationPlayState = 'paused';
+    observer.observe(card);
+  });
+</script>
+
+
+
+
+
+
+
+
+
+
+
   <div class="contact-fixed-left">
-        <a href="https://wa.me/+254708129949" target="_blank" aria-label="Chat on WhatsApp">
+        <a href="#" target="_blank" aria-label="Chat on WhatsApp">
             <img src="https://img.icons8.com/color/48/000000/whatsapp--v1.png" alt="WhatsApp">
         </a>
     </div>
 
     <!-- Phone number on the right -->
     <div class="contact-fixed-right">
-        <a href="tel:+254708129949" class="phone-number">CALL:+254708129949</a>
+        <a href="tel:+254700034440" class="phone-number">CALL:+254700034440</a>
     </div>
  
 
@@ -109,8 +135,10 @@
     <div class="footer-links">
       <h4>Explore</h4>
       <ul>
-        <li><a href="index.php">Home</a></li>
-        <li><a href="listings.php">Properties</a></li>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="rentals.html">Rentals</a></li>
+        <li><a href="sales.html">Sales</a></li>
+        <li><a href="listings.html">Properties</a></li>
         <li><a href="blog.html">Blog</a></li>
         <li><a href="aboutus.html">About Us</a></li>
         <li><a href="contact.html">Contact</a></li>
@@ -124,7 +152,7 @@
         <li><i class="fas fa-map-marker-alt"></i>  <a href="https://maps.app.goo.gl/bq331K8qRBCPPxT47" target="_blank" rel="noopener noreferrer" class="location-link">
           Jacaranda road,Watamu
         </a></li>
-        <li><i class="fas fa-phone"></i> <a href="tel:+254 708129949">+254 708129949</a></li>
+        <li><i class="fas fa-phone"></i> <a href="tel:+254 700034440">+254 700034440</a></li>
         <li><i class="fas fa-envelope"></i> <a href="mailto:werent@werentonline.com">werent@werentonline.com</a></li>
       </ul>
     </div>
