@@ -35,7 +35,7 @@ const bookingConfirmationTemplate = (data) => {
           <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee;">
             <p style="margin-bottom: 5px;"><strong>Werent Real Estate</strong></p>
             <p style="margin-top: 0; color: #666;">Email: werent@werentonline.com</p>
-            <p style="margin-top: 0; color: #666;">Phone: 0708129949</p>
+            <p style="margin-top: 0; color: #666;">Phone: 0700034440</p>
             <p style="margin-top: 0; color: #666;">Website: www.werentonline.com</p>
           </div>
         </div>
