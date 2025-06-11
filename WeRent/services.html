@@ -8,6 +8,9 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
   <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Poppins:wght@500;700&display=swap" rel="stylesheet">
+  <!-- Lightbox2 CSS -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.4/css/lightbox.min.css" rel="stylesheet" />
+
 </head>
 <body>
 
@@ -31,8 +34,6 @@
     </div>
   </header>
 
-
-
 <!-- Services Section -->
 <section class="services-section">
   <div class="container">
@@ -40,45 +41,73 @@
     <p class="section-subtitle">Premium solutions for renters, owners, and travelers in Watamu.</p>
 
     <div class="services-grid">
-      <!-- Service Card -->
       <div class="service-card">
-        <img src="assets/images/Property rentals.jpeg" alt="Property Rentals" class="service-icon">
+        <img src="assets/images/Property rentals.jpeg" alt="Property Rentals" class="service-icon"
+             onclick="openModal('assets/images/AnotherImage1.jpeg')">
         <h3>Property Rentals</h3>
         <p>Handpicked villas, cottages, and vacation homes tailored for your dream stay in Watamu—from beach escapes to peaceful gardens.</p>
       </div>
 
       <div class="service-card">
-        <img src="assets/images/Quad Bike.jpeg" alt="Bike Ride" class="service-icon">
+        <img src="assets/images/Quad Bike.jpeg" alt="Bike Ride" class="service-icon"
+             onclick="openModal('assets/images/Quad Bike1.jpeg')">
         <h3>Book your dream ride today</h3>
         <p>Discover Watamu like never before with our off-road bikes. Enjoy flexible rates and guaranteed adventure.</p>
       </div>
 
       <div class="service-card">
-        <img src="assets/images/Airport.jpeg" alt="Airport Transfers" class="service-icon">
+        <img src="assets/images/Airport.jpeg" alt="Airport Transfers" class="service-icon"
+             onclick="openModal('assets/images/Airport1.jpeg')">
         <h3>Airport Transfers</h3>
         <p>Enjoy stress-free travel with reliable airport pickups and drop-offs. We get you from runway to relaxation in comfort.</p>
       </div>
 
-      
       <div class="service-card">
-        <img src="assets/images/Safari_excursions.jpeg" alt="Safaris" class="service-icon">
+        <img src="assets/images/Safari_excursions.jpeg" alt="Safaris" class="service-icon"
+             onclick="openModal('')">
         <h3>Safaris & Excursions</h3>
         <p>Unforgettable experiences from Arabuko Forest to Mida Creek and Tsavo safaris. Let us plan your next adventure.</p>
       </div>
 
       <div class="service-card">
-        <img src="assets/images/Booking_assistance.jpeg" alt="Booking Help" class="service-icon">
+        <img src="assets/images/Booking_assistance.jpeg" alt="Booking Help" class="service-icon"
+             onclick="openModal('assets/images/AnotherImage5.jpeg')">
         <h3>Booking Assistance</h3>
         <p>Let our experts help you find the perfect fit. From accommodations to activities, we handle the logistics—so you don’t have to.</p>
       </div>
+
       <div class="service-card">
-        <img src="assets/images/Property_management.jpeg" alt="Booking Help" class="service-icon">
+        <img src="assets/images/Property_management.jpeg" alt="Property Management" class="service-icon"
+             onclick="openModal('assets/images/AnotherImage6.jpeg')">
         <h3>Property Management</h3>
         <p>Own a home in Watamu? We handle guest hosting, repairs, and full property care so you can enjoy hands-free income.</p>
       </div>
     </div>
   </div>
-</section>  
+</section>
+
+<!-- Modal -->
+<div id="imageModal" class="modal" onclick="closeModal()">
+  <span class="close">&times;</span>
+  <img class="modal-content" id="modalImage">
+</div>
+
+<script>
+  function openModal(imagePath) {
+    const modal = document.getElementById("imageModal");
+    const modalImg = document.getElementById("modalImage");
+    modal.style.display = "block";
+    modalImg.src = imagePath;
+  }
+
+  function closeModal() {
+    document.getElementById("imageModal").style.display = "none";
+  }
+</script>
+
+
+
+
 
 
 <script>
@@ -214,5 +243,9 @@ s1.setAttribute('crossorigin','*');
 s0.parentNode.insertBefore(s1,s0);
 })();
 </script>
+
+<!-- Lightbox2 JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.4/js/lightbox.min.js"></script>
+
 </body>
 </html>
