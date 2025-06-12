@@ -15,19 +15,13 @@ const adminSchema = new mongoose.Schema({
     required: [true, 'Password is required'],
     minlength: [6, 'Password must be at least 6 characters long']
   },
-  role: {
-    type: String,
-    enum: ['admin', 'super_admin'],
-    default: 'admin'
-  },
-  isActive: {
-    type: Boolean,
-    default: true
-  },
   lastLogin: {
-    type: Date
+    type: Date,
+    default: null
   }
-},{timestamps: true});
+}, {
+  timestamps: true
+});
 
 // Hash password before saving
 adminSchema.pre('save', async function(next) {
@@ -53,4 +47,4 @@ adminSchema.methods.updateLastLogin = function() {
   return this.save();
 };
 
-module.exports = mongoose.model('Admin', adminSchema);
+module.exports = mongoose.model('Login', adminSchema);

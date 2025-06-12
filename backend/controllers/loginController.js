@@ -23,8 +23,7 @@ exports.login = async (req, res) => {
 
     // Find admin by username
     const admin = await Admin.findOne({ 
-      username: username.toLowerCase().trim(),
-      
+      username: username.toLowerCase().trim()
     });
 
     if (!admin) {
@@ -61,8 +60,7 @@ exports.login = async (req, res) => {
       token,
       admin: {
         id: admin._id,
-        username: admin.username,
-        
+        username: admin.username
       }
     });
 
@@ -96,7 +94,14 @@ exports.logout = (req, res) => {
 // Get Current Admin
 exports.getCurrentAdmin = async (req, res) => {
   try {
-    const admin = await Admin.findById(req.adminId).select('-password');
+    let admin;
+    
+    // Try to get admin from session first, then from token
+    if (req.session && req.session.adminId) {
+      admin = await Admin.findById(req.session.adminId).select('-password');
+    } else if (req.adminId) {
+      admin = await Admin.findById(req.adminId).select('-password');
+    }
     
     if (!admin) {
       return res.status(404).json({
@@ -109,8 +114,7 @@ exports.getCurrentAdmin = async (req, res) => {
       success: true,
       admin: {
         id: admin._id,
-        username: admin.username,
-        
+        username: admin.username
       }
     });
   } catch (error) {
@@ -125,19 +129,25 @@ exports.getCurrentAdmin = async (req, res) => {
 // Create Admin (for setup purposes)
 exports.createAdmin = async (req, res) => {
   try {
-    const { username, password} = req.body;
+    const { username, password } = req.body;
+
+    // Validate input
+    if (!username || !password) {
+      return res.status(400).json({
+        success: false,
+        message: 'Username and password are required'
+      });
+    }
 
     // Check if admin already exists
     const existingAdmin = await Admin.findOne({
-      $or: [
-        { username: username.toLowerCase().trim() }
-      ]
+      username: username.toLowerCase().trim()
     });
 
     if (existingAdmin) {
       return res.status(409).json({
         success: false,
-        message: 'Admin with this username or email already exists'
+        message: 'Admin with this username already exists'
       });
     }
 

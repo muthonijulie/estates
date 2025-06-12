@@ -38,6 +38,7 @@
       margin-bottom: 20px;
       border: 1px solid #ccc;
       border-radius: 6px;
+      box-sizing: border-box;
     }
 
     button {
@@ -56,24 +57,65 @@
       background: #0056b3;
     }
 
+    button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+
     .error {
-      color: red;
+      color: #dc3545;
       text-align: center;
       margin-bottom: 15px;
+      padding: 10px;
+      background-color: #f8d7da;
+      border: 1px solid #f5c6cb;
+      border-radius: 4px;
+    }
+
+    .success {
+      color: #155724;
+      text-align: center;
+      margin-bottom: 15px;
+      padding: 10px;
+      background-color: #d4edda;
+      border: 1px solid #c3e6cb;
+      border-radius: 4px;
+    }
+
+    .loading {
+      display: none;
+      text-align: center;
+      margin-bottom: 15px;
+    }
+
+    .loading i {
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
     }
   </style>
 </head>
 <body>
 
-  <form class="login-box" method="POST" action="admin-login.php">
+  <form class="login-box" id="loginForm">
     <h2>Admin Login</h2>
 
-    <input type="text" name="username" placeholder="Username" required />
-    <input type="password" name="password" placeholder="Password" required />
+    <div id="message"></div>
+    
+    <div class="loading" id="loading">
+      <i class="fas fa-spinner"></i> Logging in...
+    </div>
 
-    <button type="submit">Login</button>
+    <input type="text" id="username" name="username" placeholder="Username" required />
+    <input type="password" id="password" name="password" placeholder="Password" required />
+
+    <button type="submit" id="loginBtn">Login</button>
   </form>
- <script>
+
+  <script>
     document.getElementById('loginForm').addEventListener('submit', async function(e) {
       e.preventDefault();
       
@@ -91,21 +133,19 @@
       loading.style.display = 'block';
       
       try {
+        // Update the API endpoint to match your backend routes
         const response = await fetch('/api/auth/login', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({ username, password }),
-          credentials: 'include'
+          credentials: 'include' // Important for session cookies
         });
         
         const data = await response.json();
         
         if (data.success) {
-          // Store token in localStorage for API requests
-          localStorage.setItem('adminToken', data.token);
-          
           messageDiv.innerHTML = `<div class="success">${data.message}</div>`;
           
           // Redirect to dashboard after short delay
@@ -129,25 +169,18 @@
 
     // Check if already logged in
     window.addEventListener('load', function() {
-      const token = localStorage.getItem('adminToken');
-      if (token) {
-        // Verify token with server
-        fetch('/api/auth/me', {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        })
-        .then(response => {
-          if (response.ok) {
-            window.location.href = '/dashboard';
-          } else {
-            localStorage.removeItem('adminToken');
-          }
-        })
-        .catch(() => {
-          localStorage.removeItem('adminToken');
-        });
-      }
+      // Check session authentication
+      fetch('/api/auth/me', {
+        credentials: 'include'
+      })
+      .then(response => {
+        if (response.ok) {
+          window.location.href = '/dashboard';
+        }
+      })
+      .catch(() => {
+        // User not logged in - stay on login page
+      });
     });
   </script>
 </body>
