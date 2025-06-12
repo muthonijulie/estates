@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>WeRent Airport Transfers</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Poppins:wght@500;700&display=swap" rel="stylesheet">
+  <!-- Lightbox2 CSS -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.4/css/lightbox.min.css" rel="stylesheet" />
+<style>
+
+/* Reset and base styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow-x: hidden; /* Prevent horizontal scroll */
+  font-family: 'Poppins', sans-serif !important;
+
+}
+/* Base font setup */
+body {
+  font-family: 'Open Sans', sans-serif;
+  line-height: 1.6;
+  color: #333;
+}
+
+/* Headings */
+h1, h2, h3, h4, h5 {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  line-height: 1.6;
+  background: #f9f9f9;
+  color: #333;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* Navbar */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #FAF0E6;
+  padding: 15px 30px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.logo img {
+  height: 50px;
+}
+
+nav a {
+  margin-left: 25px;
+  font-weight: 600;
+  color: #444;
+}
+
+nav a:hover {
+  color: #e67e22;
+}
+
+
+
+
+
+/* Responsive */
+@media (max-width: 768px) {
+  .filters form {
+    flex-direction: column;
+  }
+
+  nav a {
+    margin-left: 15px;
+  }
+
+  .hero h1 {
+    font-size: 2rem;
+  }
+
+  .hero p {
+    font-size: 1rem;
+  }
+
+  .hero-button {
+    padding: 10px 20px;
+  }
+}
+
+/* Navbar Responsive */
+.menu-toggle {
+  display: none;
+  flex-direction: column;
+  cursor: pointer;
+  gap: 5px;
+}
+
+.menu-toggle span {
+  height: 3px;
+  width: 25px;
+  background: #333;
+  border-radius: 3px;
+}
+
+.menu-toggle i {
+  font-size: 30px;  /* Adjust the size here */
+  color: #333;      /* Change icon color if needed */
+  transition: transform 0.3s ease;
+}
+
+.menu-toggle.open i {
+  transform: rotate(45deg);
+}
+
+
+
+/* Mobile styles only */
+@media (max-width: 768px) {
+  .nav-links {
+    display: none;
+    flex-direction: column;
+    background-color: #FAF0E6;
+    width: 100%;
+    position: absolute;
+    top: 60px;
+    left: 0;
+    padding: 10px 0;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    border-radius: 0 0 8px 8px;
+    z-index: 1000;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease-in-out;
+  }
+
+  .nav-links.active {
+    display: flex;
+    max-height: 500px;
+  }
+
+  .nav-links a {
+    padding: 12px 20px;
+    border-top: 1px solid #222;
+    color: #222;
+    text-decoration: none;
+    font-size: 16px;
+  }
+
+  .nav-links a:first-child {
+    border-top: none;
+  }
+
+  .nav-links a:hover {
+    color: #000;
+  }
+
+  .menu-toggle {
+    cursor: pointer;
+    color: #cfd8dc;
+    font-size: 24px;
+    display: block;
+  }
+}
+
+/* Desktop styles */
+@media (min-width: 769px) {
+  .nav-links {
+    display: flex !important;
+    position: static;
+    flex-direction: row;
+    max-height: none;
+    background: none;
+    box-shadow: none;
+  }
+  .nav-links a {
+    border: none;
+    padding: 0 15px;
+  }
+  .menu-toggle {
+    display: none;
+  }
+}
+
+
+/* Responsive Adjustments for Filters */
+@media (max-width: 768px) {
+  /* Stack the form fields vertically */
+  .filters form {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  /* Adjust width of form inputs and selects */
+  .filters select,
+  .filters input {
+    width: 100%;
+  }
+
+  /* Adjust padding for the filter button */
+  .filters button {
+    width: 100%;
+    padding: 12px;
+    margin-top: 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  /* Additional responsiveness for very small screens */
+  .filters {
+    padding: 20px;
+  }
+
+  .filters h2 {
+    font-size: 1.2rem;
+  }
+
+  .filters select,
+  .filters input {
+    font-size: 0.95rem;
+  }
+
+  .filters button {
+    padding: 12px;
+  }
+}
+
+
+
+.new-footer {
+  background: #0b0c10;
+  color: #cfd8dc;
+  padding: 60px 30px 30px;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.footer-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 40px;
+}
+
+.footer-brand h2 {
+  color: #e67e22;
+  margin-bottom: 15px;
+  font-size: 24px;
+}
+
+.footer-brand p {
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.footer-links h4,
+.footer-contact h4,
+.footer-social h4 {
+  font-size: 16px;
+  margin-bottom: 10px;
+  color: #ffffff;
+}
+
+.footer-links ul,
+.footer-contact ul {
+  list-style: none;
+  padding: 0;
+}
+
+.footer-links ul li,
+.footer-contact ul li {
+  margin-bottom: 8px;
+}
+
+.footer-links ul li a,
+.footer-contact ul li a {
+  text-decoration: none;
+  color: #cfd8dc;
+  transition: color 0.3s ease;
+}
+
+.footer-links ul li a:hover,
+.footer-contact ul li a:hover {
+  color: #e67e22;
+}
+
+.footer-contact i {
+  margin-right: 8px;
+}
+
+.footer-social .social-icons a {
+  display: inline-block;
+  margin-right: 12px;
+  font-size: 18px;
+  color: #cfd8dc;
+  transition: color 0.3s ease;
+}
+
+.footer-social .social-icons a:hover {
+  color: #f1c40f;
+}
+
+.footer-bottom {
+  text-align: center;
+  margin-top: 40px;
+  border-top: 1px solid #37474f;
+  padding-top: 20px;
+  font-size: 14px;
+  color: #90a4ae;
+}
+
+/* Responsive Footer Styles */
+@media (max-width: 768px) {
+  .footer-grid {
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 30px;
+  }
+
+  .new-footer {
+    padding: 40px 20px 20px;
+  }
+
+  .footer-brand h2 {
+    font-size: 22px;
+  }
+
+  .footer-links h4,
+  .footer-contact h4,
+  .footer-social h4 {
+    font-size: 14px;
+  }
+
+  .footer-social .social-icons a {
+    font-size: 16px;
+    margin-right: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .footer-grid {
+    grid-template-columns: 1fr; /* Stack all footer sections vertically */
+    gap: 25px;
+    justify-items: center;
+  }
+
+  .new-footer {
+    padding: 30px 15px 15px;
+    text-align: center;
+  }
+
+  .footer-brand h2 {
+    font-size: 20px;
+  }
+
+  .footer-links h4,
+  .footer-contact h4,
+  .footer-social h4 {
+    font-size: 13px;
+  }
+
+  .footer-links ul li,
+  .footer-contact ul li {
+    margin-bottom: 6px;
+  }
+
+  .footer-social .social-icons a {
+    font-size: 14px;
+    margin-right: 8px;
+  }
+}
+
+
+
+/* Global Fade-in for body */
+body {
+  animation: fadeInBody 1s ease-in;
+}
+
+@keyframes fadeInBody {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+/* Reusable fade-up class */
+.fade-up {
+  opacity: 0;
+  transform: translateY(30px);
+  animation: fadeUp 0.8s ease-out forwards;
+}
+
+@keyframes fadeUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+
+/* Font & Base Styling */
+.airport-transfer-section {
+  padding: 60px 20px;
+  background-color: #f0f9ff;
+  font-family: 'Poppins', sans-serif;
+  text-align: center;
+  animation: fadeIn 1.2s ease-in-out;
+}
+
+/* Heading Styling */
+.airport-title {
+  font-size: 3.5rem;
+  color: #e67e22;
+  margin-bottom: 10px;
+  animation: slideDown 1s ease forwards;
+}
+
+.airport-subtitle {
+  font-size: 1rem;
+  color: #555;
+  margin-bottom: 30px;
+  animation: fadeIn 1.5s ease;
+}
+
+/* Benefit List */
+.airport-benefits {
+  list-style: none;
+  padding: 0;
+  max-width: 600px;
+  margin: 0 auto 40px;
+  text-align: left;
+  font-size: 1rem;
+  color: #444;
+  animation: fadeInUp 1.2s ease;
+}
+
+.airport-benefits li {
+  margin-bottom: 12px;
+  position: relative;
+  padding-left: 28px;
+  opacity: 0;
+  animation: fadeInLeft 0.6s ease forwards;
+  animation-delay: calc(var(--i, 0) * 0.15s);
+}
+
+.airport-benefits li i {
+  position: absolute;
+  left: 0;
+  color: #00b36b;
+  font-size: 1.2em;
+}
+
+/* Image */
+.airport-image-container {
+  max-width: 800px;
+  margin: 0 auto 40px;
+  animation: zoomIn 1s ease-in-out;
+}
+
+.airport-image {
+  width: 100%;
+  border-radius: 10px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+}
+
+.airport-image:hover {
+  transform: scale(1.03);
+  box-shadow: 0 14px 35px rgba(0, 0, 0, 0.2);
+}
+
+/* Call Button */
+.call-now-btn {
+  display: inline-block;
+  background-color: #00b36b;
+  color: white;
+  padding: 14px 28px;
+  font-size: 16px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: background 0.3s ease, transform 0.3s ease;
+  animation: bounceIn 1s ease;
+}
+
+.call-now-btn:hover {
+  background-color: #009955;
+  transform: translateY(-4px);
+}
+
+/* MEDIA QUERIES */
+@media (max-width: 768px) {
+  .airport-title {
+    font-size: 2rem;
+  }
+
+  .airport-subtitle {
+    font-size: 0.95rem;
+  }
+
+  .airport-benefits {
+    font-size: 0.95rem;
+  }
+
+  .call-now-btn {
+    font-size: 15px;
+    padding: 12px 22px;
+  }
+}
+
+@media (max-width: 480px) {
+  .airport-title {
+    font-size: 1.75rem;
+  }
+
+  .airport-subtitle {
+    font-size: 0.9rem;
+  }
+
+  .airport-benefits {
+    font-size: 0.9rem;
+  }
+}
+
+/* ANIMATIONS */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInLeft {
+  from { opacity: 0; transform: translateX(-30px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes zoomIn {
+  from { opacity: 0; transform: scale(0.8); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes bounceIn {
+  0% { transform: scale(0.9); opacity: 0; }
+  60% { transform: scale(1.05); opacity: 1; }
+  100% { transform: scale(1); }
+}
+
+
+
+</style>
+
+</head>
+<body>
+
+  <!-- Navbar -->
+  <header class="navbar">
+    <div class="logo">
+      <img src="assets/images/logo.jpeg" alt="Logo">
+    </div>
+    <nav class="nav-links" id="navLinks">
+      <a href="index.html">Home</a>
+       <a href="rentals.html">Rentals</a>
+        <a href="sales.html">sales</a>
+      <a href="listings.html">Property</a>
+      <a href="contact.html">Contact</a>
+      <a href="blog.html">Blog</a>
+      <a href="aboutus.html">AboutUs</a>
+    </nav>
+    <div class="menu-toggle" id="menuToggle">
+      <i class="fas fa-bars" id="openIcon"></i>
+      <i class="fas fa-times" id="closeIcon" style="display: none;"></i>
+    </div>
+  </header>
+
+<!-- Services Section -->
+<section class="airport-transfer-section">
+  <div class="airport-header">
+    <h2 class="airport-title">Airport Transfers in Watamu</h2>
+    <p class="airport-subtitle">From the runway to your Destination – travel in comfort and peace of mind.</p>
+  </div>
+
+  <ul class="airport-benefits">
+    <li><i class="fas fa-check-circle"></i> Pickup & drop-off at Malindi or Mombasa Airport</li>
+    <li><i class="fas fa-check-circle"></i> Modern, air-conditioned vehicles</li>
+    <li><i class="fas fa-check-circle"></i> Professional, punctual drivers</li>
+    <li><i class="fas fa-check-circle"></i> 24/7 service availability</li>
+    <li><i class="fas fa-check-circle"></i> Group and private transfer options</li>
+  </ul>
+
+  <div class="airport-image-container">
+    <img src="assets/images/Airport1.jpeg" alt="Airport Transfer Watamu" class="airport-image">
+  </div>
+
+  <div style="text-align: center; margin-top: 30px;">
+    <a href="tel:+254700034440" style="
+      display: inline-block;
+      background-color: #00b36b;
+      color: white;
+      padding: 14px 26px;
+      font-size: 16px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+    ">
+      📞 Call Now: +254 700 034 440
+    </a>
+  </div>
+</section>
+
+
+
+
+
+<script>
+  const cards = document.querySelectorAll('.service-card');
+
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.style.animationPlayState = 'running';
+        observer.unobserve(entry.target);
+      }
+    });
+  }, {
+    threshold: 0.1
+  });
+
+  cards.forEach(card => {
+    card.style.animationPlayState = 'paused';
+    observer.observe(card);
+  });
+</script>
+
+
+
+
+
+
+
+
+
+
+
+<footer class="new-footer">
+  <div class="footer-grid">
+    <!-- Brand -->
+    <div class="footer-brand">
+      <h2>WeRent</h2>
+      <p>Find the perfect property across Watamu with WeRent. Whether for rent or sale, we simplify your search experience.</p>
+    </div>
+
+    <!-- Navigation -->
+    <div class="footer-links">
+      <h4>Explore</h4>
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="rentals.html">Rentals</a></li>
+        <li><a href="sales.html">Sales</a></li>
+        <li><a href="listings.html">Properties</a></li>
+        <li><a href="blog.html">Blog</a></li>
+        <li><a href="aboutus.html">About Us</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+    </div>
+
+    <!-- Contact Info -->
+    <div class="footer-contact">
+      <h4>Contact Us</h4>
+      <ul>
+        <li><i class="fas fa-map-marker-alt"></i>  <a href="https://maps.app.goo.gl/bq331K8qRBCPPxT47" target="_blank" rel="noopener noreferrer" class="location-link">
+          Jacaranda road,Watamu
+        </a></li>
+        <li><i class="fas fa-phone"></i> <a href="tel:+254 700034440">+254 700034440</a></li>
+        <li><i class="fas fa-envelope"></i> <a href="mailto:werent@werentonline.com">werent@werentonline.com</a></li>
+      </ul>
+    </div>
+
+    <!-- Social -->
+    <div class="footer-social">
+      <h4>Follow Us</h4>
+      <div class="social-icons">
+        <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+       
+         <a href="https://www.instagram.com/we_rent_watamu?igsh=MTB4Y3Q3d2t4cnZnaw%3D%3D&utm_source=qr" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+        
+          <a href="https://www.tiktok.com/@we_rent_watamu?_t=ZM-8wvIJjEDkSW&_r=1" target="_blank" aria-label="TikTok"><i class="fab fa-tiktok"></i></a>
+        </div>
+    </div>
+  </div>
+
+  <div class="footer-bottom">
+    <p>&copy; <?= date('Y') ?> WeRent. All rights reserved.</p>
+  </div>
+</footer>
+
+
+  <!-- AOS Animation Script -->
+  <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+  <script>
+    AOS.init({ duration: 800, once: true });
+  </script>
+
+  <!-- Toggle Menu Script -->
+  <script>
+    const menuToggle = document.getElementById('menuToggle');
+const navLinks = document.getElementById('navLinks');
+const openIcon = document.getElementById('openIcon');
+const closeIcon = document.getElementById('closeIcon');
+
+menuToggle.addEventListener('click', () => {
+  navLinks.classList.toggle('active');
+
+  if (navLinks.classList.contains('active')) {
+    openIcon.style.display = 'none';
+    closeIcon.style.display = 'block';
+  } else {
+    openIcon.style.display = 'block';
+    closeIcon.style.display = 'none';
+  }
+});
+  </script>
+
+
+<script type="text/javascript">
+var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
+(function(){
+var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
+s1.async=true;
+s1.src='https://embed.tawk.to/6825d1eec210aa190d47da1e/1ir9ro3q0';
+s1.charset='UTF-8';
+s1.setAttribute('crossorigin','*');
+s0.parentNode.insertBefore(s1,s0);
+})();
+</script>
+
+<!-- Lightbox2 JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.4/js/lightbox.min.js"></script>
+
+</body>
+</html>

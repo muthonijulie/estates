@@ -8,6 +8,9 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
   <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Poppins:wght@500;700&display=swap" rel="stylesheet">
+  <!-- Lightbox2 CSS -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.4/css/lightbox.min.css" rel="stylesheet" />
+
 </head>
 <body>
 
@@ -31,8 +34,6 @@
     </div>
   </header>
 
-
-
 <!-- Services Section -->
 <section class="services-section">
   <div class="container">
@@ -47,13 +48,14 @@
         <p>Handpicked villas, cottages, and vacation homes tailored for your dream stay in Watamu—from beach escapes to peaceful gardens.</p>
       </div>
 
-      <div class="service-card">
-        <img src="assets/images/Quad Bike.jpeg" alt="Bike Ride" class="service-icon">
-        <h3>Book your dream ride today</h3>
-        <p>Discover Watamu like never before with our off-road bikes. Enjoy flexible rates and guaranteed adventure.</p>
-      </div>
+      <div class="service-card" onclick="location.href='bike.html'" style="cursor: pointer;">
+  <img src="assets/images/Quad Bike.jpeg" alt="Bike Ride" class="service-icon">
+  <h3>Book your dream ride today</h3>
+  <p>Discover Watamu like never before with our off-road bikes. Enjoy flexible rates and guaranteed adventure.</p>
+</div>
 
-      <div class="service-card">
+
+      <div class="service-card"   onclick="location.href='airport.html'" style="cursor: pointer;" >
         <img src="assets/images/Airport.jpeg" alt="Airport Transfers" class="service-icon">
         <h3>Airport Transfers</h3>
         <p>Enjoy stress-free travel with reliable airport pickups and drop-offs. We get you from runway to relaxation in comfort.</p>
@@ -78,7 +80,10 @@
       </div>
     </div>
   </div>
-</section>  
+
+
+
+
 
 
 <script>
@@ -214,5 +219,9 @@ s1.setAttribute('crossorigin','*');
 s0.parentNode.insertBefore(s1,s0);
 })();
 </script>
+
+<!-- Lightbox2 JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.4/js/lightbox.min.js"></script>
+
 </body>
 </html>
