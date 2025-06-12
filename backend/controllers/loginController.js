@@ -24,7 +24,7 @@ exports.login = async (req, res) => {
     // Find admin by username
     const admin = await Admin.findOne({ 
       username: username.toLowerCase().trim(),
-      isActive: true 
+      
     });
 
     if (!admin) {
@@ -62,9 +62,7 @@ exports.login = async (req, res) => {
       admin: {
         id: admin._id,
         username: admin.username,
-        email: admin.email,
-        role: admin.role,
-        lastLogin: admin.lastLogin
+        
       }
     });
 
@@ -112,9 +110,7 @@ exports.getCurrentAdmin = async (req, res) => {
       admin: {
         id: admin._id,
         username: admin.username,
-        email: admin.email,
-        role: admin.role,
-        lastLogin: admin.lastLogin
+        
       }
     });
   } catch (error) {
@@ -129,13 +125,12 @@ exports.getCurrentAdmin = async (req, res) => {
 // Create Admin (for setup purposes)
 exports.createAdmin = async (req, res) => {
   try {
-    const { username, password, email, role } = req.body;
+    const { username, password} = req.body;
 
     // Check if admin already exists
     const existingAdmin = await Admin.findOne({
       $or: [
-        { username: username.toLowerCase().trim() },
-        { email: email.toLowerCase().trim() }
+        { username: username.toLowerCase().trim() }
       ]
     });
 
@@ -149,9 +144,7 @@ exports.createAdmin = async (req, res) => {
     // Create new admin
     const admin = new Admin({
       username: username.toLowerCase().trim(),
-      password,
-      email: email.toLowerCase().trim(),
-      role: role || 'admin'
+      password
     });
 
     await admin.save();
@@ -161,9 +154,7 @@ exports.createAdmin = async (req, res) => {
       message: 'Admin created successfully',
       admin: {
         id: admin._id,
-        username: admin.username,
-        email: admin.email,
-        role: admin.role
+        username: admin.username
       }
     });
 

@@ -20,14 +20,7 @@ exports.authenticateToken = async (req, res, next) => {
     // Check if admin exists and is active
     const admin = await Admin.findById(decoded.adminId).select('-password');
     
-    if (!admin || !admin.isActive) {
-      return res.status(401).json({
-        success: false,
-        message: 'Invalid or expired token'
-      });
-    }
-
-    // Add admin info to request
+       // Add admin info to request
     req.adminId = admin._id;
     req.admin = admin;
     
@@ -68,23 +61,3 @@ exports.authenticateSession = (req, res, next) => {
   });
 };
 
-// Role-based Authorization Middleware
-exports.authorizeRole = (roles) => {
-  return (req, res, next) => {
-    if (!req.admin) {
-      return res.status(401).json({
-        success: false,
-        message: 'Authentication required'
-      });
-    }
-
-    if (!roles.includes(req.admin.role)) {
-      return res.status(403).json({
-        success: false,
-        message: 'Insufficient permissions'
-      });
-    }
-
-    next();
-  };
-};
