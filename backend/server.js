@@ -19,7 +19,7 @@ const bookingRoutes = require('./routes/bookingRoutes');
 const blogRoutes = require('./routes/blogRoutes');
 const testEmailRoutes = require('./routes/testEmail');
 const authRoutes = require('./routes/authRoutes');
-const { requireAuth } = require('./middleware/auth');
+const { isAuthenticated } = require('./middleware/auth');
 
 // Multer configuration
 const storage = multer.diskStorage({
@@ -70,14 +70,16 @@ app.use(session({
     }
 }));
 
-// CORS configuration 
-app.use(cors())
-// CORS configuration - MUST come before routes
+// CORS configuration with more permissive settings to avoid CORS errors
 app.use(cors({
-    origin: ['http://127.0.0.1:5500', 'http://localhost:5000','https://estates-qmk8.onrender.com', 'http://localhost:3000', 'https://estates-eosin.vercel.app','https://www.werentonline.com'],
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-    credentials: true
+    origin: function(origin, callback) {
+        // Allow any origin
+        callback(null, true);
+    },
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
+    credentials: true,
+    maxAge: 86400
 }));
 
 // Body parsing middleware
@@ -98,12 +100,23 @@ mongoose.connect(process.env.MONGODB_URI, {
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// Admin area protection middleware
+// Authentication middleware for admin pages
 app.use('/admin', (req, res, next) => {
-    if (req.path.endsWith('login.html') || req.path.includes('/assets/')) {
-        return next(); // Allow access to login page and assets
+    // Allow access to login page and assets without authentication
+    if (req.path === '/login.html' || 
+        req.path.startsWith('/assets/') || 
+        req.path.startsWith('/css/') || 
+        req.path.startsWith('/js/')) {
+        return next();
     }
-    requireAuth(req, res, next);
+
+    // Check if user is authenticated
+    if (req.session && req.session.adminId && req.session.isAuthenticated) {
+        return next();
+    }
+
+    // If not authenticated, redirect to login page
+    return res.redirect('/admin/login.html');
 });
 
 // API Routes
@@ -121,6 +134,18 @@ const port_number = process.env.PORT || 5000;
 // Health check route
 app.get('/', (req, res) => {
     res.send("Server is Healthy 😂😂😂");
+});
+
+// Authentication check API endpoint
+app.get('/api/check-auth', isAuthenticated, (req, res) => {
+    res.status(200).json({
+        success: true,
+        isAuthenticated: true,
+        admin: {
+            id: req.admin._id,
+            username: req.admin.username
+        }
+    });
 });
 
 // Error handling middleware

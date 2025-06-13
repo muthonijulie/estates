@@ -5,7 +5,7 @@ const Admin = require('../models/Admin');
 exports.isAuthenticated = async (req, res, next) => {
   try {
     // First check session
-    if (req.session && req.session.adminId) {
+    if (req.session && req.session.adminId && req.session.isAuthenticated) {
       const admin = await Admin.findById(req.session.adminId).select('-password');
       if (admin) {
         req.admin = admin;
@@ -44,4 +44,18 @@ exports.isAuthenticated = async (req, res, next) => {
       message: 'Internal server error'
     });
   }
+};
+
+// Middleware for protecting routes that render HTML pages
+exports.requireAuth = (req, res, next) => {
+  // Check for session
+  if (req.session && req.session.adminId && req.session.isAuthenticated) {
+    return next();
+  }
+  
+  // Check for JWT token in localStorage (client-side)
+  // This will be handled by JavaScript in the browser, but we need to redirect here
+  
+  // Redirect to login page
+  res.redirect('/Werent/admin/login.html');
 };

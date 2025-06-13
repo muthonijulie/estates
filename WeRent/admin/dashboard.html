@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -635,13 +634,13 @@
       <a href="blogs.html"><i class="fas fa-pen-nib"></i> Manage Blogs</a>
     </div>
     <div class="logout">
-      <a href=""><i class="fas fa-sign-out-alt"></i> Logout</a>
+      <a href="#" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</a>
     </div>
   </div>
 
   <div class="main-content">
     <div class="header">
-      <h1>Welcome, Admin</h1>
+      <h1>Welcome, <span id="adminUsername">Admin</span></h1>
       <p>Here's an overview of your real estate management dashboard</p>
     </div>
 
@@ -766,6 +765,7 @@
 
   <script>
     const API_BASE_URL = 'https://estates-qmk8.onrender.com/api/v1';
+    const AUTH_URL = 'https://estates-qmk8.onrender.com/api/auth';
     
     let dashboardData = {
       properties: [],
@@ -774,12 +774,103 @@
       messages: []
     };
 
+    // Check authentication on page load
+    document.addEventListener('DOMContentLoaded', function() {
+      checkAuthentication();
+      loadDashboardData();
+    });
+
+    // Authentication check function
+    async function checkAuthentication() {
+      try {
+        // Try to get the token from localStorage
+        const token = localStorage.getItem('adminToken');
+        
+        // If no token is found, redirect to login
+        if (!token) {
+          redirectToLogin();
+          return;
+        }
+        
+        // Verify the token with the server
+        const response = await fetch(`${AUTH_URL}/me`, {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`
+          },
+          credentials: 'include'
+        });
+        
+        const data = await response.json();
+        
+        if (!data.success || !data.admin) {
+          // If authentication failed, redirect to login
+          redirectToLogin();
+          return;
+        }
+        
+        // If authenticated, update the username in the header
+        document.getElementById('adminUsername').textContent = data.admin.username;
+        
+      } catch (error) {
+        console.error('Authentication error:', error);
+        redirectToLogin();
+      }
+    }
+
+    function redirectToLogin() {
+      window.location.href = '/Werent/admin/login.html';
+    }
+
+    // Logout functionality
+    document.getElementById('logoutBtn').addEventListener('click', async function(e) {
+      e.preventDefault();
+      
+      try {
+        await fetch(`${AUTH_URL}/logout`, {
+          method: 'POST',
+          credentials: 'include'
+        });
+        
+        // Clear token from storage
+        localStorage.removeItem('adminToken');
+        
+        // Redirect to login page
+        redirectToLogin();
+        
+      } catch (error) {
+        console.error('Logout error:', error);
+        // Even if there's an error, clear token and redirect
+        localStorage.removeItem('adminToken');
+        redirectToLogin();
+      }
+    });
+
     async function fetchData(endpoint) {
       try {
-        const response = await fetch(`${API_BASE_URL}${endpoint}`);
+        const token = localStorage.getItem('adminToken');
+        const headers = {
+          'Content-Type': 'application/json'
+        };
+        
+        if (token) {
+          headers['Authorization'] = `Bearer ${token}`;
+        }
+        
+        const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+          headers,
+          credentials: 'include'
+        });
+        
         if (!response.ok) {
+          // If unauthorized, redirect to login
+          if (response.status === 401) {
+            redirectToLogin();
+            throw new Error('Authentication required');
+          }
           throw new Error(`HTTP error! status: ${response.status}`);
         }
+        
         const data = await response.json();
         return data;
       } catch (error) {
@@ -811,29 +902,29 @@
     }
 
     function calculateQuickStats() {
-  // Available properties (status is null meaning they aren't booked)
-  const availableProps = dashboardData.properties.filter(p => 
-    p.status === null || p.status === 'null' || p.status === 'available'
-  ).length;
-  
-  // Pending viewings (assuming viewings with status 'pending' or 'scheduled')
-  const pendingViews = dashboardData.viewings.filter(v => 
-    v.status === 'pending' || v.status === 'scheduled'
-  ).length;
-  
-  // Active bookings - count properties with 'booked' status
-  const activeBooks = dashboardData.properties.filter(p => 
-    p.status === 'booked'
-  ).length;
-  
-  // For messages, since there's no unread option, show total messages
-  const totalMessages = dashboardData.messages.length;
+      // Available properties (status is null meaning they aren't booked)
+      const availableProps = dashboardData.properties.filter(p => 
+        p.status === null || p.status === 'null' || p.status === 'available'
+      ).length;
+      
+      // Pending viewings (assuming viewings with status 'pending' or 'scheduled')
+      const pendingViews = dashboardData.viewings.filter(v => 
+        v.status === 'pending' || v.status === 'scheduled'
+      ).length;
+      
+      // Active bookings - count properties with 'booked' status
+      const activeBooks = dashboardData.properties.filter(p => 
+        p.status === 'booked'
+      ).length;
+      
+      // For messages, since there's no unread option, show total messages
+      const totalMessages = dashboardData.messages.length;
 
-  document.getElementById('availableProperties').textContent = availableProps;
-  document.getElementById('pendingViewings').textContent = pendingViews;
-  document.getElementById('activeBookings').textContent = activeBooks;
-  document.getElementById('unreadMessages').textContent = totalMessages;
-}
+      document.getElementById('availableProperties').textContent = availableProps;
+      document.getElementById('pendingViewings').textContent = pendingViews;
+      document.getElementById('activeBookings').textContent = activeBooks;
+      document.getElementById('unreadMessages').textContent = totalMessages;
+    }
 
     function generateRecentActivity() {
       const activityContainer = document.getElementById('recentActivity');
@@ -987,6 +1078,11 @@
       } catch (error) {
         console.error('Error loading dashboard data:', error);
         updateStatusIndicator(false, 'Failed to load data');
+        
+        // If authentication error, redirect to login
+        if (error.message === 'Authentication required') {
+          redirectToLogin();
+        }
       } finally {
         refreshBtn.disabled = false;
         refreshBtn.innerHTML = '<i class="fas fa-sync-alt"></i> Refresh Data';
@@ -994,10 +1090,12 @@
     }
 
     // Auto-refresh every 5 minutes
-    setInterval(loadDashboardData, 5 * 60 * 1000);
-
-    // Load data when page loads
-    document.addEventListener('DOMContentLoaded', loadDashboardData);
+    const autoRefreshInterval = setInterval(loadDashboardData, 5 * 60 * 1000);
+    
+    // Clear interval when page is unloaded
+    window.addEventListener('beforeunload', function() {
+      clearInterval(autoRefreshInterval);
+    });
   </script>
 </body>
 </html>
