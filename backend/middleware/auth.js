@@ -57,5 +57,5 @@ exports.requireAuth = (req, res, next) => {
   // This will be handled by JavaScript in the browser, but we need to redirect here
   
   // Redirect to login page
-  res.redirect('/Werent/admin/login.html');
+  res.redirect('/admin/login.html');
 };
