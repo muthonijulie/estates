@@ -72,7 +72,7 @@ app.use(session({
 
 // CORS configuration - MUST come before routes
 app.use(cors({
-    origin: ['http://127.0.0.1:5500', 'http://localhost:5000', 'http://localhost:3000', 'https://estates-eosin.vercel.app'],
+    origin: ['http://127.0.0.1:5500', 'http://localhost:5000','https://estates-qmk8.onrender.com/api', 'http://localhost:3000', 'https://estates-eosin.vercel.app'],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true
