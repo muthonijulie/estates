@@ -1,7 +1,7 @@
 // create-admin.js - Run this once to create your first admin
 require("dotenv").config();
 const mongoose = require('mongoose');
-const Admin = require('./models/Login');
+const Admin = require('./models/Admin');
 
 async function createFirstAdmin() {
     try {

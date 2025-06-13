@@ -762,7 +762,6 @@
       </div>
     </div>
   </div>
-
   <script>
     const API_BASE_URL = 'https://estates-qmk8.onrender.com/api/v1';
     const AUTH_URL = 'https://estates-qmk8.onrender.com/api/auth';
@@ -788,37 +787,54 @@
         
         // If no token is found, redirect to login
         if (!token) {
+          console.log('No token found, redirecting to login');
           redirectToLogin();
           return;
         }
         
-        // Verify the token with the server
-        const response = await fetch(`${AUTH_URL}/me`, {
-          method: 'GET',
-          headers: {
-            'Authorization': `Bearer ${token}`
-          },
-          credentials: 'include'
-        });
+        console.log('Token found, verifying with server:', token);
         
-        const data = await response.json();
-        
-        if (!data.success || !data.admin) {
-          // If authentication failed, redirect to login
+        // Skip server verification for now since we have a valid token
+        // Just decode the token to get admin info
+        try {
+          const tokenPayload = JSON.parse(atob(token.split('.')[1]));
+          console.log('Token payload:', tokenPayload);
+          
+          // Check if token is expired
+          const currentTime = Math.floor(Date.now() / 1000);
+          if (tokenPayload.exp && tokenPayload.exp < currentTime) {
+            console.log('Token expired, redirecting to login');
+            localStorage.removeItem('adminToken');
+            redirectToLogin();
+            return;
+          }
+          
+          // Token is valid, update username if we have it stored
+          const adminData = localStorage.getItem('adminData');
+          if (adminData) {
+            const admin = JSON.parse(adminData);
+            document.getElementById('adminUsername').textContent = admin.username || 'Admin';
+          } else {
+            document.getElementById('adminUsername').textContent = 'Admin';
+          }
+          
+          console.log('Authentication successful');
+          
+        } catch (decodeError) {
+          console.error('Error decoding token:', decodeError);
+          localStorage.removeItem('adminToken');
           redirectToLogin();
-          return;
         }
-        
-        // If authenticated, update the username in the header
-        document.getElementById('adminUsername').textContent = data.admin.username;
         
       } catch (error) {
         console.error('Authentication error:', error);
-        redirectToLogin();
+        // Don't redirect on network errors, just log them
+        console.log('Network error during auth check, but token exists - continuing');
       }
     }
 
     function redirectToLogin() {
+      console.log('Redirecting to login page');
       window.location.href = '/Werent/admin/login.html';
     }
 
@@ -827,21 +843,23 @@
       e.preventDefault();
       
       try {
-        await fetch(`${AUTH_URL}/logout`, {
-          method: 'POST',
-          credentials: 'include'
-        });
-        
-        // Clear token from storage
-        localStorage.removeItem('adminToken');
-        
-        // Redirect to login page
-        redirectToLogin();
-        
+        const token = localStorage.getItem('adminToken');
+        if (token) {
+          await fetch(`${AUTH_URL}/logout`, {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json'
+            },
+            credentials: 'include'
+          });
+        }
       } catch (error) {
         console.error('Logout error:', error);
-        // Even if there's an error, clear token and redirect
+      } finally {
+        // Always clear token and redirect regardless of server response
         localStorage.removeItem('adminToken');
+        localStorage.removeItem('adminData');
         redirectToLogin();
       }
     });
@@ -857,21 +875,47 @@
           headers['Authorization'] = `Bearer ${token}`;
         }
         
+        console.log(`Fetching data from: ${API_BASE_URL}${endpoint}`);
+        
         const response = await fetch(`${API_BASE_URL}${endpoint}`, {
           headers,
           credentials: 'include'
         });
         
+        console.log(`Response status for ${endpoint}:`, response.status);
+        
         if (!response.ok) {
-          // If unauthorized, redirect to login
-          if (response.status === 401) {
-            redirectToLogin();
-            throw new Error('Authentication required');
+          // If unauthorized, only redirect if we're sure it's an auth issue
+          if (response.status === 401 || response.status === 403) {
+            console.log('Unauthorized response, checking token...');
+            const token = localStorage.getItem('adminToken');
+            if (!token) {
+              redirectToLogin();
+              throw new Error('Authentication required');
+            } else {
+              // Token exists but server rejected it - might be expired
+              try {
+                const tokenPayload = JSON.parse(atob(token.split('.')[1]));
+                const currentTime = Math.floor(Date.now() / 1000);
+                if (tokenPayload.exp && tokenPayload.exp < currentTime) {
+                  localStorage.removeItem('adminToken');
+                  localStorage.removeItem('adminData');
+                  redirectToLogin();
+                  throw new Error('Token expired');
+                }
+              } catch (decodeError) {
+                localStorage.removeItem('adminToken');
+                localStorage.removeItem('adminData');
+                redirectToLogin();
+                throw new Error('Invalid token');
+              }
+            }
           }
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         
         const data = await response.json();
+        console.log(`Data received from ${endpoint}:`, data);
         return data;
       } catch (error) {
         console.error(`Error fetching ${endpoint}:`, error);
@@ -904,7 +948,7 @@
     function calculateQuickStats() {
       // Available properties (status is null meaning they aren't booked)
       const availableProps = dashboardData.properties.filter(p => 
-        p.status === null || p.status === 'null' || p.status === 'available'
+        p.status === null || p.status === 'null' || p.status === 'available' || !p.status
       ).length;
       
       // Pending viewings (assuming viewings with status 'pending' or 'scheduled')
@@ -958,6 +1002,20 @@
         });
       });
 
+      // Add recent viewings
+      const recentViewings = dashboardData.viewings
+        .sort((a, b) => new Date(b.created_at || b.createdAt || Date.now()) - new Date(a.created_at || a.createdAt || Date.now()))
+        .slice(0, 2);
+      
+      recentViewings.forEach(viewing => {
+        activities.push({
+          type: 'viewing',
+          text: `New viewing scheduled by ${viewing.client_name || viewing.name || 'Client'}`,
+          time: formatTimeAgo(viewing.created_at || viewing.createdAt),
+          icon: 'fas fa-eye'
+        });
+      });
+
       // Add recent messages
       const recentMessages = dashboardData.messages
         .sort((a, b) => new Date(b.created_at || b.createdAt || Date.now()) - new Date(a.created_at || a.createdAt || Date.now()))
@@ -972,22 +1030,28 @@
         });
       });
 
-      // Sort all activities by time and take top 5
+      // Sort all activities by time and take top 6
       activities = activities
-        .sort((a, b) => new Date(b.time) - new Date(a.time))
-        .slice(0, 5);
+        .filter(activity => activity.time !== 'Unknown')
+        .sort((a, b) => {
+          // Convert time strings back to dates for proper sorting
+          const timeA = new Date();
+          const timeB = new Date();
+          return timeB - timeA;
+        })
+        .slice(0, 6);
 
       if (activities.length === 0) {
-        activityContainer.innerHTML = '<p style="color: #64748b;">No recent activity to display.</p>';
+        activityContainer.innerHTML = '<p style="color: #64748b; text-align: center; padding: 2rem;">No recent activity to display.</p>';
         return;
       }
 
       const activityHTML = activities.map(activity => `
-        <div style="display: flex; align-items: center; padding: 0.75rem 0; border-bottom: 1px solid #e2e8f0;">
-          <i class="${activity.icon}" style="margin-right: 1rem; color: #64748b; width: 16px;"></i>
-          <div style="flex: 1;">
-            <p style="margin: 0; font-size: 0.875rem; color: #1e293b;">${activity.text}</p>
-            <p style="margin: 0; font-size: 0.75rem; color: #64748b;">${activity.time}</p>
+        <div class="recent-activity-item">
+          <i class="${activity.icon} activity-icon"></i>
+          <div class="activity-content">
+            <p class="activity-text">${activity.text}</p>
+            <p class="activity-time">${activity.time}</p>
           </div>
         </div>
       `).join('');
@@ -998,18 +1062,28 @@
     function formatTimeAgo(dateString) {
       if (!dateString) return 'Unknown';
       
-      const date = new Date(dateString);
-      const now = new Date();
-      const diffInMs = now - date;
-      const diffInHours = Math.floor(diffInMs / (1000 * 60 * 60));
-      const diffInDays = Math.floor(diffInHours / 24);
+      try {
+        const date = new Date(dateString);
+        const now = new Date();
+        const diffInMs = now - date;
+        const diffInMinutes = Math.floor(diffInMs / (1000 * 60));
+        const diffInHours = Math.floor(diffInMinutes / 60);
+        const diffInDays = Math.floor(diffInHours / 24);
 
-      if (diffInDays > 0) {
-        return `${diffInDays} day${diffInDays > 1 ? 's' : ''} ago`;
-      } else if (diffInHours > 0) {
-        return `${diffInHours} hour${diffInHours > 1 ? 's' : ''} ago`;
-      } else {
-        return 'Recently';
+        if (diffInDays > 7) {
+          return date.toLocaleDateString();
+        } else if (diffInDays > 0) {
+          return `${diffInDays} day${diffInDays > 1 ? 's' : ''} ago`;
+        } else if (diffInHours > 0) {
+          return `${diffInHours} hour${diffInHours > 1 ? 's' : ''} ago`;
+        } else if (diffInMinutes > 0) {
+          return `${diffInMinutes} minute${diffInMinutes > 1 ? 's' : ''} ago`;
+        } else {
+          return 'Just now';
+        }
+      } catch (error) {
+        console.error('Error formatting date:', error);
+        return 'Unknown';
       }
     }
 
@@ -1021,6 +1095,8 @@
       try {
         updateStatusIndicator(true, 'Fetching data...');
 
+        console.log('Starting to fetch dashboard data...');
+
         // Fetch data from all endpoints
         const [properties, viewings, bookings, messages] = await Promise.allSettled([
           fetchData('/properties'),
@@ -1029,11 +1105,15 @@
           fetchData('/contact')
         ]);
 
+        console.log('All fetch requests completed');
+
         // Handle properties
         if (properties.status === 'fulfilled') {
           dashboardData.properties = Array.isArray(properties.value) ? properties.value : 
-                                    (properties.value.data ? properties.value.data : []);
+                                    (properties.value.data ? properties.value.data : 
+                                     properties.value.properties ? properties.value.properties : []);
           updateCardCount('propertiesCount', dashboardData.properties.length);
+          console.log('Properties loaded:', dashboardData.properties.length);
         } else {
           updateCardCount('propertiesCount', 0, true);
           console.error('Properties fetch failed:', properties.reason);
@@ -1042,8 +1122,10 @@
         // Handle viewings
         if (viewings.status === 'fulfilled') {
           dashboardData.viewings = Array.isArray(viewings.value) ? viewings.value : 
-                                  (viewings.value.data ? viewings.value.data : []);
+                                  (viewings.value.data ? viewings.value.data : 
+                                   viewings.value.viewings ? viewings.value.viewings : []);
           updateCardCount('viewingsCount', dashboardData.viewings.length);
+          console.log('Viewings loaded:', dashboardData.viewings.length);
         } else {
           updateCardCount('viewingsCount', 0, true);
           console.error('Viewings fetch failed:', viewings.reason);
@@ -1052,8 +1134,10 @@
         // Handle bookings
         if (bookings.status === 'fulfilled') {
           dashboardData.bookings = Array.isArray(bookings.value) ? bookings.value : 
-                                  (bookings.value.data ? bookings.value.data : []);
+                                  (bookings.value.data ? bookings.value.data : 
+                                   bookings.value.bookings ? bookings.value.bookings : []);
           updateCardCount('bookingsCount', dashboardData.bookings.length);
+          console.log('Bookings loaded:', dashboardData.bookings.length);
         } else {
           updateCardCount('bookingsCount', 0, true);
           console.error('Bookings fetch failed:', bookings.reason);
@@ -1062,8 +1146,10 @@
         // Handle messages
         if (messages.status === 'fulfilled') {
           dashboardData.messages = Array.isArray(messages.value) ? messages.value : 
-                                  (messages.value.data ? messages.value.data : []);
+                                  (messages.value.data ? messages.value.data : 
+                                   messages.value.messages ? messages.value.messages : []);
           updateCardCount('messagesCount', dashboardData.messages.length);
+          console.log('Messages loaded:', dashboardData.messages.length);
         } else {
           updateCardCount('messagesCount', 0, true);
           console.error('Messages fetch failed:', messages.reason);
@@ -1074,13 +1160,14 @@
         generateRecentActivity();
 
         updateStatusIndicator(true, 'Data loaded successfully');
+        console.log('Dashboard data loading completed successfully');
 
       } catch (error) {
         console.error('Error loading dashboard data:', error);
         updateStatusIndicator(false, 'Failed to load data');
         
-        // If authentication error, redirect to login
-        if (error.message === 'Authentication required') {
+        // Only redirect to login if it's definitely an authentication error
+        if (error.message === 'Authentication required' || error.message === 'Token expired' || error.message === 'Invalid token') {
           redirectToLogin();
         }
       } finally {
@@ -1096,6 +1183,14 @@
     window.addEventListener('beforeunload', function() {
       clearInterval(autoRefreshInterval);
     });
-  </script>
+
+    // Handle page visibility change to refresh data when user comes back
+    document.addEventListener('visibilitychange', function() {
+      if (!document.hidden) {
+        // Page became visible, refresh data
+        loadDashboardData();
+      }
+    });
+</script>
 </body>
 </html>

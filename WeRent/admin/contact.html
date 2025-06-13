@@ -548,7 +548,7 @@
       <a href="blogs.html"><i class="fas fa-pen-nib"></i> Manage Blogs</a>
     </div>
     <div class="logout">
-      <a href=""><i class="fas fa-sign-out-alt"></i> Logout</a>
+      <a href="#" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</a>
     </div>
   </div>
 
@@ -649,6 +649,36 @@
       loadMessages();
       setupEventListeners();
     });
+    // Logout functionality
+    document.getElementById('logoutBtn').addEventListener('click', async function(e) {
+      e.preventDefault();
+      
+      try {
+        const token = localStorage.getItem('adminToken');
+        if (token) {
+          await fetch(`${AUTH_URL}/logout`, {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json'
+            },
+            credentials: 'include'
+          });
+        }
+      } catch (error) {
+        console.error('Logout error:', error);
+      } finally {
+        // Always clear token and redirect regardless of server response
+        localStorage.removeItem('adminToken');
+        localStorage.removeItem('adminData');
+        redirectToLogin();
+      }
+    });
+
+ function redirectToLogin() {
+      console.log('Redirecting to login page');
+      window.location.href = '/Werent/admin/login.html';
+    }
 
     function setupEventListeners() {
       // Modal close functionality
