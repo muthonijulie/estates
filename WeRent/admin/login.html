@@ -373,7 +373,7 @@
           localStorage.setItem('adminToken', data.token);
           
           // Get redirect URL from sessionStorage or use default
-          const redirectUrl = sessionStorage.getItem('redirectAfterLogin') || '/Werent/admin/dashboard.html';
+          const redirectUrl = sessionStorage.getItem('redirectAfterLogin') || '/admin/dashboard.html';
           sessionStorage.removeItem('redirectAfterLogin'); // Clear the stored URL
           
           // Redirect after short delay
@@ -426,7 +426,7 @@
           
           if (data.success && data.admin) {
             // User is already logged in, redirect to dashboard
-            const redirectUrl = sessionStorage.getItem('redirectAfterLogin') || '/Werent/admin/dashboard.html';
+            const redirectUrl = sessionStorage.getItem('redirectAfterLogin') || '/admin/dashboard.html';
             sessionStorage.removeItem('redirectAfterLogin');
             window.location.href = redirectUrl;
           }
