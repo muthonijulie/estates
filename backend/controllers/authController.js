@@ -94,27 +94,18 @@ exports.logout = (req, res) => {
 // Get Current Admin
 exports.getCurrentAdmin = async (req, res) => {
   try {
-    let admin;
-    
-    // Try to get admin from session first, then from token
-    if (req.session && req.session.adminId) {
-      admin = await Admin.findById(req.session.adminId).select('-password');
-    } else if (req.adminId) {
-      admin = await Admin.findById(req.adminId).select('-password');
-    }
-    
-    if (!admin) {
-      return res.status(404).json({
+    if (!req.admin) {
+      return res.status(401).json({
         success: false,
-        message: 'Admin not found'
+        message: 'Not authenticated'
       });
     }
 
     res.status(200).json({
       success: true,
       admin: {
-        id: admin._id,
-        username: admin.username
+        id: req.admin._id,
+        username: req.admin.username
       }
     });
   } catch (error) {

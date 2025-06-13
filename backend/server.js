@@ -3,8 +3,8 @@ const app = express();
 const multer = require('multer');
 const fs = require('fs');
 const path = require('path');
-const session = require('express-session'); // Add this
-const MongoStore = require('connect-mongo'); // Add this
+const session = require('express-session');
+const MongoStore = require('connect-mongo');
 const Property = require('./models/Property');
 
 require("dotenv").config();
@@ -18,7 +18,8 @@ const rentalRoutes = require('./routes/rentalRoutes');
 const bookingRoutes = require('./routes/bookingRoutes');
 const blogRoutes = require('./routes/blogRoutes');
 const testEmailRoutes = require('./routes/testEmail');
-const authRoutes = require('./routes/loginRoutes');
+const authRoutes = require('./routes/authRoutes');
+const { requireAuth } = require('./middleware/auth');
 
 // Multer configuration
 const storage = multer.diskStorage({
@@ -53,9 +54,25 @@ const upload = multer({
     }
 });
 
+// Session configuration
+app.use(session({
+    secret: process.env.SESSION_SECRET || 'your_session_secret_key_here',
+    resave: false,
+    saveUninitialized: false,
+    store: MongoStore.create({
+        mongoUrl: process.env.MONGODB_URI,
+        ttl: 24 * 60 * 60 // Session TTL (1 day)
+    }),
+    cookie: {
+        secure: process.env.NODE_ENV === 'production', // true in production
+        httpOnly: true,
+        maxAge: 24 * 60 * 60 * 1000 // 1 day
+    }
+}));
+
 // CORS configuration - MUST come before routes
 app.use(cors({
-    origin: ['http://127.0.0.1:5500', 'http://localhost:5500', 'http://localhost:3000', 'https://estates-eosin.vercel.app'],
+    origin: ['http://127.0.0.1:5500', 'http://localhost:5000', 'http://localhost:3000', 'https://estates-eosin.vercel.app'],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true
@@ -75,30 +92,19 @@ mongoose.connect(process.env.MONGODB_URI, {
     console.error("Error connecting to MongoDB:", err);
 });
 
-// Session configuration - ADD THIS AFTER DATABASE CONNECTION
-app.use(session({
-    secret: process.env.SESSION_SECRET || 'your-fallback-secret-key-change-in-production',
-    resave: false,
-    saveUninitialized: false,
-    store: MongoStore.create({
-        mongoUrl: process.env.MONGODB_URI,
-        collectionName: 'sessions'
-    }),
-    cookie: {
-        secure: process.env.NODE_ENV === 'production', // Use secure cookies in production
-        httpOnly: true,
-        maxAge: 24 * 60 * 60 * 1000 // 24 hours
+// Serve static files
+app.use(express.static(path.join(__dirname, 'public')));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+// Admin area protection middleware
+app.use('/admin', (req, res, next) => {
+    if (req.path.endsWith('login.html') || req.path.includes('/assets/')) {
+        return next(); // Allow access to login page and assets
     }
-}));
+    requireAuth(req, res, next);
+});
 
-// Serve static files - ADD THIS
-app.use(express.static('public'));
-app.use('/uploads', express.static('uploads'));
-
-// Import auth middleware for protected routes
-const { authenticateSession } = require('./middleware/auth');
-
-// Routes - AFTER CORS and session configuration
+// API Routes
 app.use('/api/v1', viewRoutes);
 app.use('/api/v1', propertyRoutes);
 app.use('/api/v1', contactRoutes);
@@ -106,33 +112,7 @@ app.use('/api/v1', rentalRoutes);
 app.use('/api/v1', bookingRoutes);
 app.use('/api/v1', blogRoutes); 
 app.use('/api/test-email', testEmailRoutes);
-app.use('/api/auth', authRoutes); // Changed from '/auth' to '/api/auth' to match frontend
-
-// Admin routes - ADD THESE
-app.get('/admin', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'admin-login.html'));
-});
-
-app.get('/dashboard', authenticateSession, (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'dashboard.html'));
-});
-
-// Logout route
-app.post('/api/auth/logout', (req, res) => {
-    req.session.destroy((err) => {
-        if (err) {
-            return res.status(500).json({
-                success: false,
-                message: 'Could not log out'
-            });
-        }
-        res.clearCookie('connect.sid');
-        res.json({
-            success: true,
-            message: 'Logout successful'
-        });
-    });
-});
+app.use('/api/auth', authRoutes);
 
 const port_number = process.env.PORT || 5000;
 
