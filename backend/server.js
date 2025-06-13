@@ -70,9 +70,11 @@ app.use(session({
     }
 }));
 
+// CORS configuration 
+app.use(cors())
 // CORS configuration - MUST come before routes
 app.use(cors({
-    origin: ['http://127.0.0.1:5000', 'http://localhost:5000','https://estates-qmk8.onrender.com', 'http://localhost:3000', 'https://estates-eosin.vercel.app','https://www.werentonline.com'],
+    origin: ['http://127.0.0.1:5500', 'http://localhost:5000','https://estates-qmk8.onrender.com', 'http://localhost:3000', 'https://estates-eosin.vercel.app','https://www.werentonline.com'],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true
