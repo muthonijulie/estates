@@ -1,4 +1,4 @@
-const Admin = require('../models/Admin');
+const Admin = require('../models/Login');
 const jwt = require('jsonwebtoken');
 
 // Generate JWT Token

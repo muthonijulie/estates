@@ -1,19 +1,16 @@
-// test-login.js - Run this to test your login functionality
+
 const mongoose = require('mongoose');
-const Admin = require('./models/Admin');
+const Admin = require('./models/Login'); // Go up two levels from config // Adjust the path as necessary
 require('dotenv').config();
 
 async function testLogin() {
   try {
     // Connect to MongoDB
-    await mongoose.connect(process.env.MONGODB_URI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true
-    });
+    await mongoose.connect(process.env.MONGODB_URI);
     console.log('Connected to MongoDB');
 
     // Check if admin exists
-    const admin = await Admin.findOne({ username: 'brayoadmin' });
+    const admin = await Admin.findOne({ username: 'admin' });
     
     if (!admin) {
       console.log('❌ Admin not found');
@@ -23,12 +20,12 @@ async function testLogin() {
     console.log('✅ Admin found:', {
       id: admin._id,
       username: admin.username,
-      role: admin.role,
+
       hasPassword: !!admin.password
     });
 
     // Test password comparison
-    const isPasswordValid = await admin.comparePassword('password1234');
+    const isPasswordValid = await admin.comparePassword('admin123');
     console.log('Password test result:', isPasswordValid ? '✅ Valid' : '❌ Invalid');
 
     // Test with wrong password

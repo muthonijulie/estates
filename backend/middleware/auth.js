@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const Admin = require('../models/Admin');
+const Admin = require('../models/Login');
 
 // Authentication Middleware - Checks both session and JWT token
 exports.isAuthenticated = async (req, res, next) => {
