@@ -1,0 +1,60 @@
+name: Deploy to Production Server
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'backend/**'
+  workflow_dispatch: # Allows manual triggering
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        
+      - name: Set up SSH
+        uses: webfactory/ssh-agent@v0.7.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+          
+      - name: Add server to known hosts
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -p 22 209.74.89.145 >> ~/.ssh/known_hosts
+          
+      - name: Package and deploy
+        working-directory: ./backend
+        run: |
+          tar -czf werent-backend.tar.gz Dockerfile docker-compose.yml package.json package-lock.json config/ controllers/ database/ middleware/ models/ routes/ server.js services/ utils/ .dockerignore
+          
+          scp -P 22 werent-backend.tar.gz root@209.74.89.145:/root/
+          
+          # Create .env.production file with secrets
+          ssh -p 22 root@209.74.89.145 << EOF
+            cat > /root/werent-backend/.env.production << 'ENVEOF'
+            PORT=5000
+            MONGODB_URI=${{ secrets.MONGODB_URI }}
+            JWT_SECRET=${{ secrets.JWT_SECRET }}
+            SESSION_SECRET=${{ secrets.SESSION_SECRET }}
+            SENDGRID_API_KEY=${{ secrets.SENDGRID_API_KEY }}
+            FROM_EMAIL=${{ secrets.FROM_EMAIL }}
+            FROM_NAME=${{ secrets.FROM_NAME }}
+            REPLY_TO_EMAIL=${{ secrets.REPLY_TO_EMAIL }}
+            CLOUDINARY_CLOUD_NAME=${{ secrets.CLOUDINARY_CLOUD_NAME }}
+            CLOUDINARY_API_KEY=${{ secrets.CLOUDINARY_API_KEY }}
+            CLOUDINARY_API_SECRET=${{ secrets.CLOUDINARY_API_SECRET }}
+            ENVEOF
+          EOF
+          
+          ssh -p 22 root@209.74.89.145 << 'EOF'
+            mkdir -p /root/werent-backend
+            tar -xzf /root/werent-backend.tar.gz -C /root/werent-backend
+            cd /root/werent-backend
+            docker-compose down
+            docker-compose up -d --build
+            rm -f /root/werent-backend.tar.gz
+            echo "Deployment completed!"
+          EOF
