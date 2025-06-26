@@ -1529,7 +1529,7 @@ document.getElementById('calendarModal').style.display = 'flex';
 
 async function fetchProperties() {
 try {
-const response = await fetch('http://209.74.89.145:5000/api/v1/properties');
+const response = await fetch('https://api.werentonline.com/api/v1/properties');
 if (!response.ok) {
 throw new Error(`HTTP error! Status: ${response.status}`);
 }
