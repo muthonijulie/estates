@@ -1782,19 +1782,19 @@
           const galleryPreview = document.getElementById('galleryImagesPreview');
           galleryPreview.innerHTML = '';
           
-          if (property.galleryImages && property.galleryImages.length > 0) {
-            property.galleryImages.forEach((imageUrl, index) => {
-              const preview = document.createElement('div');
-              preview.className = 'preview-item';
-              
-              const img = document.createElement('img');
-              img.src = imageUrl;
-              img.alt = `Gallery image ${index + 1}`;
-              
-              preview.appendChild(img);
-              galleryPreview.appendChild(preview);
-            });
-          }
+         if (property.galleryImages && property.galleryImages.length > 0) {
+  property.galleryImages.forEach((imagePath, index) => {
+    const preview = document.createElement('div');
+    preview.className = 'preview-item';
+    
+    const img = document.createElement('img');
+    img.src = getImageUrl(imagePath);  // ✅ This will work for both old and new images
+    img.alt = `Gallery image ${index + 1}`;
+    
+    preview.appendChild(img);
+    galleryPreview.appendChild(preview);
+  });
+}
           
           // Reset file inputs
           document.getElementById('mainImageUpload').value = '';
