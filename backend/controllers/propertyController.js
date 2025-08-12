@@ -1,20 +1,18 @@
 const Property = require('../models/Property');
-const { cloudinary } = require('../middleware/uploadMiddleware');
+const fs = require('fs');
+const path = require('path');
 
-// Helper function to delete images from Cloudinary
-const deleteCloudinaryImages = async (imageUrls) => {
-    const deletePromises = imageUrls.map(async (url) => {
-        if (url && url.includes('cloudinary.com')) {
-            const publicId = url.split('/').pop().split('.')[0];
-            const folderPath = url.includes('/gallery/') ? 'real-estate/gallery/' : 'real-estate/properties/';
-            return cloudinary.uploader.destroy(folderPath + publicId);
-        }
-    });
-    
+// Helper function to delete local images
+const deleteLocalImages = async (imagePaths) => {
     try {
-        await Promise.all(deletePromises);
+        for (const imagePath of imagePaths) {
+            if (imagePath && fs.existsSync(imagePath)) {
+                fs.unlinkSync(imagePath);
+                console.log(`Deleted local image: ${imagePath}`);
+            }
+        }
     } catch (error) {
-        console.error('Error deleting images from Cloudinary:', error);
+        console.error('Error deleting local images:', error);
     }
 };
 
@@ -26,12 +24,12 @@ exports.createProperty = async (req, res) => {
         if (!propertyData.status || !['available', 'booked', 'rented', 'sold'].includes(propertyData.status)) {
             propertyData.status = 'available';
         }
-        
+
         // Handle main image
         if (req.files && req.files.mainImage) {
             propertyData.mainImage = req.files.mainImage[0].path;
         }
-        
+
         // Handle gallery images
         if (req.files && req.files.galleryImages) {
             propertyData.galleryImages = req.files.galleryImages.map(file => file.path);
@@ -39,22 +37,18 @@ exports.createProperty = async (req, res) => {
             // Create image metadata
             propertyData.imageMetadata = req.files.galleryImages.map(file => ({
                 url: file.path,
-                filename: file.filename,
-                size: file.size,
-                uploadDate: new Date(),
                 alt: `${propertyData.title || 'Property'} - Gallery Image`,
                 caption: ''
             }));
         }
-        
+
         const property = await Property.create(propertyData);
-        
+
         res.status(201).json({
             success: true,
             data: property,
-            message: 'Property created successfully with images uploaded to Cloudinary'
+            message: 'Property created successfully with images uploaded locally'
         });
-        
     } catch (error) {
         // If property creation fails, clean up uploaded images
         if (req.files) {
@@ -63,9 +57,109 @@ exports.createProperty = async (req, res) => {
             if (req.files.galleryImages) {
                 imagesToDelete.push(...req.files.galleryImages.map(f => f.path));
             }
-            await deleteCloudinaryImages(imagesToDelete);
+            await deleteLocalImages(imagesToDelete);
         }
         
+        res.status(400).json({
+            success: false,
+            error: error.message
+        });
+    }
+};
+
+exports.getProperties = async (req, res) => {
+    try {
+        let query = {};
+        
+        // Filter by status
+        if (req.query.status) {
+            query.status = req.query.status;
+        }
+        
+        // Filter by type
+        if (req.query.type) {
+            query.type = req.query.type;
+        }
+        
+        // Filter by listing type
+        if (req.query.listingType) {
+            query.listingType = req.query.listingType;
+        }
+        
+        // Filter by price range
+        if (req.query.minPrice || req.query.maxPrice) {
+            query.price = {};
+            if (req.query.minPrice) query.price.$gte = Number(req.query.minPrice);
+            if (req.query.maxPrice) query.price.$lte = Number(req.query.maxPrice);
+        }
+        
+        // Filter by bedrooms
+        if (req.query.bedrooms) {
+            query.bedrooms = req.query.bedrooms;
+        }
+        
+        // Filter by bathrooms
+        if (req.query.bathrooms) {
+            query.bathrooms = req.query.bathrooms;
+        }
+        
+        // Filter by location
+        if (req.query.location) {
+            query.location = { $regex: req.query.location, $options: 'i' };
+        }
+        
+        // Filter by amenities
+        if (req.query.amenities) {
+            const amenitiesArray = req.query.amenities.split(',');
+            query.amenities = { $in: amenitiesArray };
+        }
+
+        let properties = await Property.find(query).sort({ createdAt: -1 });
+        
+        // Post-process to handle null status values in the response
+        properties = properties.map(property => {
+            const propertyObj = property.toObject();
+            if (!propertyObj.status || propertyObj.status === null) {
+                propertyObj.status = 'available';
+            }
+            return propertyObj;
+        });
+
+        res.status(200).json({
+            success: true,
+            count: properties.length,
+            data: properties
+        });
+    } catch (error) {
+        res.status(400).json({
+            success: false,
+            error: error.message
+        });
+    }
+};
+
+exports.getPropertyById = async (req, res) => {
+    try {
+        const property = await Property.findById(req.params.id);
+        
+        if (!property) {
+            return res.status(404).json({
+                success: false,
+                error: 'Property not found'
+            });
+        }
+
+        // Handle null status
+        const propertyObj = property.toObject();
+        if (!propertyObj.status || propertyObj.status === null) {
+            propertyObj.status = 'available';
+        }
+
+        res.status(200).json({
+            success: true,
+            data: propertyObj
+        });
+    } catch (error) {
         res.status(400).json({
             success: false,
             error: error.message
@@ -75,83 +169,69 @@ exports.createProperty = async (req, res) => {
 
 exports.updateProperty = async (req, res) => {
     try {
-        const existingProperty = await Property.findById(req.params.id);
-        if (!existingProperty) {
+        const property = await Property.findById(req.params.id);
+        
+        if (!property) {
             return res.status(404).json({
                 success: false,
                 error: 'Property not found'
             });
         }
-        
-        // Prepare update data
-        const updateData = { ...req.body };
-        const imagesToDelete = [];
-        
-        // Ensure status has a valid value
-        if (!updateData.status || !['available', 'booked', 'rented', 'sold'].includes(updateData.status)) {
-            updateData.status = existingProperty.status || 'available';
-        }
-        
+
+        const propertyData = { ...req.body };
+        const oldImages = [];
+
         // Handle main image update
         if (req.files && req.files.mainImage) {
-            // Delete old main image if it exists
-            if (existingProperty.mainImage) {
-                imagesToDelete.push(existingProperty.mainImage);
+            if (property.mainImage) {
+                oldImages.push(property.mainImage);
             }
-            updateData.mainImage = req.files.mainImage[0].path;
+            propertyData.mainImage = req.files.mainImage[0].path;
         }
-        
+
         // Handle gallery images update
         if (req.files && req.files.galleryImages) {
-            // Delete old gallery images if they exist
-            if (existingProperty.galleryImages && existingProperty.galleryImages.length > 0) {
-                imagesToDelete.push(...existingProperty.galleryImages);
+            if (property.galleryImages && property.galleryImages.length > 0) {
+                oldImages.push(...property.galleryImages);
             }
+            propertyData.galleryImages = req.files.galleryImages.map(file => file.path);
             
-            updateData.galleryImages = req.files.galleryImages.map(file => file.path);
-            
-            // Create new image metadata
-            updateData.imageMetadata = req.files.galleryImages.map(file => ({
+            // Create image metadata
+            propertyData.imageMetadata = req.files.galleryImages.map(file => ({
                 url: file.path,
-                filename: file.filename,
-                size: file.size,
-                uploadDate: new Date(),
-                alt: `${updateData.title || existingProperty.title} - Gallery Image`,
+                alt: `${propertyData.title || property.title || 'Property'} - Gallery Image`,
                 caption: ''
             }));
         }
-        
-        // Use findOneAndUpdate with upsert option to force schema validation
-        const updatedProperty = await Property.findOneAndUpdate(
-            { _id: req.params.id },
-            { $set: updateData },
-            { 
-                new: true, 
-                runValidators: true,
-                strict: false  // Allow updates to fields not in original schema
+
+        const updatedProperty = await Property.findByIdAndUpdate(
+            req.params.id,
+            propertyData,
+            {
+                new: true,
+                runValidators: true
             }
         );
-        
-        // Delete old images from Cloudinary after successful update
-        if (imagesToDelete.length > 0) {
-            await deleteCloudinaryImages(imagesToDelete);
+
+        // Delete old images after successful update
+        if (oldImages.length > 0) {
+            await deleteLocalImages(oldImages);
         }
-        
+
         res.status(200).json({
             success: true,
             data: updatedProperty,
             message: 'Property updated successfully'
         });
-        
     } catch (error) {
-        // If update fails and new images were uploaded, clean them up
+        // If update fails, clean up new uploaded images
         if (req.files) {
-            const newImagesToDelete = [];
-            if (req.files.mainImage) newImagesToDelete.push(req.files.mainImage[0].path);
+            const imagesToDelete = [];
+            if (req.files.mainImage) imagesToDelete.push(req.files.mainImage[0].path);
             if (req.files.galleryImages) {
-                newImagesToDelete.push(...req.files.galleryImages.map(f => f.path));
+                imagesToDelete.push(...req.files.galleryImages.map(f => f.path));
             }
-            await deleteCloudinaryImages(newImagesToDelete);
+            await deleteLocalImages(imagesToDelete);
         }
         
         res.status(400).json({
@@ -160,53 +240,6 @@ exports.updateProperty = async (req, res) => {
         });
     }
 };
-
-// UPDATED STATUS UPDATE ENDPOINT
-// exports.updatePropertyStatus = async (req, res) => {
-//     try {
-//         const { status } = req.body;
-        
-//         // Validate status
-//         const validStatuses = ['available', 'booked', 'rented', 'sold'];
-//         if (!status || !validStatuses.includes(status)) {
-//             return res.status(400).json({
-//                 success: false,
-//                 error: 'Invalid status. Must be one of: available, booked, rented, sold'
-//             });
-//         }
-        
-//         // Use direct MongoDB update to bypass schema restrictions
-//         const updatedProperty = await Property.findOneAndUpdate(
-//             { _id: req.params.id },
-//             { $set: { status: status } },
-//             { 
-//                 new: true, 
-//                 runValidators: false,  // Skip validation for this update
-//                 strict: false
-//             }
-//         );
-        
-//         if (!updatedProperty) {
-//             return res.status(404).json({
-//                 success: false,
-//                 error: 'Property not found'
-//             });
-//         }
-        
-//         res.status(200).json({
-//             success: true,
-//             data: updatedProperty,
-//             message: 'Property status updated successfully'
-//         });
-        
-//     } catch (error) {
-//         console.error('Status update error:', error);
-//         res.status(400).json({
-//             success: false,
-//             error: error.message
-//         });
-//     }
-// };
 
 exports.deleteProperty = async (req, res) => {
     try {
@@ -218,27 +251,25 @@ exports.deleteProperty = async (req, res) => {
                 error: 'Property not found'
             });
         }
-        
-        // Collect all images to delete
+
+        // Collect images to delete
         const imagesToDelete = [];
         if (property.mainImage) imagesToDelete.push(property.mainImage);
         if (property.galleryImages && property.galleryImages.length > 0) {
             imagesToDelete.push(...property.galleryImages);
         }
-        
+
         // Delete property from database
         await Property.findByIdAndDelete(req.params.id);
-        
-        // Delete images from Cloudinary
-        if (imagesToDelete.length > 0) {
-            await deleteCloudinaryImages(imagesToDelete);
-        }
-        
+
+        // Delete images from local storage
+        await deleteLocalImages(imagesToDelete);
+
         res.status(200).json({
             success: true,
-            message: 'Property and associated images deleted successfully'
+            data: {},
+            message: 'Property deleted successfully'
         });
-        
     } catch (error) {
         res.status(400).json({
             success: false,
@@ -247,111 +278,38 @@ exports.deleteProperty = async (req, res) => {
     }
 };
 
-exports.getProperties = async (req, res) => {
+exports.updatePropertyStatus = async (req, res) => {
     try {
-        const query = {};
+        const { status } = req.body;
         
-        // Location filter
-        if (req.query.location) {
-            query.location = new RegExp(req.query.location, 'i');
+        if (!status || !['available', 'booked', 'rented', 'sold'].includes(status)) {
+            return res.status(400).json({
+                success: false,
+                error: 'Invalid status. Must be: available, booked, rented, or sold'
+            });
         }
-        
-        // Property type filter
-        if (req.query.propertyType) {
-            query.propertyType = req.query.propertyType;
-        }
-        
-        // Listing type filter
-        if (req.query.listingType) {
-            query.listingType = req.query.listingType;
-        }
-        
-        // Price range filter
-        if (req.query.minPrice || req.query.maxPrice) {
-            query.price = {};
-            if (req.query.minPrice) query.price.$gte = parseInt(req.query.minPrice);
-            if (req.query.maxPrice) query.price.$lte = parseInt(req.query.maxPrice);
-        }
-        
-        // Bedrooms filter
-        if (req.query.bedrooms) {
-            const bedrooms = parseInt(req.query.bedrooms);
-            query.bedrooms = bedrooms >= 5 ? { $gte: 5 } : bedrooms;
-        }
-        
-        // Bathrooms filter
-        if (req.query.bathrooms) {
-            const bathrooms = parseInt(req.query.bathrooms);
-            query.bathrooms = bathrooms >= 4 ? { $gte: 4 } : bathrooms;
-        }
-        
-        // Status filter - handle null values
-        if (req.query.status) {
-            if (req.query.status === 'available') {
-                // Include both 'available' and null values
-                query.$or = [
-                    { status: 'available' },
-                    { status: null },
-                    { status: { $exists: false } }
-                ];
-            } else {
-                query.status = req.query.status;
-            }
-        }
-        
-        // Amenities filter
-        if (req.query.amenities) {
-            const amenitiesArray = req.query.amenities.split(',');
-            query.amenities = { $in: amenitiesArray };
-        }
-        
-        let properties = await Property.find(query).sort({ createdAt: -1 });
-        
-        // Post-process to handle null status values in the response
-        properties = properties.map(property => {
-            const propertyObj = property.toObject();
-            if (!propertyObj.status || propertyObj.status === null) {
-                propertyObj.status = 'available';
-            }
-            return propertyObj;
-        });
-        
-        res.status(200).json({
-            success: true,
-            count: properties.length,
-            data: properties
-        });
-        
-    } catch (error) {
-        res.status(400).json({
-            success: false,
-            error: error.message
-        });
-    }
-};
 
-exports.getPropertyById = async (req, res) => {
-    try {
-        let property = await Property.findById(req.params.id);
-        
+        const property = await Property.findByIdAndUpdate(
+            req.params.id,
+            { status },
+            {
+                new: true,
+                runValidators: true
+            }
+        );
+
         if (!property) {
             return res.status(404).json({
                 success: false,
                 error: 'Property not found'
             });
         }
-        
-        // Handle null status
-        const propertyObj = property.toObject();
-        if (!propertyObj.status || propertyObj.status === null) {
-            propertyObj.status = 'available';
-        }
-        
+
         res.status(200).json({
             success: true,
-            data: propertyObj
+            data: property,
+            message: 'Property status updated successfully'
         });
-        
     } catch (error) {
         res.status(400).json({
             success: false,
@@ -362,89 +320,23 @@ exports.getPropertyById = async (req, res) => {
 
 exports.getPropertyGallery = async (req, res) => {
     try {
-        const property = await Property.findById(req.params.id)
-            .select('galleryImages imageMetadata title');
+        const property = await Property.findById(req.params.id).select('galleryImages imageMetadata title');
         
         if (!property) {
-            return res.status(404).json({
-                success: false,
-                message: 'Property not found'
-            });
-        }
-        
-        // Gallery images are already full Cloudinary URLs
-        const galleryWithMetadata = property.galleryImages.map((img, index) => {
-            const metadata = property.imageMetadata && property.imageMetadata[index] 
-                ? property.imageMetadata[index] 
-                : {};
-            
-            return {
-                url: img, // Cloudinary URL is already complete
-                index,
-                alt: metadata.alt || `${property.title} - Image ${index + 1}`,
-                caption: metadata.caption || '',
-                uploadDate: metadata.uploadDate,
-                size: metadata.size
-            };
-        });
-        
-        res.json({
-            success: true,
-            data: galleryWithMetadata
-        });
-    } catch (error) {
-        res.status(500).json({
-            success: false,
-            message: 'Failed to fetch gallery',
-            error: error.message
-        });
-    }
-};
-
-// Add this method to your controller to handle status updates properly
-exports.updatePropertyStatus = async (req, res) => {
-    try {
-        const { status } = req.body;
-        const propertyId = req.params.id;
-        
-        console.log('Updating property status:', { propertyId, status }); // Debug log
-        
-        // Validate status
-        const validStatuses = ['available', 'booked', 'rented', 'sold'];
-        if (!status || !validStatuses.includes(status)) {
-            return res.status(400).json({
-                success: false,
-                error: 'Invalid status. Must be one of: available, booked, rented, sold'
-            });
-        }
-        
-        // Update the property
-        const updatedProperty = await Property.findByIdAndUpdate(
-            propertyId,
-            { status: status },
-            { 
-                new: true, 
-                runValidators: true
-            }
-        );
-        
-        if (!updatedProperty) {
             return res.status(404).json({
                 success: false,
                 error: 'Property not found'
             });
         }
-        
-        console.log('Property updated successfully:', updatedProperty.status); // Debug log
-        
+
         res.status(200).json({
             success: true,
-            data: updatedProperty,
-            message: 'Property status updated successfully'
+            data: {
+                galleryImages: property.galleryImages || [],
+                imageMetadata: property.imageMetadata || []
+            }
         });
-        
     } catch (error) {
-        console.error('Status update error:', error);
         res.status(400).json({
             success: false,
             error: error.message

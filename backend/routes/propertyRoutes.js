@@ -15,34 +15,23 @@ const router = express.Router();
 // Configure multer fields for property creation/update
 const uploadFields = [
     { name: 'mainImage', maxCount: 1 },
-    { name: 'galleryImages', maxCount: 10 } // Allow up to 10 gallery images
+    { name: 'galleryImages', maxCount: 20 } // Allow up to 20 gallery images
 ];
 
-// Route to get property gallery
-router.get('/properties/:id/gallery', getPropertyGallery);
+// Routes
+router.route('/')
+    .get(getProperties)
+    .post(uploadMainImage.fields(uploadFields), createProperty);
 
-// Route to create a new property with image uploads
-router.post('/properties', 
-    uploadMainImage.fields(uploadFields),
-    createProperty
-);
+router.route('/:id')
+    .get(getPropertyById)
+    .put(uploadMainImage.fields(uploadFields), updateProperty)
+    .delete(deleteProperty);
 
-// Route to get all properties
-router.get('/properties', getProperties);
+router.route('/:id/status')
+    .patch(updatePropertyStatus);
 
-// Route to get a property by ID
-router.get('/properties/:id', getPropertyById);
-
-// Route to update a property by ID with image uploads
-router.put('/properties/:id',
-    uploadMainImage.fields(uploadFields),
-    updateProperty
-);
-
-router.patch('/properties/:id', updatePropertyStatus);
-
-
-// Route to delete a property by ID
-router.delete('/properties/:id', deleteProperty);
+router.route('/:id/gallery')
+    .get(getPropertyGallery);
 
 module.exports = router;
