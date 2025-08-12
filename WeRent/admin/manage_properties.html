@@ -1583,7 +1583,7 @@
       ${property.isFeatured ? '<div class="property-badge featured">Featured</div>' : ''}
       ${property.status ? `<div class="property-badge status ${property.status}">${property.status}</div>` : ''}
       
-      <img src="${getImageUrl(property.mainImage)}" alt="${property.title}" class="property-img" onerror="this.src='uploads/lamu-bungalow-1.jpg'">
+    <img src="${getImageUrl(property.mainImage)}" alt="${property.title}" class="property-img" onerror="this.src='uploads/lamu-bungalow-1.jpg'"> 
       
       <div class="property-content">
         <h3 class="property-title">${property.title}</h3>
@@ -1770,10 +1770,10 @@
           }
           
           // Show current main image preview
-          if (property.mainImage) {
-            const mainImagePreview = document.getElementById('mainImagePreview');
-            mainImagePreview.src = property.mainImage;
-            mainImagePreview.style.display = 'block';
+         if (property.mainImage) {
+          const mainImagePreview = document.getElementById('mainImagePreview');
+          mainImagePreview.src = getImageUrl(property.mainImage);
+          mainImagePreview.style.display = 'block';
           } else {
             document.getElementById('mainImagePreview').style.display = 'none';
           }
