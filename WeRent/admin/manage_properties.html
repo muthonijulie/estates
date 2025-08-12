@@ -1992,27 +1992,53 @@
     }
     
 
-         const result = await response.json();
-    
-    if (result.success !== false) {
-      showAlert(`Property ${isEdit ? 'updated' : 'added'} successfully!`, 'success');
-      closePropertyModal();
-      fetchProperties();
-    } else {
-      showAlert(result.message || `Failed to ${isEdit ? 'update' : 'add'} property`, 'error');
+        
+        const result = await response.json();
+        
+        if (response.ok) {
+          showAlert(`Property ${isEdit ? 'updated' : 'added'} successfully!`, 'success');
+          closePropertyModal();
+          fetchProperties();
+        } else {
+          showAlert(result.message || `Failed to ${isEdit ? 'update' : 'add'} property`, 'error');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        showAlert(`Network error while ${propertyId ? 'updating' : 'adding'} property`, 'error');
+      } finally {
+        document.getElementById('savePropertyBtn').innerHTML = '<i class="fas fa-save"></i> Save Property';
+        document.getElementById('savePropertyBtn').disabled = false;
+      }
     }
-    
-  } catch (error) {
-    console.error('Error:', error);
-    if (error.name === 'TypeError' && error.message.includes('fetch')) {
-      showAlert('Cannot connect to server. Please check your internet connection and ensure the API server is running.', 'error');
-    } else {
-      showAlert(`Network error while ${propertyId ? 'updating' : 'adding'} property`, 'error');
-    }
-  } finally {
-    document.getElementById('savePropertyBtn').innerHTML = '<i class="fas fa-save"></i> Save Property';
-    document.getElementById('savePropertyBtn').disabled = false;
-  }
+
+    // Delete property
+    async function deleteProperty() {
+      if (!currentPropertyId) return;
+      
+      try {
+        document.getElementById('confirmDeleteBtn').innerHTML = '<div class="loading-spinner"></div> Deleting...';
+        document.getElementById('confirmDeleteBtn').disabled = true;
+        
+        const response = await fetch(`${apiBaseUrl}/properties/${currentPropertyId}`, {
+          method: 'DELETE'
+        });
+        
+        const result = await response.json();
+        
+        if (response.ok) {
+          showAlert('Property deleted successfully!', 'success');
+          closeDeleteModal();
+          fetchProperties();
+        } else {
+          showAlert(result.message || 'Failed to delete property', 'error');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        showAlert('Network error while deleting property', 'error');
+      } finally {
+        document.getElementById('confirmDeleteBtn').innerHTML = '<i class="fas fa-trash-alt"></i> Delete';
+        document.getElementById('confirmDeleteBtn').disabled = false;
+      }
     }
 
     // Toggle status dropdown menu

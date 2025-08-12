@@ -25,17 +25,22 @@ const { isAuthenticated } = require('./middleware/auth');
 
 // CORS configuration with more permissive settings to avoid CORS errors
 app.use(cors({
-    // origin: function(origin, callback) {
-    //     // Allow any origin
-    //     callback(null, true);
-    // },
-     origin: ['https://www.werentonline.com', 'http://localhost:3000'],
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
+  origin: [
+    'https://www.werentonline.com',
+    'https://werentonline.com',
+    'http://localhost:3000',
+    'http://127.0.0.1:3000'
+  ],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+ 
+
+// Handle preflight OPTIONS requests
+
     credentials: true,
     maxAge: 86400
 }));
-
+app.options('*', cors());
 // Body parsing middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
