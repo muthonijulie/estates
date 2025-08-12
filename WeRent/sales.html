@@ -1782,8 +1782,8 @@ function displayProperties(properties) {
     if (property.galleryImages && Array.isArray(property.galleryImages)) {
       property.galleryImages.forEach(img => {
        const imageUrl = getImageUrl(img);
-if (imageUrl && !allImages.includes(imageUrl)) {
-  allImages.push(imageUrl);
+        if (imageUrl && !allImages.includes(imageUrl)) {
+         allImages.push(imageUrl);
 
 
         }
@@ -1918,8 +1918,8 @@ if (imageUrl && !allImages.includes(imageUrl)) {
     if (property.galleryImages && Array.isArray(property.galleryImages)) {
       property.galleryImages.forEach(img => {
         const imageUrl = getImageUrl(img);
-if (imageUrl && !allImages.includes(imageUrl)) {
-  allImages.push(imageUrl);
+          if (imageUrl && !allImages.includes(imageUrl)) {
+            allImages.push(imageUrl);
 }
 
 
