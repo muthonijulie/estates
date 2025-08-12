@@ -25,10 +25,11 @@ const { isAuthenticated } = require('./middleware/auth');
 
 // CORS configuration with more permissive settings to avoid CORS errors
 app.use(cors({
-    origin: function(origin, callback) {
-        // Allow any origin
-        callback(null, true);
-    },
+    // origin: function(origin, callback) {
+    //     // Allow any origin
+    //     callback(null, true);
+    // },
+     origin: ['https://www.werentonline.com', 'http://localhost:3000'],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
     credentials: true,
