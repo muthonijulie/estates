@@ -1366,6 +1366,16 @@
     let totalPages = 0;
     let currentPropertyId = null;
     const apiBaseUrl = 'https://api.werentonline.com/api/v1';
+    const getImageUrl = (imagePath) => {
+  // If no image path, use placeholder
+  if (!imagePath) return 'assets/images/final.png';
+  
+  // If it's already a full URL (old Cloudinary), keep it
+  if (imagePath.startsWith('http')) return imagePath;
+  
+  // Add our server URL to the file path
+  return `http://209.74.89.145:5000/${imagePath}`;
+};
     
     // Variables to store selected files
     let selectedMainImage = null;
@@ -1556,7 +1566,7 @@
       </div>
     `;
     return;
-  }
+  } 
   
   // Calculate pagination
   const startIndex = (currentPage - 1) * propertiesPerPage;
@@ -1573,7 +1583,7 @@
       ${property.isFeatured ? '<div class="property-badge featured">Featured</div>' : ''}
       ${property.status ? `<div class="property-badge status ${property.status}">${property.status}</div>` : ''}
       
-      <img src="${property.mainImage || 'uploads/lamu-bungalow-1.jpg'}" alt="${property.title}" class="property-img" onerror="this.src='uploads/lamu-bungalow-1.jpg'">
+      <img src="${getImageUrl(property.mainImage)}" alt="${property.title}" class="property-img" onerror="this.src='uploads/lamu-bungalow-1.jpg'">
       
       <div class="property-content">
         <h3 class="property-title">${property.title}</h3>
@@ -1630,10 +1640,11 @@
     `;
     
     propertiesGrid.appendChild(card);
+
   });
 
   // Add click outside listener for status dropdown
-  document.addEventListener('click', function(event) {
+    document.addEventListener('click', function(event) {
     const dropdowns = document.querySelectorAll('.status-dropdown');
     dropdowns.forEach(dropdown => {
       if (!dropdown.contains(event.target)) {
