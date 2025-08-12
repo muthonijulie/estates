@@ -1256,6 +1256,18 @@ let calendarInstance = null;
 let propertyViewings = {};
 let globalBookedDates = {}; // Store booked dates by property ID
 
+// Add this at the beginning of your <script> section
+const getImageUrl = (imagePath) => {
+  // If no image path, use placeholder
+  if (!imagePath) return 'assets/images/final.png';
+  
+  // If it's already a full URL (old Cloudinary), keep it
+  if (imagePath.startsWith('http')) return imagePath;
+  
+  // Add our server URL to the file path
+  return `http://209.74.89.145:5000/${imagePath}`;
+};
+
 // Variables for image gallery functionality
 let currentGalleryImages = [];
 let currentGalleryIndex = 0;
@@ -1450,7 +1462,11 @@ function openGalleryModal(propertyId, startIndex = 0) {
   if (property.mainImage) allImages.push(property.mainImage);
   if (property.galleryImages && Array.isArray(property.galleryImages)) {
     property.galleryImages.forEach(img => {
-      if (img && !allImages.includes(img)) allImages.push(img);
+       // REPLACE WITH:
+const imageUrl = getImageUrl(img);
+if (imageUrl && !allImages.includes(imageUrl)) {
+  allImages.push(imageUrl);
+} 
     });
   }
   
@@ -1572,7 +1588,10 @@ function openCalendarModal(propertyId) {
   document.getElementById('calendar-property-title').textContent = property.title;
   document.getElementById('calendar-property-location').textContent = property.location;
   
-  const imageUrl = property.mainImage || (property.galleryImages && property.galleryImages.length > 0 ? property.galleryImages[0] : 'assets/images/final.png');
+  const imageUrl = getImageUrl(property.mainImage) || 
+                 (property.galleryImages && property.galleryImages.length > 0 ? 
+                  getImageUrl(property.galleryImages[0]) : 'assets/images/final.png');
+
   document.getElementById('calendar-property-img').src = imageUrl;
   
   // Get booked dates for this property from our global storage
@@ -1762,8 +1781,11 @@ function displayProperties(properties) {
     // Add gallery images, avoiding duplicates
     if (property.galleryImages && Array.isArray(property.galleryImages)) {
       property.galleryImages.forEach(img => {
-        if (img && !allImages.includes(img)) {
-          allImages.push(img);
+       const imageUrl = getImageUrl(img);
+if (imageUrl && !allImages.includes(imageUrl)) {
+  allImages.push(imageUrl);
+
+
         }
       });
     }
@@ -1895,7 +1917,12 @@ function displayProperties(properties) {
     if (property.mainImage) allImages.push(property.mainImage);
     if (property.galleryImages && Array.isArray(property.galleryImages)) {
       property.galleryImages.forEach(img => {
-        if (img && !allImages.includes(img)) allImages.push(img);
+        const imageUrl = getImageUrl(img);
+if (imageUrl && !allImages.includes(imageUrl)) {
+  allImages.push(imageUrl);
+}
+
+
       });
     }
     

@@ -544,6 +544,17 @@
             RETRY_ATTEMPTS: 3,
             RETRY_DELAY: 1000
         };
+        // Add this at the beginning of your <script> section
+const getImageUrl = (imagePath) => {
+  // If no image path, use placeholder
+  if (!imagePath) return 'assets/images/final.png';
+  
+  // If it's already a full URL (old Cloudinary), keep it
+  if (imagePath.startsWith('http')) return imagePath;
+  
+  // Add our server URL to the file path
+  return `http://209.74.89.145:5000/${imagePath}`;
+};
 
         // Global variables
         let selectedPropertyId = null;

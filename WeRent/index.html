@@ -1160,6 +1160,17 @@ const navLinks = document.getElementById('navLinks');
 const openIcon = document.getElementById('openIcon');
 const closeIcon = document.getElementById('closeIcon');
 // Global variables for calendar and property data
+// Add this at the beginning of your <script> section
+const getImageUrl = (imagePath) => {
+  // If no image path, use placeholder
+  if (!imagePath) return 'assets/images/final.png';
+  
+  // If it's already a full URL (old Cloudinary), keep it
+  if (imagePath.startsWith('http')) return imagePath;
+  
+  // Add our server URL to the file path
+  return `http://209.74.89.145:5000/${imagePath}`;
+};
 let currentPropertyId = null;
 let currentPropertyData = null;
 let calendarInstance = null;
@@ -1517,7 +1528,9 @@ return;
 document.getElementById('calendar-property-title').textContent = currentPropertyData.title || 'Property';
 document.getElementById('calendar-property-location').textContent = currentPropertyData.location || 'Location not specified';
 
-const imageUrl = currentPropertyData.mainImage || 'https://via.placeholder.com/80x80';
+const imageUrl = getImageUrl(property.mainImage) || 
+                 (property.galleryImages && property.galleryImages.length > 0 ? 
+                  getImageUrl(property.galleryImages[0]) : 'assets/images/final.png');
 document.getElementById('calendar-property-img').src = imageUrl;
 
 // Initialize calendar
