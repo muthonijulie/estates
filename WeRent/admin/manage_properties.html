@@ -1374,7 +1374,7 @@
   if (imagePath.startsWith('http')) return imagePath;
   
   // Add our server URL to the file path
-  return `http://209.74.89.145:5000/${imagePath}`;
+  return `https://api.werentonline.com/${imagePath}`;
 };
     
     // Variables to store selected files
@@ -1589,7 +1589,7 @@
       ${property.isFeatured ? '<div class="property-badge featured">Featured</div>' : ''}
       ${property.status ? `<div class="property-badge status ${property.status}">${property.status}</div>` : ''}
       
-    <img src="${getImageUrl(property.mainImage)}" alt="${property.title}" class="property-img" onerror="this.src='uploads/lamu-bungalow-1.jpg'"> 
+    <img src="${getImageUrl(property.mainImage)}" alt="${property.title}" class="property-img" "> 
       
       <div class="property-content">
         <h3 class="property-title">${property.title}</h3>

@@ -25,25 +25,20 @@ const { isAuthenticated } = require('./middleware/auth');
 
 // CORS configuration with more permissive settings to avoid CORS errors
 app.use(cors({
-  origin: [
-    'https://www.werentonline.com',
-    'https://werentonline.com',
-    'http://localhost:3000',
-    'http://127.0.0.1:3000'
-  ],
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
- 
-
-// Handle preflight OPTIONS requests
-
+    origin: function(origin, callback) {
+        // Allow any origin
+        callback(null, true);
+    },
+    
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
     credentials: true,
     maxAge: 86400
 }));
-app.options('*', cors());
+
 // Body parsing middleware
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: '25mb' }));
+app.use(express.urlencoded({ extended: true, limit: '25mb' }));
 
 // FIXED: MongoDB connection without deprecated options
 const connectDB = async () => {
