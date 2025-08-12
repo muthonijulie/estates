@@ -1,6 +1,5 @@
 const express = require('express');
 const app = express();
-const multer = require('multer');
 const fs = require('fs');
 const path = require('path');
 const session = require('express-session');
@@ -21,54 +20,8 @@ const testEmailRoutes = require('./routes/testEmail');
 const authRoutes = require('./routes/authRoutes');
 const { isAuthenticated } = require('./middleware/auth');
 
-// Multer configuration
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        const uploadPath = 'uploads/properties';
-        if (!fs.existsSync(uploadPath)) {
-            fs.mkdirSync(uploadPath, { recursive: true });
-        }
-        cb(null, uploadPath);
-    },
-    filename: function (req, file, cb) {
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-        cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
-    }
-});
-
-const upload = multer({
-    storage: storage,
-    limits: {
-        fileSize: 5 * 1024 * 1024 // 5MB limit per file
-    },
-    fileFilter: function (req, file, cb) {
-        const allowedTypes = /jpeg|jpg|png|gif|webp/;
-        const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
-        const mimetype = allowedTypes.test(file.mimetype);
-        
-        if (mimetype && extname) {
-            return cb(null, true);
-        } else {
-            cb(new Error('Only image files are allowed'));
-        }
-    }
-});
-
-// Session configuration
-app.use(session({
-    secret: process.env.SESSION_SECRET || 'your_session_secret_key_here',
-    resave: false,
-    saveUninitialized: false,
-    store: MongoStore.create({
-        mongoUrl: process.env.MONGODB_URI,
-        ttl: 24 * 60 * 60 // Session TTL (1 day)
-    }),
-    cookie: {
-        secure: process.env.NODE_ENV === 'production', // true in production
-        httpOnly: true,
-        maxAge: 24 * 60 * 60 * 1000 // 1 day
-    }
-}));
+// REMOVED OLD MULTER CONFIG - Using dedicated uploadMiddleware.js instead
+// The uploadMiddleware.js handles property image uploads with 25MB limits
 
 // CORS configuration with more permissive settings to avoid CORS errors
 app.use(cors({
@@ -86,15 +39,50 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Connecting to the database
-mongoose.connect(process.env.MONGODB_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-}).then(() => {
-    console.log("Connected to MongoDB");
-}).catch((err) => {
-    console.error("Error connecting to MongoDB:", err);
-});
+// FIXED: MongoDB connection without deprecated options
+const connectDB = async () => {
+    try {
+        // Removed useNewUrlParser and useUnifiedTopology (deprecated in v4.0+)
+        const conn = await mongoose.connect(process.env.MONGODB_URI);
+        console.log(`MongoDB Connected: ${conn.connection.host}`);
+    } catch (error) {
+        console.error("Error connecting to MongoDB:", error);
+        
+        // Fallback connection attempts
+        console.log("Attempting fallback connection strategies...");
+        
+        // Try with explicit options if needed
+        try {
+            await mongoose.connect(process.env.MONGODB_URI, {
+                serverSelectionTimeoutMS: 5000,
+                socketTimeoutMS: 45000,
+            });
+            console.log("MongoDB Connected via fallback method");
+        } catch (fallbackError) {
+            console.error("Fallback connection also failed:", fallbackError);
+            process.exit(1);
+        }
+    }
+};
+
+// Connect to database
+connectDB();
+
+// Session configuration (after DB connection)
+app.use(session({
+    secret: process.env.SESSION_SECRET || 'your_session_secret_key_here',
+    resave: false,
+    saveUninitialized: false,
+    store: MongoStore.create({
+        mongoUrl: process.env.MONGODB_URI,
+        ttl: 24 * 60 * 60 // Session TTL (1 day)
+    }),
+    cookie: {
+        secure: process.env.NODE_ENV === 'production', // true in production
+        httpOnly: true,
+        maxAge: 24 * 60 * 60 * 1000 // 1 day
+    }
+}));
 
 // Serve static files
 app.use(express.static(path.join(__dirname, 'public')));
@@ -154,9 +142,22 @@ app.use((error, req, res, next) => {
         if (error.code === 'LIMIT_FILE_SIZE') {
             return res.status(400).json({
                 success: false,
-                message: 'File too large. Maximum size is 5MB.'
+                message: 'File too large. Maximum size is 25MB for property images.'
             });
         }
+        if (error.code === 'LIMIT_FILE_COUNT') {
+            return res.status(400).json({
+                success: false,
+                message: 'Too many files. Maximum 20 gallery images allowed.'
+            });
+        }
+    }
+    
+    if (error.message === 'Only image files are allowed!') {
+        return res.status(400).json({
+            success: false,
+            message: 'Only image files (JPG, PNG, GIF, WebP) are allowed.'
+        });
     }
     
     console.error('Server error:', error);

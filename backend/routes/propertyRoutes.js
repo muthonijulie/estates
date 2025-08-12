@@ -8,24 +8,20 @@ const {
     deleteProperty,
     updatePropertyStatus
 } = require('../controllers/propertyController');
-const { uploadMainImage, uploadGalleryImages } = require('../middleware/uploadMiddleware');
+
+// Import the CORRECT middleware exports
+const { uploadImages, handleUploadError } = require('../middleware/uploadMiddleware');
 
 const router = express.Router();
 
-// Configure multer fields for property creation/update
-const uploadFields = [
-    { name: 'mainImage', maxCount: 1 },
-    { name: 'galleryImages', maxCount: 20 } // Allow up to 20 gallery images
-];
-
-// Routes
+// Routes with the fixed middleware
 router.route('/')
     .get(getProperties)
-    .post(uploadMainImage.fields(uploadFields), createProperty);
+    .post(uploadImages, handleUploadError, createProperty);
 
 router.route('/:id')
     .get(getPropertyById)
-    .put(uploadMainImage.fields(uploadFields), updateProperty)
+    .put(uploadImages, handleUploadError, updateProperty)
     .delete(deleteProperty);
 
 router.route('/:id/status')
