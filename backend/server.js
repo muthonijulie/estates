@@ -23,43 +23,100 @@ const { isAuthenticated } = require('./middleware/auth');
 
 // CORS configuration with more permissive settings to avoid CORS errors
 app.use(cors({
-    origin: function(origin, callback) {
-        // Allow any origin
-        callback(null, true);
+     origin: function(origin, callback) {
+        // Allow requests from both HTTP and HTTPS
+        const allowedOrigins = [
+            'http://localhost:3000',
+            'http://localhost:5000',
+            'http://209.74.89.145:5000',
+            'https://api.werentonline.com', 
+            'https://www.werentonline.com/' // Replace with your actual domain
+            
+        ];
+        
+  // Allow requests with no origin (mobile apps, etc.)
+        if (!origin) return callback(null, true);
+        
+        // Allow all origins in development
+        if (process.env.NODE_ENV !== 'production') {
+            return callback(null, true);
+        }
+        
+        // Check allowed origins in production
+        if (allowedOrigins.includes(origin)) {
+            return callback(null, true);
+        }
+        
+        callback(null, true); // For now, allow all - tighten this in production
     },
     
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
+    allowedHeaders: [
+        'Content-Type', 
+        'Authorization', 
+        'X-Requested-With', 
+        'Accept', 
+        'Origin',
+        'X-Forwarded-Proto',
+        'X-Forwarded-For'
+    ],
     credentials: true,
-    maxAge: 86400
+    maxAge: 86400,
+    optionsSuccessStatus: 200
 }));
 
 // Handle preflight requests explicitly
 app.options('*', cors());
 
+// Force HTTPS redirect in production (if needed)
+app.use((req, res, next) => {
+    // Skip redirect for localhost and development
+    if (req.hostname === 'localhost' || req.hostname === '127.0.0.1' || process.env.NODE_ENV !== 'production') {
+        return next();
+    }
+    
+    // Force HTTPS in production
+    if (req.header('x-forwarded-proto') !== 'https') {
+        res.redirect(`https://${req.header('host')}${req.url}`);
+    } else {
+        next();
+    }
+});
+
 // Body parsing middleware
 app.use(express.json({ limit: '25mb' }));
 app.use(express.urlencoded({ extended: true, limit: '25mb' }));
 
-// STATIC FILE SERVING - Enhanced with proper headers
+// ENHANCED STATIC FILE SERVING with better CORS and security headers
 app.use('/uploads', express.static(path.join(__dirname, 'uploads'), {
-    setHeaders: (res, path) => {
-        // Add CORS headers for all static files
+    setHeaders: (res, filePath) => {
+        // Enhanced CORS headers
         res.setHeader('Access-Control-Allow-Origin', '*');
-        res.setHeader('Access-Control-Allow-Methods', 'GET');
+        res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+        res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+        
+        // Cache control
         res.setHeader('Cache-Control', 'public, max-age=86400');
         
-        // Set proper MIME types for images
-        if (path.endsWith('.jpg') || path.endsWith('.jpeg')) {
-            res.setHeader('Content-Type', 'image/jpeg');
-        } else if (path.endsWith('.png')) {
-            res.setHeader('Content-Type', 'image/png');
-        } else if (path.endsWith('.gif')) {
-            res.setHeader('Content-Type', 'image/gif');
-        } else if (path.endsWith('.webp')) {
-            res.setHeader('Content-Type', 'image/webp');
+        // Security headers
+        res.setHeader('X-Content-Type-Options', 'nosniff');
+        
+        // Set proper MIME types
+        const ext = path.extname(filePath).toLowerCase();
+        const mimeTypes = {
+            '.jpg': 'image/jpeg',
+            '.jpeg': 'image/jpeg',
+            '.png': 'image/png',
+            '.gif': 'image/gif',
+            '.webp': 'image/webp',
+            '.svg': 'image/svg+xml'
+        };
+        
+        if (mimeTypes[ext]) {
+            res.setHeader('Content-Type', mimeTypes[ext]);
         }
-    }
+    },
+    maxAge: '1d'
 }));
 
 app.use('/public', express.static(path.join(__dirname, 'public')));
@@ -77,9 +134,6 @@ const connectDB = async () => {
     } catch (error) {
         console.error("Error connecting to MongoDB:", error);
         
-        // Fallback connection attempts
-        console.log("Attempting fallback connection strategies...");
-        
         try {
             await mongoose.connect(process.env.MONGODB_URI, {
                 serverSelectionTimeoutMS: 5000,
@@ -93,10 +147,9 @@ const connectDB = async () => {
     }
 };
 
-// Connect to database
 connectDB();
 
-// Session configuration
+// Session configuration with HTTPS support
 app.use(session({
     secret: process.env.SESSION_SECRET || 'your_session_secret_key_here',
     resave: false,
@@ -106,14 +159,13 @@ app.use(session({
         ttl: 24 * 60 * 60
     }),
     cookie: {
-        secure: process.env.NODE_ENV === 'production',
+        secure: process.env.NODE_ENV === 'production', // Auto-detect HTTPS
         httpOnly: true,
-        maxAge: 24 * 60 * 60 * 1000
-    }
+        maxAge: 24 * 60 * 60 * 1000,
+        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax'
+    },
+    name: 'sessionId'
 }));
-
-// Serve static files (duplicate removed - already handled above)
-app.use(express.static(path.join(__dirname, 'public')));
 
 // Authentication middleware for admin pages
 app.use('/admin', (req, res, next) => {
@@ -131,6 +183,105 @@ app.use('/admin', (req, res, next) => {
     return res.redirect('/admin/login.html');
 });
 
+// ENHANCED IMAGE PROXY ENDPOINT - Critical for HTTPS compatibility
+app.get('/api/proxy-image/:imagePath(*)', (req, res) => {
+    const imagePath = decodeURIComponent(req.params.imagePath);
+    console.log('🖼️ Image proxy request for:', imagePath);
+    
+    // Set CORS headers
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET');
+    res.setHeader('Cache-Control', 'public, max-age=86400');
+    
+    const possiblePaths = [
+        path.join(__dirname, imagePath),
+        path.join(__dirname, 'uploads', imagePath),
+        path.join(__dirname, 'uploads/properties', path.basename(imagePath)),
+        path.join(__dirname, 'uploads', path.basename(imagePath))
+    ];
+    
+    console.log('🔍 Searching in paths:', possiblePaths);
+    
+    for (const filePath of possiblePaths) {
+        if (fs.existsSync(filePath)) {
+            console.log('✅ Image found at:', filePath);
+            
+            // Set proper content type
+            const ext = path.extname(filePath).toLowerCase();
+            const mimeTypes = {
+                '.jpg': 'image/jpeg',
+                '.jpeg': 'image/jpeg',
+                '.png': 'image/png',
+                '.gif': 'image/gif',
+                '.webp': 'image/webp',
+                '.svg': 'image/svg+xml'
+            };
+            
+            if (mimeTypes[ext]) {
+                res.setHeader('Content-Type', mimeTypes[ext]);
+            }
+            
+            return res.sendFile(path.resolve(filePath));
+        }
+    }
+    
+    console.warn('❌ Image not found:', imagePath);
+    
+    // Try to serve placeholder if available
+    const placeholderPath = path.join(__dirname, 'public/assets/images/final.png');
+    if (fs.existsSync(placeholderPath)) {
+        res.setHeader('Content-Type', 'image/png');
+        return res.sendFile(path.resolve(placeholderPath));
+    }
+    
+    res.status(404).json({
+        error: 'Image not found',
+        requestedPath: imagePath,
+        searchedPaths: possiblePaths.map(p => ({
+            path: p,
+            exists: fs.existsSync(p)
+        }))
+    });
+});
+
+// Alternative proxy endpoint with different route structure
+app.get('/api/images/:folder?/:filename', (req, res) => {
+    const folder = req.params.folder;
+    const filename = req.params.filename || folder; // Handle case where folder is actually filename
+    
+    // Set CORS headers
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Cache-Control', 'public, max-age=86400');
+    
+    const possiblePaths = [
+        folder && filename !== folder 
+            ? path.join(__dirname, 'uploads', folder, filename)
+            : path.join(__dirname, 'uploads/properties', filename || folder),
+        path.join(__dirname, 'uploads', filename || folder)
+    ];
+    
+    for (const filePath of possiblePaths) {
+        if (fs.existsSync(filePath)) {
+            const ext = path.extname(filePath).toLowerCase();
+            const mimeTypes = {
+                '.jpg': 'image/jpeg',
+                '.jpeg': 'image/jpeg', 
+                '.png': 'image/png',
+                '.gif': 'image/gif',
+                '.webp': 'image/webp'
+            };
+            
+            if (mimeTypes[ext]) {
+                res.setHeader('Content-Type', mimeTypes[ext]);
+            }
+            
+            return res.sendFile(path.resolve(filePath));
+        }
+    }
+    
+    res.status(404).send('Image not found');
+});
+
 // API Routes
 app.use('/api/v1', viewRoutes);
 app.use('/api/v1', propertyRoutes);
@@ -143,30 +294,35 @@ app.use('/api/auth', authRoutes);
 
 const port_number = process.env.PORT || 5000;
 
-// ENHANCED HEALTH CHECK - More informative
+// ENHANCED HEALTH CHECK
 app.get('/', (req, res) => {
     res.json({
         status: "Server is Healthy 😂😂😂",
         timestamp: new Date().toISOString(),
+        protocol: req.protocol,
+        host: req.get('host'),
+        secure: req.secure,
+        environment: process.env.NODE_ENV || 'development',
         uploadsPath: path.join(__dirname, 'uploads'),
-        staticFilesServed: [
-            '/uploads',
-            '/public', 
-            '/static',
-            '/files'
-        ],
-        corsEnabled: true
+        staticFilesServed: ['/uploads', '/public', '/static', '/files'],
+        corsEnabled: true,
+        proxyEndpoints: [
+            '/api/proxy-image/:imagePath',
+            '/api/images/:folder/:filename'
+        ]
     });
 });
 
-// DEBUGGING ENDPOINTS
+// Alternative health endpoint
 app.get('/health', (req, res) => {
     const uploadsPath = path.join(__dirname, 'uploads');
     const propertiesPath = path.join(__dirname, 'uploads/properties');
     
     res.json({
         status: 'OK',
-        server: `http://209.74.89.145:${port_number}`,
+        server: `${req.protocol}://${req.get('host')}`,
+        timestamp: new Date().toISOString(),
+        environment: process.env.NODE_ENV || 'development',
         paths: {
             uploads: uploadsPath,
             properties: propertiesPath,
@@ -174,11 +330,12 @@ app.get('/health', (req, res) => {
             propertiesExists: fs.existsSync(propertiesPath)
         },
         cors: 'enabled',
-        timestamp: new Date().toISOString()
+        https: req.secure,
+        protocol: req.protocol
     });
 });
 
-// List files endpoint for debugging
+// Enhanced file listing endpoint
 app.get('/api/files/list', (req, res) => {
     try {
         const uploadsPath = path.join(__dirname, 'uploads');
@@ -189,12 +346,16 @@ app.get('/api/files/list', (req, res) => {
             properties: []
         };
         
+        const protocol = req.secure ? 'https' : 'http';
+        const host = req.get('host');
+        
         if (fs.existsSync(uploadsPath)) {
             files.uploads = fs.readdirSync(uploadsPath)
                 .filter(file => file.match(/\.(jpg|jpeg|png|gif|webp)$/i))
                 .map(filename => ({
                     filename,
-                    url: `http://209.74.89.145:${port_number}/uploads/${filename}`
+                    url: `${protocol}://${host}/uploads/${filename}`,
+                    proxyUrl: `${protocol}://${host}/api/proxy-image/uploads/${filename}`
                 }));
         }
         
@@ -203,18 +364,26 @@ app.get('/api/files/list', (req, res) => {
                 .filter(file => file.match(/\.(jpg|jpeg|png|gif|webp)$/i))
                 .map(filename => ({
                     filename,
-                    url: `http://209.74.89.145:${port_number}/uploads/properties/${filename}`
+                    url: `${protocol}://${host}/uploads/properties/${filename}`,
+                    proxyUrl: `${protocol}://${host}/api/proxy-image/uploads/properties/${filename}`
                 }));
         }
         
-        res.json({ files });
+        res.json({ 
+            files,
+            serverInfo: {
+                protocol,
+                host,
+                secure: req.secure
+            }
+        });
     } catch (error) {
         console.error('❌ Error listing files:', error);
         res.status(500).json({ error: 'Could not list files' });
     }
 });
 
-// Test specific image endpoint
+// Enhanced test image endpoint
 app.get('/test-image/:folder?/:filename', (req, res) => {
     const folder = req.params.folder || '';
     const filename = req.params.filename || req.params.folder;
@@ -230,14 +399,36 @@ app.get('/test-image/:folder?/:filename', (req, res) => {
     for (const imagePath of possiblePaths) {
         if (fs.existsSync(imagePath)) {
             console.log('✅ Found image at:', imagePath);
-            return res.sendFile(imagePath);
+            
+            // Set proper headers
+            const ext = path.extname(imagePath).toLowerCase();
+            const mimeTypes = {
+                '.jpg': 'image/jpeg',
+                '.jpeg': 'image/jpeg',
+                '.png': 'image/png',
+                '.gif': 'image/gif',
+                '.webp': 'image/webp'
+            };
+            
+            if (mimeTypes[ext]) {
+                res.setHeader('Content-Type', mimeTypes[ext]);
+            }
+            
+            res.setHeader('Access-Control-Allow-Origin', '*');
+            res.setHeader('Cache-Control', 'public, max-age=3600');
+            
+            return res.sendFile(path.resolve(imagePath));
         }
     }
     
     res.status(404).json({
         error: 'Image not found',
         tested: possiblePaths,
-        exists: possiblePaths.map(p => ({ path: p, exists: fs.existsSync(p) }))
+        exists: possiblePaths.map(p => ({ 
+            path: p, 
+            exists: fs.existsSync(p),
+            isFile: fs.existsSync(p) ? fs.statSync(p).isFile() : false
+        }))
     });
 });
 
@@ -284,17 +475,20 @@ app.use((error, req, res, next) => {
     });
 });
 
-// CRITICAL FIX: Listen on all interfaces, not just localhost
+// Listen on all interfaces
 app.listen(port_number, '0.0.0.0', () => {
     console.log('🚀 Server Configuration:');
     console.log(`   - Server running on: http://209.74.89.145:${port_number}`);
     console.log(`   - Local access: http://localhost:${port_number}`);
+    console.log(`   - Environment: ${process.env.NODE_ENV || 'development'}`);
     console.log(`   - Uploads path: ${path.join(__dirname, 'uploads')}`);
     console.log('   - CORS: Enabled for all origins');
     console.log('   - Static files served from: /uploads, /public, /static, /files');
+    console.log('   - Image proxy endpoints: /api/proxy-image/* and /api/images/*');
     console.log('');
     console.log('🧪 Test endpoints:');
     console.log(`   Health: http://209.74.89.145:${port_number}/health`);
     console.log(`   Files:  http://209.74.89.145:${port_number}/api/files/list`);
     console.log(`   Test:   http://209.74.89.145:${port_number}/test-image/your-image.jpg`);
+    console.log(`   Proxy:  http://209.74.89.145:${port_number}/api/proxy-image/uploads/properties/your-image.jpg`);
 });

@@ -1275,8 +1275,16 @@ const getImageUrl = (imagePath) => {
   // Clean the path (remove leading slashes)
   const cleanPath = imagePath.startsWith('/') ? imagePath.substring(1) : imagePath;
   
-  // Build the final URL based on your server configuration
-  const finalUrl = `http://209.74.89.145:5000/${cleanPath}`;
+  // CRITICAL FIX: Use HTTPS instead of HTTP to avoid mixed content errors
+  // Also add a proxy endpoint to handle CORS and protocol issues
+  const baseUrl = window.location.protocol === 'https:' 
+    ? 'https://your-domain.com'  // Replace with your actual HTTPS domain
+    : 'http://209.74.89.145:5000';
+  
+  // Use proxy endpoint for HTTPS compatibility
+  const finalUrl = window.location.protocol === 'https:'
+    ? `/api/proxy-image/${encodeURIComponent(cleanPath)}`
+    : `${baseUrl}/${cleanPath}`;
   
   console.log('🔗 Generated image URL:', finalUrl);
   
@@ -1286,7 +1294,7 @@ const getImageUrl = (imagePath) => {
   return finalUrl;
 };
 
-// Enhanced debugging function
+// Enhanced debugging function with better error handling
 function testImageLoad(url) {
   const img = new Image();
   
@@ -1298,49 +1306,82 @@ function testImageLoad(url) {
   img.onerror = function() {
     console.warn('❌ Primary URL failed:', url);
     
-    // Extract filename for testing alternative paths
-    const filename = url.split('/').pop();
-    const pathSegments = url.split('/');
-    
-    // Test different possible paths based on your server setup
-    const fallbackUrls = [
-      `http://209.74.89.145:5000/uploads/properties/${filename}`,
-      `http://209.74.89.145:5000/uploads/${filename}`,
-      `http://209.74.89.145:5000/test-image/properties/${filename}`,
-      `http://209.74.89.145:5000/test-image/${filename}`
-    ];
-    
-    console.log('🔄 Testing fallback URLs for:', filename);
-    
-    fallbackUrls.forEach((fallbackUrl, index) => {
-      const testImg = new Image();
-      testImg.onload = () => {
-        console.log(`✅ Fallback ${index + 1} SUCCESS:`, fallbackUrl);
-        console.log('💡 Use this URL format for future images');
-      };
-      testImg.onerror = () => {
-        console.warn(`❌ Fallback ${index + 1} failed:`, fallbackUrl);
-      };
-      testImg.src = fallbackUrl;
-    });
+    // For HTTPS sites, try different proxy approaches
+    if (window.location.protocol === 'https:') {
+      const filename = url.split('/').pop();
+      
+      const fallbackUrls = [
+        `/api/proxy-image/uploads/properties/${filename}`,
+        `/api/proxy-image/uploads/${filename}`,
+        `/api/proxy-image/properties/${filename}`,
+        'assets/images/final.png'
+      ];
+      
+      console.log('🔄 Testing HTTPS-compatible fallback URLs for:', filename);
+      
+      fallbackUrls.forEach((fallbackUrl, index) => {
+        const testImg = new Image();
+        testImg.onload = () => {
+          console.log(`✅ HTTPS Fallback ${index + 1} SUCCESS:`, fallbackUrl);
+          console.log('💡 Use this URL format for future images');
+        };
+        testImg.onerror = () => {
+          console.warn(`❌ HTTPS Fallback ${index + 1} failed:`, fallbackUrl);
+        };
+        testImg.src = fallbackUrl;
+      });
+    } else {
+      // Original HTTP fallback logic for local development
+      const filename = url.split('/').pop();
+      const fallbackUrls = [
+        `http://209.74.89.145:5000/uploads/properties/${filename}`,
+        `http://209.74.89.145:5000/uploads/${filename}`,
+        `http://209.74.89.145:5000/test-image/properties/${filename}`,
+        `http://209.74.89.145:5000/test-image/${filename}`
+      ];
+      
+      console.log('🔄 Testing HTTP fallback URLs for:', filename);
+      
+      fallbackUrls.forEach((fallbackUrl, index) => {
+        const testImg = new Image();
+        testImg.onload = () => {
+          console.log(`✅ HTTP Fallback ${index + 1} SUCCESS:`, fallbackUrl);
+        };
+        testImg.onerror = () => {
+          console.warn(`❌ HTTP Fallback ${index + 1} failed:`, fallbackUrl);
+        };
+        testImg.src = fallbackUrl;
+      });
+    }
   };
   
   img.src = url;
 }
 
-// Function to handle property images specifically
+// Function to handle property images with protocol awareness
 function getPropertyImageUrl(imagePath) {
   if (!imagePath) return 'assets/images/final.png';
   if (imagePath.startsWith('http')) return imagePath;
   
   const cleanPath = imagePath.startsWith('/') ? imagePath.substring(1) : imagePath;
   
-  // If path doesn't include 'uploads', add the full path structure
+  // For HTTPS sites, use proxy endpoint
+  if (window.location.protocol === 'https:') {
+    if (!cleanPath.startsWith('uploads/')) {
+      if (cleanPath.startsWith('properties/')) {
+        return `/api/proxy-image/uploads/${cleanPath}`;
+      } else {
+        return `/api/proxy-image/uploads/properties/${cleanPath}`;
+      }
+    }
+    return `/api/proxy-image/${cleanPath}`;
+  }
+  
+  // HTTP fallback (for local development)
   if (!cleanPath.startsWith('uploads/')) {
     if (cleanPath.startsWith('properties/')) {
       return `http://209.74.89.145:5000/uploads/${cleanPath}`;
     } else {
-      // Assume it's just the filename and belongs in properties folder
       return `http://209.74.89.145:5000/uploads/properties/${cleanPath}`;
     }
   }
@@ -1348,19 +1389,27 @@ function getPropertyImageUrl(imagePath) {
   return `http://209.74.89.145:5000/${cleanPath}`;
 }
 
-// Smart image element updater with fallbacks
+// Smart image element updater with HTTPS support
 function updateImageWithFallback(imgElement, imagePath) {
   if (!imgElement) return;
   
   const primaryUrl = getImageUrl(imagePath);
   const filename = imagePath ? imagePath.split('/').pop() : '';
   
-  const fallbackUrls = [
-    primaryUrl,
-    `http://209.74.89.145:5000/uploads/properties/${filename}`,
-    `http://209.74.89.145:5000/uploads/${filename}`,
-    'assets/images/final.png'
-  ];
+  const fallbackUrls = window.location.protocol === 'https:' 
+    ? [
+        primaryUrl,
+        `/api/proxy-image/uploads/properties/${filename}`,
+        `/api/proxy-image/uploads/${filename}`,
+        `/api/proxy-image/properties/${filename}`,
+        'assets/images/final.png'
+      ]
+    : [
+        primaryUrl,
+        `http://209.74.89.145:5000/uploads/properties/${filename}`,
+        `http://209.74.89.145:5000/uploads/${filename}`,
+        'assets/images/final.png'
+      ];
   
   let currentIndex = 0;
   
@@ -1388,17 +1437,53 @@ function updateImageWithFallback(imgElement, imagePath) {
   tryNextImage();
 }
 
-// Test functions for debugging
+// Environment detection and configuration
+function getServerConfig() {
+  const isProduction = window.location.protocol === 'https:';
+  const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+  
+  return {
+    isProduction,
+    isDevelopment,
+    baseUrl: isProduction 
+      ? window.location.origin 
+      : 'http://209.74.89.145:5000',
+    apiUrl: isProduction 
+      ? '/api/v1' 
+      : 'http://209.74.89.145:5000/api/v1',
+    imageProxy: '/api/proxy-image'
+  };
+}
+
+// Test functions for debugging with environment awareness
 async function testServerHealth() {
   console.log('🏥 Testing server health...');
   
+  const config = getServerConfig();
+  const healthUrl = config.isProduction 
+    ? '/health' 
+    : `${config.baseUrl}/health`;
+  
   try {
-    const response = await fetch('http://209.74.89.145:5000/health');
+    const response = await fetch(healthUrl);
     const data = await response.json();
     console.log('✅ Server health check passed:', data);
     return true;
   } catch (error) {
     console.error('❌ Server health check failed:', error);
+    
+    // Try alternative endpoints for HTTPS sites
+    if (config.isProduction) {
+      try {
+        const response = await fetch('/api/health');
+        const data = await response.json();
+        console.log('✅ Alternative health check passed:', data);
+        return true;
+      } catch (altError) {
+        console.error('❌ Alternative health check also failed:', altError);
+      }
+    }
+    
     return false;
   }
 }
@@ -1406,15 +1491,23 @@ async function testServerHealth() {
 async function listServerFiles() {
   console.log('📁 Fetching file list from server...');
   
+  const config = getServerConfig();
+  const filesUrl = config.isProduction 
+    ? '/api/files/list' 
+    : `${config.baseUrl}/api/files/list`;
+  
   try {
-    const response = await fetch('http://209.74.89.145:5000/api/files/list');
+    const response = await fetch(filesUrl);
     const data = await response.json();
     console.log('📋 Available files:', data);
     
-    if (data.files.properties && data.files.properties.length > 0) {
+    if (data.files && data.files.properties && data.files.properties.length > 0) {
       console.log('🖼️ Property images found:');
       data.files.properties.forEach((file, index) => {
-        console.log(`  ${index + 1}. ${file.filename} -> ${file.url}`);
+        const displayUrl = config.isProduction 
+          ? `/api/proxy-image/uploads/properties/${file.filename}`
+          : file.url;
+        console.log(`  ${index + 1}. ${file.filename} -> ${displayUrl}`);
       });
     }
     
@@ -1425,17 +1518,26 @@ async function listServerFiles() {
   }
 }
 
-// Test with actual server image
+// Test with actual server image (environment-aware)
 function testActualImage(filename) {
   console.log(`🧪 Testing actual image: ${filename}`);
   
-  const testUrl = `http://209.74.89.145:5000/test-image/properties/${filename}`;
+  const config = getServerConfig();
+  const testUrl = config.isProduction 
+    ? `/api/proxy-image/uploads/properties/${filename}`
+    : `${config.baseUrl}/test-image/properties/${filename}`;
+    
   testImageLoad(testUrl);
 }
 
-// Usage examples:
+// Usage examples with environment detection
+const config = getServerConfig();
 console.log('🚀 Image loading utilities ready!');
-console.log('Run these in console to test:');
+console.log('🌍 Environment:', config.isProduction ? 'Production (HTTPS)' : 'Development (HTTP)');
+console.log('📡 Base URL:', config.baseUrl);
+console.log('🖼️ Using image proxy:', config.isProduction);
+console.log('');
+console.log('🧪 Test commands:');
 console.log('- testServerHealth()');
 console.log('- listServerFiles()');
 console.log('- testActualImage("your-image-filename.jpg")');
@@ -1443,7 +1545,6 @@ console.log('- getImageUrl("uploads/properties/your-image.jpg")');
 
 // Auto-test server connectivity
 testServerHealth();
-
 // Variables for image gallery functionality
 let currentGalleryImages = [];
 let currentGalleryIndex = 0;
