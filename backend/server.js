@@ -5,7 +5,7 @@ const path = require('path');
 const session = require('express-session');
 const MongoStore = require('connect-mongo');
 const Property = require('./models/Property');
-const multer = require('multer'); // ADD THIS - needed for error handling
+const multer = require('multer');
 
 require("dotenv").config();
 
@@ -21,20 +21,23 @@ const testEmailRoutes = require('./routes/testEmail');
 const authRoutes = require('./routes/authRoutes');
 const { isAuthenticated } = require('./middleware/auth');
 
-// CORS configuration with more permissive settings to avoid CORS errors
+// CRITICAL: Trust proxy for HTTPS deployment
+app.set('trust proxy', 1);
+
+// CORS configuration with enhanced settings for HTTPS/HTTP compatibility
 app.use(cors({
-     origin: function(origin, callback) {
+    origin: function(origin, callback) {
         // Allow requests from both HTTP and HTTPS
         const allowedOrigins = [
             'http://localhost:3000',
             'http://localhost:5000',
             'http://209.74.89.145:5000',
-            'https://api.werentonline.com', 
-            'https://www.werentonline.com/' // Replace with your actual domain
-            
+            'https://www.werentonline.com', 
+            'https://api.werentonline.com/api/v1', // Replace with your actual domain
+            // Add your actual production domain here
         ];
         
-  // Allow requests with no origin (mobile apps, etc.)
+        // Allow requests with no origin (mobile apps, etc.)
         if (!origin) return callback(null, true);
         
         // Allow all origins in development
@@ -185,8 +188,11 @@ app.use('/admin', (req, res, next) => {
 
 // ENHANCED IMAGE PROXY ENDPOINT - Critical for HTTPS compatibility
 app.get('/api/proxy-image/:imagePath(*)', (req, res) => {
-    const imagePath = decodeURIComponent(req.params.imagePath);
+    // Double decode to handle potential double encoding
+    let imagePath = decodeURIComponent(decodeURIComponent(req.params.imagePath));
+    
     console.log('🖼️ Image proxy request for:', imagePath);
+    console.log('🔍 Original param:', req.params.imagePath);
     
     // Set CORS headers
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -197,7 +203,10 @@ app.get('/api/proxy-image/:imagePath(*)', (req, res) => {
         path.join(__dirname, imagePath),
         path.join(__dirname, 'uploads', imagePath),
         path.join(__dirname, 'uploads/properties', path.basename(imagePath)),
-        path.join(__dirname, 'uploads', path.basename(imagePath))
+        path.join(__dirname, 'uploads', path.basename(imagePath)),
+        // Additional fallbacks for different path structures
+        path.join(__dirname, imagePath.replace('uploads/', '')),
+        path.join(__dirname, 'uploads/properties', imagePath.replace(/^.*\//, '')),
     ];
     
     console.log('🔍 Searching in paths:', possiblePaths);
@@ -237,6 +246,7 @@ app.get('/api/proxy-image/:imagePath(*)', (req, res) => {
     res.status(404).json({
         error: 'Image not found',
         requestedPath: imagePath,
+        originalParam: req.params.imagePath,
         searchedPaths: possiblePaths.map(p => ({
             path: p,
             exists: fs.existsSync(p)

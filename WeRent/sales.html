@@ -1272,21 +1272,20 @@ const getImageUrl = (imagePath) => {
     return imagePath;
   }
   
+  // CRITICAL FIX: Decode the path first to handle double-encoding
+  let cleanPath = decodeURIComponent(imagePath);
+  
   // Clean the path (remove leading slashes)
-  const cleanPath = imagePath.startsWith('/') ? imagePath.substring(1) : imagePath;
+  cleanPath = cleanPath.startsWith('/') ? cleanPath.substring(1) : cleanPath;
   
-  // CRITICAL FIX: Use HTTPS instead of HTTP to avoid mixed content errors
-  // Also add a proxy endpoint to handle CORS and protocol issues
-  const baseUrl = window.location.protocol === 'https:' 
-    ? 'https://your-domain.com'  // Replace with your actual HTTPS domain
-    : 'http://209.74.89.145:5000';
-  
-  // Use proxy endpoint for HTTPS compatibility
+  // Use proxy endpoint for HTTPS compatibility - NO ENCODING for the path part
   const finalUrl = window.location.protocol === 'https:'
-    ? `/api/proxy-image/${encodeURIComponent(cleanPath)}`
-    : `${baseUrl}/${cleanPath}`;
+    ? `/api/proxy-image/${cleanPath}`
+    : `http://209.74.89.145:5000/${cleanPath}`;
   
   console.log('🔗 Generated image URL:', finalUrl);
+  console.log('🔗 Original path:', imagePath);
+  console.log('🔗 Cleaned path:', cleanPath);
   
   // Test the image load for debugging
   testImageLoad(finalUrl);
@@ -1306,14 +1305,17 @@ function testImageLoad(url) {
   img.onerror = function() {
     console.warn('❌ Primary URL failed:', url);
     
+    // Extract just the filename from the URL for fallbacks
+    const urlParts = url.split('/');
+    const filename = urlParts[urlParts.length - 1];
+    
     // For HTTPS sites, try different proxy approaches
     if (window.location.protocol === 'https:') {
-      const filename = url.split('/').pop();
-      
       const fallbackUrls = [
         `/api/proxy-image/uploads/properties/${filename}`,
         `/api/proxy-image/uploads/${filename}`,
         `/api/proxy-image/properties/${filename}`,
+        `/api/proxy-image/${filename}`,
         'assets/images/final.png'
       ];
       
@@ -1332,7 +1334,6 @@ function testImageLoad(url) {
       });
     } else {
       // Original HTTP fallback logic for local development
-      const filename = url.split('/').pop();
       const fallbackUrls = [
         `http://209.74.89.145:5000/uploads/properties/${filename}`,
         `http://209.74.89.145:5000/uploads/${filename}`,
@@ -1363,7 +1364,9 @@ function getPropertyImageUrl(imagePath) {
   if (!imagePath) return 'assets/images/final.png';
   if (imagePath.startsWith('http')) return imagePath;
   
-  const cleanPath = imagePath.startsWith('/') ? imagePath.substring(1) : imagePath;
+  // Decode first to handle double encoding
+  let cleanPath = decodeURIComponent(imagePath);
+  cleanPath = cleanPath.startsWith('/') ? cleanPath.substring(1) : cleanPath;
   
   // For HTTPS sites, use proxy endpoint
   if (window.location.protocol === 'https:') {
@@ -1394,7 +1397,9 @@ function updateImageWithFallback(imgElement, imagePath) {
   if (!imgElement) return;
   
   const primaryUrl = getImageUrl(imagePath);
-  const filename = imagePath ? imagePath.split('/').pop() : '';
+  
+  // Extract just the filename for fallbacks
+  const filename = imagePath ? imagePath.split('/').pop().replace(/%2F/g, '/').split('/').pop() : '';
   
   const fallbackUrls = window.location.protocol === 'https:' 
     ? [
@@ -1402,6 +1407,7 @@ function updateImageWithFallback(imgElement, imagePath) {
         `/api/proxy-image/uploads/properties/${filename}`,
         `/api/proxy-image/uploads/${filename}`,
         `/api/proxy-image/properties/${filename}`,
+        `/api/proxy-image/${filename}`,
         'assets/images/final.png'
       ]
     : [
