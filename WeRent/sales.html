@@ -1256,17 +1256,193 @@ let calendarInstance = null;
 let propertyViewings = {};
 let globalBookedDates = {}; // Store booked dates by property ID
 
-// Add this at the beginning of your <script> section
+
 const getImageUrl = (imagePath) => {
-  // If no image path, use placeholder
-  if (!imagePath) return 'assets/images/final.png';
+  console.log('🔍 getImageUrl called with:', imagePath);
   
-  // If it's already a full URL (old Cloudinary), keep it
+  // If no image path, use placeholder
+  if (!imagePath) {
+    console.log('❌ No image path provided, using placeholder');
+    return 'assets/images/final.png';
+  }
+  
+  // If it's already a full URL (old Cloudinary or external), keep it
+  if (imagePath.startsWith('http')) {
+    console.log('✅ Full URL detected, using as-is:', imagePath);
+    return imagePath;
+  }
+  
+  // Clean the path (remove leading slashes)
+  const cleanPath = imagePath.startsWith('/') ? imagePath.substring(1) : imagePath;
+  
+  // Build the final URL based on your server configuration
+  const finalUrl = `http://209.74.89.145:5000/${cleanPath}`;
+  
+  console.log('🔗 Generated image URL:', finalUrl);
+  
+  // Test the image load for debugging
+  testImageLoad(finalUrl);
+  
+  return finalUrl;
+};
+
+// Enhanced debugging function
+function testImageLoad(url) {
+  const img = new Image();
+  
+  img.onload = function() {
+    console.log('✅ Image loaded successfully:', url);
+    console.log('📊 Dimensions:', this.naturalWidth + 'x' + this.naturalHeight);
+  };
+  
+  img.onerror = function() {
+    console.warn('❌ Primary URL failed:', url);
+    
+    // Extract filename for testing alternative paths
+    const filename = url.split('/').pop();
+    const pathSegments = url.split('/');
+    
+    // Test different possible paths based on your server setup
+    const fallbackUrls = [
+      `http://209.74.89.145:5000/uploads/properties/${filename}`,
+      `http://209.74.89.145:5000/uploads/${filename}`,
+      `http://209.74.89.145:5000/test-image/properties/${filename}`,
+      `http://209.74.89.145:5000/test-image/${filename}`
+    ];
+    
+    console.log('🔄 Testing fallback URLs for:', filename);
+    
+    fallbackUrls.forEach((fallbackUrl, index) => {
+      const testImg = new Image();
+      testImg.onload = () => {
+        console.log(`✅ Fallback ${index + 1} SUCCESS:`, fallbackUrl);
+        console.log('💡 Use this URL format for future images');
+      };
+      testImg.onerror = () => {
+        console.warn(`❌ Fallback ${index + 1} failed:`, fallbackUrl);
+      };
+      testImg.src = fallbackUrl;
+    });
+  };
+  
+  img.src = url;
+}
+
+// Function to handle property images specifically
+function getPropertyImageUrl(imagePath) {
+  if (!imagePath) return 'assets/images/final.png';
   if (imagePath.startsWith('http')) return imagePath;
   
-  // Add our server URL to the file path
-  return `http://209.74.89.145:5000/${imagePath}`;
-};
+  const cleanPath = imagePath.startsWith('/') ? imagePath.substring(1) : imagePath;
+  
+  // If path doesn't include 'uploads', add the full path structure
+  if (!cleanPath.startsWith('uploads/')) {
+    if (cleanPath.startsWith('properties/')) {
+      return `http://209.74.89.145:5000/uploads/${cleanPath}`;
+    } else {
+      // Assume it's just the filename and belongs in properties folder
+      return `http://209.74.89.145:5000/uploads/properties/${cleanPath}`;
+    }
+  }
+  
+  return `http://209.74.89.145:5000/${cleanPath}`;
+}
+
+// Smart image element updater with fallbacks
+function updateImageWithFallback(imgElement, imagePath) {
+  if (!imgElement) return;
+  
+  const primaryUrl = getImageUrl(imagePath);
+  const filename = imagePath ? imagePath.split('/').pop() : '';
+  
+  const fallbackUrls = [
+    primaryUrl,
+    `http://209.74.89.145:5000/uploads/properties/${filename}`,
+    `http://209.74.89.145:5000/uploads/${filename}`,
+    'assets/images/final.png'
+  ];
+  
+  let currentIndex = 0;
+  
+  function tryNextImage() {
+    if (currentIndex >= fallbackUrls.length) {
+      console.error('🚨 All fallback images failed for:', imagePath);
+      return;
+    }
+    
+    const currentUrl = fallbackUrls[currentIndex];
+    
+    imgElement.onload = function() {
+      console.log(`✅ Image loaded with URL ${currentIndex + 1}:`, currentUrl);
+    };
+    
+    imgElement.onerror = function() {
+      console.warn(`❌ URL ${currentIndex + 1} failed:`, currentUrl);
+      currentIndex++;
+      tryNextImage();
+    };
+    
+    imgElement.src = currentUrl;
+  }
+  
+  tryNextImage();
+}
+
+// Test functions for debugging
+async function testServerHealth() {
+  console.log('🏥 Testing server health...');
+  
+  try {
+    const response = await fetch('http://209.74.89.145:5000/health');
+    const data = await response.json();
+    console.log('✅ Server health check passed:', data);
+    return true;
+  } catch (error) {
+    console.error('❌ Server health check failed:', error);
+    return false;
+  }
+}
+
+async function listServerFiles() {
+  console.log('📁 Fetching file list from server...');
+  
+  try {
+    const response = await fetch('http://209.74.89.145:5000/api/files/list');
+    const data = await response.json();
+    console.log('📋 Available files:', data);
+    
+    if (data.files.properties && data.files.properties.length > 0) {
+      console.log('🖼️ Property images found:');
+      data.files.properties.forEach((file, index) => {
+        console.log(`  ${index + 1}. ${file.filename} -> ${file.url}`);
+      });
+    }
+    
+    return data;
+  } catch (error) {
+    console.error('❌ Failed to fetch file list:', error);
+    return null;
+  }
+}
+
+// Test with actual server image
+function testActualImage(filename) {
+  console.log(`🧪 Testing actual image: ${filename}`);
+  
+  const testUrl = `http://209.74.89.145:5000/test-image/properties/${filename}`;
+  testImageLoad(testUrl);
+}
+
+// Usage examples:
+console.log('🚀 Image loading utilities ready!');
+console.log('Run these in console to test:');
+console.log('- testServerHealth()');
+console.log('- listServerFiles()');
+console.log('- testActualImage("your-image-filename.jpg")');
+console.log('- getImageUrl("uploads/properties/your-image.jpg")');
+
+// Auto-test server connectivity
+testServerHealth();
 
 // Variables for image gallery functionality
 let currentGalleryImages = [];

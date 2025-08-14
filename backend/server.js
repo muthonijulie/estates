@@ -5,6 +5,7 @@ const path = require('path');
 const session = require('express-session');
 const MongoStore = require('connect-mongo');
 const Property = require('./models/Property');
+const multer = require('multer'); // ADD THIS - needed for error handling
 
 require("dotenv").config();
 
@@ -20,9 +21,6 @@ const testEmailRoutes = require('./routes/testEmail');
 const authRoutes = require('./routes/authRoutes');
 const { isAuthenticated } = require('./middleware/auth');
 
-// REMOVED OLD MULTER CONFIG - Using dedicated uploadMiddleware.js instead
-// The uploadMiddleware.js handles property image uploads with 25MB limits
-
 // CORS configuration with more permissive settings to avoid CORS errors
 app.use(cors({
     origin: function(origin, callback) {
@@ -36,14 +34,44 @@ app.use(cors({
     maxAge: 86400
 }));
 
+// Handle preflight requests explicitly
+app.options('*', cors());
+
 // Body parsing middleware
 app.use(express.json({ limit: '25mb' }));
 app.use(express.urlencoded({ extended: true, limit: '25mb' }));
 
-// FIXED: MongoDB connection without deprecated options
+// STATIC FILE SERVING - Enhanced with proper headers
+app.use('/uploads', express.static(path.join(__dirname, 'uploads'), {
+    setHeaders: (res, path) => {
+        // Add CORS headers for all static files
+        res.setHeader('Access-Control-Allow-Origin', '*');
+        res.setHeader('Access-Control-Allow-Methods', 'GET');
+        res.setHeader('Cache-Control', 'public, max-age=86400');
+        
+        // Set proper MIME types for images
+        if (path.endsWith('.jpg') || path.endsWith('.jpeg')) {
+            res.setHeader('Content-Type', 'image/jpeg');
+        } else if (path.endsWith('.png')) {
+            res.setHeader('Content-Type', 'image/png');
+        } else if (path.endsWith('.gif')) {
+            res.setHeader('Content-Type', 'image/gif');
+        } else if (path.endsWith('.webp')) {
+            res.setHeader('Content-Type', 'image/webp');
+        }
+    }
+}));
+
+app.use('/public', express.static(path.join(__dirname, 'public')));
+app.use('/static', express.static(path.join(__dirname, 'static')));
+app.use('/files', express.static(path.join(__dirname, 'files')));
+
+// Also serve files directly from root for backward compatibility
+app.use(express.static(path.join(__dirname, 'uploads')));
+
+// MongoDB connection
 const connectDB = async () => {
     try {
-        // Removed useNewUrlParser and useUnifiedTopology (deprecated in v4.0+)
         const conn = await mongoose.connect(process.env.MONGODB_URI);
         console.log(`MongoDB Connected: ${conn.connection.host}`);
     } catch (error) {
@@ -52,7 +80,6 @@ const connectDB = async () => {
         // Fallback connection attempts
         console.log("Attempting fallback connection strategies...");
         
-        // Try with explicit options if needed
         try {
             await mongoose.connect(process.env.MONGODB_URI, {
                 serverSelectionTimeoutMS: 5000,
@@ -69,29 +96,27 @@ const connectDB = async () => {
 // Connect to database
 connectDB();
 
-// Session configuration (after DB connection)
+// Session configuration
 app.use(session({
     secret: process.env.SESSION_SECRET || 'your_session_secret_key_here',
     resave: false,
     saveUninitialized: false,
     store: MongoStore.create({
         mongoUrl: process.env.MONGODB_URI,
-        ttl: 24 * 60 * 60 // Session TTL (1 day)
+        ttl: 24 * 60 * 60
     }),
     cookie: {
-        secure: process.env.NODE_ENV === 'production', // true in production
+        secure: process.env.NODE_ENV === 'production',
         httpOnly: true,
-        maxAge: 24 * 60 * 60 * 1000 // 1 day
+        maxAge: 24 * 60 * 60 * 1000
     }
 }));
 
-// Serve static files
+// Serve static files (duplicate removed - already handled above)
 app.use(express.static(path.join(__dirname, 'public')));
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Authentication middleware for admin pages
 app.use('/admin', (req, res, next) => {
-    // Allow access to login page and assets without authentication
     if (req.path === '/login.html' || 
         req.path.startsWith('/assets/') || 
         req.path.startsWith('/css/') || 
@@ -99,12 +124,10 @@ app.use('/admin', (req, res, next) => {
         return next();
     }
 
-    // Check if user is authenticated
     if (req.session && req.session.adminId && req.session.isAuthenticated) {
         return next();
     }
 
-    // If not authenticated, redirect to login page
     return res.redirect('/admin/login.html');
 });
 
@@ -120,9 +143,102 @@ app.use('/api/auth', authRoutes);
 
 const port_number = process.env.PORT || 5000;
 
-// Health check route
+// ENHANCED HEALTH CHECK - More informative
 app.get('/', (req, res) => {
-    res.send("Server is Healthy 😂😂😂");
+    res.json({
+        status: "Server is Healthy 😂😂😂",
+        timestamp: new Date().toISOString(),
+        uploadsPath: path.join(__dirname, 'uploads'),
+        staticFilesServed: [
+            '/uploads',
+            '/public', 
+            '/static',
+            '/files'
+        ],
+        corsEnabled: true
+    });
+});
+
+// DEBUGGING ENDPOINTS
+app.get('/health', (req, res) => {
+    const uploadsPath = path.join(__dirname, 'uploads');
+    const propertiesPath = path.join(__dirname, 'uploads/properties');
+    
+    res.json({
+        status: 'OK',
+        server: `http://209.74.89.145:${port_number}`,
+        paths: {
+            uploads: uploadsPath,
+            properties: propertiesPath,
+            uploadsExists: fs.existsSync(uploadsPath),
+            propertiesExists: fs.existsSync(propertiesPath)
+        },
+        cors: 'enabled',
+        timestamp: new Date().toISOString()
+    });
+});
+
+// List files endpoint for debugging
+app.get('/api/files/list', (req, res) => {
+    try {
+        const uploadsPath = path.join(__dirname, 'uploads');
+        const propertiesPath = path.join(__dirname, 'uploads/properties');
+        
+        let files = {
+            uploads: [],
+            properties: []
+        };
+        
+        if (fs.existsSync(uploadsPath)) {
+            files.uploads = fs.readdirSync(uploadsPath)
+                .filter(file => file.match(/\.(jpg|jpeg|png|gif|webp)$/i))
+                .map(filename => ({
+                    filename,
+                    url: `http://209.74.89.145:${port_number}/uploads/${filename}`
+                }));
+        }
+        
+        if (fs.existsSync(propertiesPath)) {
+            files.properties = fs.readdirSync(propertiesPath)
+                .filter(file => file.match(/\.(jpg|jpeg|png|gif|webp)$/i))
+                .map(filename => ({
+                    filename,
+                    url: `http://209.74.89.145:${port_number}/uploads/properties/${filename}`
+                }));
+        }
+        
+        res.json({ files });
+    } catch (error) {
+        console.error('❌ Error listing files:', error);
+        res.status(500).json({ error: 'Could not list files' });
+    }
+});
+
+// Test specific image endpoint
+app.get('/test-image/:folder?/:filename', (req, res) => {
+    const folder = req.params.folder || '';
+    const filename = req.params.filename || req.params.folder;
+    
+    const possiblePaths = [
+        path.join(__dirname, 'uploads', folder, filename),
+        path.join(__dirname, 'uploads', 'properties', filename),
+        path.join(__dirname, 'uploads', filename)
+    ];
+    
+    console.log('🔍 Testing image paths:', possiblePaths);
+    
+    for (const imagePath of possiblePaths) {
+        if (fs.existsSync(imagePath)) {
+            console.log('✅ Found image at:', imagePath);
+            return res.sendFile(imagePath);
+        }
+    }
+    
+    res.status(404).json({
+        error: 'Image not found',
+        tested: possiblePaths,
+        exists: possiblePaths.map(p => ({ path: p, exists: fs.existsSync(p) }))
+    });
 });
 
 // Authentication check API endpoint
@@ -168,6 +284,17 @@ app.use((error, req, res, next) => {
     });
 });
 
-app.listen(port_number, () => {
-    console.log(`Server is running on http://localhost:${port_number}`);
+// CRITICAL FIX: Listen on all interfaces, not just localhost
+app.listen(port_number, '0.0.0.0', () => {
+    console.log('🚀 Server Configuration:');
+    console.log(`   - Server running on: http://209.74.89.145:${port_number}`);
+    console.log(`   - Local access: http://localhost:${port_number}`);
+    console.log(`   - Uploads path: ${path.join(__dirname, 'uploads')}`);
+    console.log('   - CORS: Enabled for all origins');
+    console.log('   - Static files served from: /uploads, /public, /static, /files');
+    console.log('');
+    console.log('🧪 Test endpoints:');
+    console.log(`   Health: http://209.74.89.145:${port_number}/health`);
+    console.log(`   Files:  http://209.74.89.145:${port_number}/api/files/list`);
+    console.log(`   Test:   http://209.74.89.145:${port_number}/test-image/your-image.jpg`);
 });
