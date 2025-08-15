@@ -1290,7 +1290,7 @@
               <label for="mainImageUpload" class="file-upload-label">
                 <i class="fas fa-cloud-upload-alt"></i>
                 <span>Click or drag to upload main property image</span>
-                <span class="text-sm">Recommended: 1200 x 800px, Max: 5MB</span>
+                <span class="text-sm">Recommended: 1200 x 800px, Max: 25MB</span>
               </label>
               <input type="file" id="mainImageUpload" name="mainImage" class="file-upload-input" accept="image/jpeg, image/png, image/webp">
             </div>
@@ -1304,7 +1304,7 @@
               <label for="galleryImagesUpload" class="file-upload-label">
                 <i class="fas fa-images"></i>
                 <span>Click or drag to upload gallery images</span>
-                <span class="text-sm">Select multiple files. Max: 3MB each</span>
+                <span class="text-sm">Select multiple files. Max: 25MB each</span>
               </label>
               <input type="file" id="galleryImagesUpload" name="galleryImages" class="file-upload-input" accept="image/jpeg, image/png, image/webp" multiple>
             </div>
@@ -1501,9 +1501,9 @@ const alertContainer = document.getElementById('alertContainer');
   let totalSize = 0;
       
       Array.from(files).forEach((file, index) => {
-    // Check file size (max 3MB)
-    if (file.size > 3 * 1024 * 1024) {
-      showAlert(`Image "${file.name}" is too large. Maximum size is 3MB.`, 'error');
+    // Check file size (max 25MB)
+    if (file.size > 25 * 1024 * 1024) {
+      showAlert(`Image "${file.name}" is too large. Maximum size is 25MB.`, 'error');
       return;
     }
     
