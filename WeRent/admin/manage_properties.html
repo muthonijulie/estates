@@ -1359,51 +1359,46 @@
   </div>
 
   <script>
-    // Global variables
-    let properties = [];
-    let currentPage = 1;
-    const propertiesPerPage = 6;
-    let totalPages = 0;
-    let currentPropertyId = null;
-    const apiBaseUrl = 'https://api.werentonline.com/api/v1';
-    const getImageUrl = (imagePath) => {
+   // Global variables
+let properties = [];
+let currentPage = 1;
+const propertiesPerPage = 6;
+let totalPages = 0;
+let currentPropertyId = null;
+const apiBaseUrl = 'https://api.werentonline.com/api/v1';
+
+// FIXED: Updated image configuration to match your working setup
+const getImageUrl = (imagePath) => {
   // If no image path, use placeholder
   if (!imagePath) return 'assets/images/final.png';
   
   // If it's already a full URL (old Cloudinary), keep it
   if (imagePath.startsWith('http')) return imagePath;
   
-  // Use your main domain as proxy to avoid mixed content
-  return `https://www.werentonline.com/proxy/images/${imagePath}`;
-};
-
-// SOLUTION 2: Environment-based configuration
-const API_CONFIG = {
-  // Use this for development (HTTP)
-  development: {
-    imageBaseUrl: 'http://209.74.89.145:5000'
-  },
-  // Use this for production (HTTPS via proxy or SSL)
-  production: {
-    imageBaseUrl: 'https://www.werentonline.com/api/images'
+  // Use the correct API endpoint for images
+  if (imagePath.startsWith('gallery/') || imagePath.startsWith('properties/') || imagePath.startsWith('images/')) {
+    // Path already includes subfolder
+    return `https://api.werentonline.com/uploads/${imagePath}`;
+  } else {
+    // Assume it's a general image if no subfolder specified
+    return `https://api.werentonline.com/uploads/images/${imagePath}`;
   }
 };
-
 const ENVIRONMENT = window.location.protocol === 'https:' ? 'production' : 'development';
 
 
     
-    // Variables to store selected files
-    let selectedMainImage = null;
-    let selectedGalleryImages = [];
+  // Variables to store selected files
+let selectedMainImage = null;
+let selectedGalleryImages = [];
 
-    // DOM elements
-    const propertyModal = document.getElementById('propertyModal');
-    const deleteModal = document.getElementById('deleteModal');
-    const propertyForm = document.getElementById('propertyForm');
-    const propertiesGrid = document.getElementById('propertiesGrid');
-    const paginationContainer = document.getElementById('pagination');
-    const alertContainer = document.getElementById('alertContainer');
+// DOM elements
+const propertyModal = document.getElementById('propertyModal');
+const deleteModal = document.getElementById('deleteModal');
+const propertyForm = document.getElementById('propertyForm');
+const propertiesGrid = document.getElementById('propertiesGrid');
+const paginationContainer = document.getElementById('pagination');
+const alertContainer = document.getElementById('alertContainer');
     
     // Mobile menu toggle
     document.getElementById('menuToggle').addEventListener('click', function() {

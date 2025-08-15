@@ -1261,23 +1261,31 @@ let globalBookedDates = {}; // Store booked dates by property ID
 const API_CONFIG = {
   // Use this for development (HTTP)
   development: {
-    imageBaseUrl: 'http://209.74.89.145:5000'
+    imageBaseUrl: 'https://api.werentonline.com/uploads'
   },
   // Use this for production (HTTPS via proxy or SSL)
   production: {
-    imageBaseUrl: 'https://www.werentonline.com/api/images'
+    imageBaseUrl: 'https://api.werentonline.com/uploads'
   }
 };
 
-const ENVIRONMENT = window.location.protocol === 'https:' ? 'production' : 'development';
+const ENVIRONMENT = 'production'; // Always use production config now
 
-  const getImageUrl = (imagePath) => {
+const getImageUrl = (imagePath) => {
   if (!imagePath) return 'assets/images/final.png';
   if (imagePath.startsWith('http')) return imagePath;
   
   const config = API_CONFIG[ENVIRONMENT];
-  return `${config.imageBaseUrl}/${imagePath}`;
-};
+  
+  // Handle different image path formats
+  if (imagePath.startsWith('gallery/') || imagePath.startsWith('properties/') || imagePath.startsWith('images/')) {
+    // Path already includes subfolder
+    return `${config.imageBaseUrl}/${imagePath}`;
+  } else {
+    // Assume it's a general image if no subfolder specified
+    return `${config.imageBaseUrl}/images/${imagePath}`;
+  }
+}
 
 // Variables for image gallery functionality
 let currentGalleryImages = [];
