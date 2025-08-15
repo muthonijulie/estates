@@ -1240,35 +1240,34 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-TNbMZjwnuN+uyVXX9A++a2hQwGItV9q8OQa2k3+u7jVr8J5eG9+lGqQvFa+hmpoK" crossorigin="anonymous"></script>
   
   <script>
-    const API_BASE_URL = 'https://api.werentonline.com/api/v1';
-    let currentPropertyId = null;
-    let allProperties = [];
-    let calendarInstance = null;
-    let propertyBookings = {}; // Store bookings data by property ID
-    let userCurrentBooking = null; // Store the user's current booking dates
-    let currentUserEmail = null; // Store user's email for matching their bookings
+ const API_BASE_URL = 'https://api.werentonline.com/api/v1';
 
+let currentPropertyId = null;
+let allProperties = [];
+let calendarInstance = null;
+let propertyBookings = {}; // Store bookings data by property ID
+let userCurrentBooking = null; // Store the user's current booking dates
+let currentUserEmail = null; // Store user's email for matching their bookings
 
-// SOLUTION 2: Environment-based configuration
-const API_CONFIG = {
-  // Use this for development (HTTP)
-  development: {
-    imageBaseUrl: 'http://209.74.89.145:5000'
-  },
-  // Use this for production (HTTPS via proxy or SSL)
-  production: {
-    imageBaseUrl: 'https://www.werentonline.com/api/images'
-  }
-};
-
-const ENVIRONMENT = window.location.protocol === 'https:' ? 'production' : 'development';
-
-  const getImageUrl = (imagePath) => {
+// FIXED: Updated to use the correct working image configuration
+const getImageUrl = (imagePath) => {
+  // If no image path, use placeholder
   if (!imagePath) return 'assets/images/final.png';
+  
+  // If it's already a full URL (old Cloudinary), keep it
   if (imagePath.startsWith('http')) return imagePath;
   
-  const config = API_CONFIG[ENVIRONMENT];
-  return `${config.imageBaseUrl}/${imagePath}`;
+  // Check if path already includes 'uploads/' prefix (from database)
+  if (imagePath.startsWith('uploads/')) {
+    // Path already has uploads prefix, just add domain
+    return `https://api.werentonline.com/${imagePath}`;
+  } else if (imagePath.startsWith('gallery/') || imagePath.startsWith('properties/') || imagePath.startsWith('images/')) {
+    // Path has subfolder but no uploads prefix
+    return `https://api.werentonline.com/uploads/${imagePath}`;
+  } else {
+    // Assume it's a general image if no subfolder specified
+    return `https://api.werentonline.com/uploads/images/${imagePath}`;
+  }
 };
 
 
