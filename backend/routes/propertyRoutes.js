@@ -1,33 +1,28 @@
 const express = require('express');
-const {
+const { 
     getPropertyGallery,
-    createProperty,
-    getProperties,
-    getPropertyById,
-    updateProperty,
-    deleteProperty,
-    updatePropertyStatus
+    createProperty, 
+    getProperties, 
+    getPropertyById, 
+    updateProperty, 
+    deleteProperty 
 } = require('../controllers/propertyController');
 
-// Import the CORRECT middleware exports
-const { uploadImages, handleUploadError } = require('../middleware/uploadMiddleware');
-
 const router = express.Router();
+router.get('/properties/:id/gallery', getPropertyGallery);
+// Route to create a new property
+router.post('/properties', createProperty);
 
-// Routes with the fixed middleware
-router.route('/')
-    .get(getProperties)
-    .post(uploadImages, handleUploadError, createProperty);
+// Route to get all properties
+router.get('/properties', getProperties);
 
-router.route('/:id')
-    .get(getPropertyById)
-    .put(uploadImages, handleUploadError, updateProperty)
-    .delete(deleteProperty);
+// Route to get a property by ID
+router.get('/properties/:id', getPropertyById);
 
-router.route('/:id/status')
-    .patch(updatePropertyStatus);
+// Route to update a property by ID
+router.put('/properties/:id', updateProperty);
 
-router.route('/:id/gallery')
-    .get(getPropertyGallery);
+// Route to delete a property by ID
+router.delete('/properties/:id', deleteProperty);
 
 module.exports = router;

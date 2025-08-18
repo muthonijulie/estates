@@ -1745,172 +1745,379 @@ function updatePropertyCards() {
 updateRentalProperties();
 updateSaleProperties();
 }
-
-// Generate multiple property images for the gallery
+// Fixed generatePropertyImages function - now properly uses API images
 function generatePropertyImages(property, count = 5) {
-// Use property's main image if available
-const mainImage = property.mainImage || null;
-
-// Placeholder image URLs
-const placeholderImages = [
-'https://via.placeholder.com/800x600/f5f5f5/666666?text=Living+Room',
-'https://via.placeholder.com/800x600/f1f1f1/666666?text=Kitchen',
-'https://via.placeholder.com/800x600/f8f8f8/666666?text=Bedroom',
-'https://via.placeholder.com/800x600/efefef/666666?text=Bathroom',
-'https://via.placeholder.com/800x600/e8e8e8/666666?text=Exterior',
-'https://via.placeholder.com/800x600/f0f0f0/666666?text=Garden',
-'https://via.placeholder.com/800x600/eaeaea/666666?text=Dining+Area'
-];
-
-// Create image array with main image as first if available
-const images = [];
-if (mainImage) {
-images.push(mainImage);
+  const images = [];
+  
+  // Add main image first if available
+  if (property.mainImage) {
+    images.push(getImageUrl(property.mainImage));
+  }
+  
+  // Add gallery images if available
+  if (property.galleryImages && Array.isArray(property.galleryImages)) {
+    property.galleryImages.forEach(img => {
+      const imageUrl = getImageUrl(img);
+      if (imageUrl && !images.includes(imageUrl)) {
+        images.push(imageUrl);
+      }
+    });
+  }
+  
+  // If no images from API, use placeholders
+  if (images.length === 0) {
+    images.push('assets/images/final.png');
+  }
+  
+  // Only add placeholders if we have fewer images than requested AND we have at least one real image
+  const placeholderImages = [
+    'https://via.placeholder.com/800x600/f5f5f5/666666?text=Living+Room',
+    'https://via.placeholder.com/800x600/f1f1f1/666666?text=Kitchen',
+    'https://via.placeholder.com/800x600/f8f8f8/666666?text=Bedroom',
+    'https://via.placeholder.com/800x600/efefef/666666?text=Bathroom',
+    'https://via.placeholder.com/800x600/e8e8e8/666666?text=Exterior'
+  ];
+  
+  // Only add placeholders if we have real images but fewer than count
+  if (images.length > 0 && images[0] !== 'assets/images/final.png' && images.length < count) {
+    while (images.length < count && images.length < 5) { // Limit to 5 total
+      const randomIndex = Math.floor(Math.random() * placeholderImages.length);
+      if (!images.includes(placeholderImages[randomIndex])) {
+        images.push(placeholderImages[randomIndex]);
+      }
+    }
+  }
+  
+  return images;
 }
 
-// Add random placeholder images to reach desired count
-while (images.length < count) {
-const randomIndex = Math.floor(Math.random() * placeholderImages.length);
-// Avoid duplicates
-if (!images.includes(placeholderImages[randomIndex])) {
-images.push(placeholderImages[randomIndex]);
-}
-}
-
-return images;
-}
-
+// Fixed createRentalCard function with clean design and working gallery
 function createRentalCard(property) {
-const card = document.createElement('div');
-card.className = 'rental-card';
+    const card = document.createElement('div');
+    card.className = 'rental-card';
 
-const formattedPrice = new Intl.NumberFormat('en-KE').format(property.price || 35000);
+    const formattedPrice = new Intl.NumberFormat('en-KE').format(property.price || 35000);
 
-// Generate random property images
-const propertyImages = generatePropertyImages(property);
+    // Get all property images (main + gallery)
+    const propertyImages = generatePropertyImages(property, 5);
+    const hasMultipleImages = propertyImages.length > 1;
 
-// Create image gallery HTML
-const galleryHTML = `
-<div class="property-gallery">
-<div class="gallery-container">
-     ${(propertyImages || []).map(img => 
-        `<img src="${getImageUrl(img)}" 
-              alt="${property.title}" 
-              onerror="this.src='assets/images/final.png'">`)
-     .join('')}
-</div>
-<div class="gallery-controls">
-<div class="gallery-indicator">
-${propertyImages.map((_, index) => `<span class="dot ${index === 0 ? 'active' : ''}"></span>`).join('')}
-</div>
-</div>
-</div>
-`;
-
-// Check if property has bookings
-const hasBookings = userBookings.has(property._id) && userBookings.get(property._id).length > 0;
-
-// Create availability status text
-let availabilityText = hasBookings ?
-'<span class="availability-tag booked">You have a booking</span>' :
-'<span class="availability-tag available">Available Now</span>';
-
-card.innerHTML = `
-<div class="property-label">For Rent</div>
-<img src="${getImageUrl(property.mainImage)}" alt="${property.title}" onerror="this.src='assets/images/final.png'">
-
-<div class="content">
-<h3>${property.title || 'Modern Apartment'}</h3>
-<p><i class="fas fa-tag"></i> Ksh ${formattedPrice} per night</p>
-<div class="property-features">
-<span class="feature"><i class="fas fa-bed"></i> ${property.bedrooms || '2'} BD</span>
-<span class="feature"><i class="fas fa-bath"></i> ${property.bathrooms || '1'} BA</span>
-<span class="feature"><i class="fas fa-map-marker-alt"></i> ${property.location || 'Nairobi'}</span>
-</div>
-${availabilityText}
-<div class="buttons">
-<button class="book-btn" onclick="openBookingForm('${property._id}')">Book Now</button>
-<button class="view-btn" onclick="toggleDetails(this)"><i class="fas fa-chevron-down"></i> View More</button>
-</div>
-<button class="calendar-btn" onclick="openCalendarModal('${property._id}', 'rental')">
-<i class="fas fa-calendar-alt"></i> Check Availability
-</button>
-<div class="details">
-${galleryHTML}
-
-                    <p><strong>Location:</strong> ${property.location || 'Not specified'}</p>
-                    <p><strong>Bedrooms:</strong> ${property.bedrooms || 'Not specified'}</p>
-                    <p><strong>Bathrooms:</strong> ${property.bathrooms || 'Not specified'}</p>
-                    <p><strong>Amenities:</strong> ${property.amenities ? property.amenities.join(', ') : 'Not specified'}</p>
-                    <p>${property.description || 'Beautiful property with great amenities.'}</p>
-                </div>
-            </div>
-        `;
-
-        return card;
-    }
-
-    function createSaleCard(property) {
-        const card = document.createElement('div');
-        card.className = 'sales-card';
-        
-        const formattedPrice = new Intl.NumberFormat('en-KE').format(property.price || 12500000);
-        
-        // Generate random property images
-        const propertyImages = generatePropertyImages(property);
-        
-        // Create image gallery HTML
-        const galleryHTML = `
-            <div class="property-gallery">
-                 ${(propertyImages || []).map(img => 
-        `<img src="${getImageUrl(img)}" 
-              alt="${property.title}" 
-              onerror="this.src='assets/images/final.png'">`)
-     .join('')}
-                <div class="gallery-container">
-                    ${propertyImages.map(img => `<img src="${img}" alt="${property.title}" onerror="this.src='https://via.placeholder.com/800x600'">`).join('')}
-                </div>
-                <div class="gallery-controls">
-                    <button class="gallery-control prev" onclick="prevImage(this)"><i class="fas fa-chevron-left"></i></button>
-                    <div class="gallery-indicator">
-                        ${propertyImages.map((_, index) => `<span class="dot ${index === 0 ? 'active' : ''}"></span>`).join('')}
-                    </div>
-                    <button class="gallery-control next" onclick="nextImage(this)"><i class="fas fa-chevron-right"></i></button>
-                </div>
-            </div>
-        `;
-        
-        card.innerHTML = `
-            <div class="property-label">For Sale</div>
-            <img src="${getImageUrl(property.mainImage)}" alt="${property.title}" onerror="this.src='assets/images/final.png'">
-            <div class="content">
-                <h3>${property.title || 'Elegant Villa'}</h3>
-                <p><i class="fas fa-tag"></i> Ksh ${formattedPrice}</p>
-                <div class="property-features">
-                    <span class="feature"><i class="fas fa-bed"></i> ${property.bedrooms || '4'} BD</span>
-                    <span class="feature"><i class="fas fa-bath"></i> ${property.bathrooms || '3'} BA</span>
-                    <span class="feature"><i class="fas fa-map-marker-alt"></i> ${property.location || 'Mombasa'}</span>
-                </div>
-                <div class="buttons">
-                    <button class="book-btn" onclick="openViewingForm('${property._id}')">Schedule Viewing</button>
-                    <button class="view-btn" onclick="toggleDetails(this)"><i class="fas fa-chevron-down"></i> View More</button>
-                </div>
-                <button class="calendar-btn" onclick="openCalendarModal('${property._id}', 'sale')">
-                    <i class="fas fa-calendar-alt"></i> Schedule Visit
+    // Create clean image gallery HTML - only show in details section
+    const galleryHTML = hasMultipleImages ? `
+        <div class="property-gallery" style="margin: 15px 0;">
+            <div class="gallery-container" style="position: relative; height: 200px; overflow: hidden; border-radius: 8px;">
+                ${propertyImages.map((img, index) => 
+                    `<img src="${img}" 
+                          alt="${property.title} - Image ${index + 1}" 
+                          style="display: ${index === 0 ? 'block' : 'none'}; width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0;"
+                          onerror="this.style.display='none';">`)
+                .join('')}
+                
+                <!-- Navigation arrows -->
+                <button onclick="navigateGallery(this, -1)" 
+                        style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.5); border: none; color: white; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center;">
+                    <i class="fas fa-chevron-left"></i>
                 </button>
-                <div class="details">
-                    ${galleryHTML}
-                    <p><strong>Location:</strong> ${property.location || 'Not specified'}</p>
-                    <p><strong>Bedrooms:</strong> ${property.bedrooms || 'Not specified'}</p>
-                    <p><strong>Bathrooms:</strong> ${property.bathrooms || 'Not specified'}</p>
-                    <p><strong>Amenities:</strong> ${property.amenities ? property.amenities.join(', ') : 'Not specified'}</p>
-                    <p>${property.description || 'Beautiful property with great amenities.'}</p>
+                <button onclick="navigateGallery(this, 1)" 
+                        style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.5); border: none; color: white; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center;">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+            
+            <!-- Clean dots indicator -->
+            <div class="gallery-indicator" style="display: flex; justify-content: center; gap: 8px; margin-top: 10px;">
+                ${propertyImages.map((_, index) => 
+                    `<span class="dot ${index === 0 ? 'active' : ''}" 
+                          onclick="showGalleryImage(this, ${index})"
+                          style="width: 8px; height: 8px; border-radius: 50%; background: ${index === 0 ? '#007bff' : '#ddd'}; cursor: pointer; transition: background 0.3s;"></span>`
+                ).join('')}
+            </div>
+        </div>
+    ` : '';
+
+    // Check if property has bookings
+    const hasBookings = userBookings.has(property._id) && userBookings.get(property._id).length > 0;
+
+    // Create availability status text
+    let availabilityText = hasBookings ?
+        '<span class="availability-tag booked">You have a booking</span>' :
+        '<span class="availability-tag available">Available Now</span>';
+
+    card.innerHTML = `
+        <div class="property-label">For Rent</div>
+        <div style="position: relative;">
+            <img src="${getImageUrl(property.mainImage)}" 
+                 alt="${property.title}" 
+                 style="width: 100%; height: 200px; object-fit: cover;"
+                 onerror="this.src='assets/images/final.png'">
+            ${hasMultipleImages ? `
+                <div style="position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.7); color: white; padding: 4px 8px; border-radius: 12px; font-size: 0.8rem;">
+                    <i class="fas fa-images"></i> ${propertyImages.length}
+                </div>
+            ` : ''}
+        </div>
+
+        <div class="content">
+            <h3>${property.title || 'Modern Apartment'}</h3>
+            <p><i class="fas fa-tag"></i> Ksh ${formattedPrice} per night</p>
+            <div class="property-features">
+                <span class="feature"><i class="fas fa-bed"></i> ${property.bedrooms || '2'} BD</span>
+                <span class="feature"><i class="fas fa-bath"></i> ${property.bathrooms || '1'} BA</span>
+                <span class="feature"><i class="fas fa-map-marker-alt"></i> ${property.location || 'Nairobi'}</span>
+            </div>
+            ${availabilityText}
+            <div class="buttons">
+                <button class="book-btn" onclick="openBookingForm('${property._id}')">Book Now</button>
+                <button class="view-btn" onclick="toggleDetails(this)"><i class="fas fa-chevron-down"></i> View More</button>
+            </div>
+            <button class="calendar-btn" onclick="openCalendarModal('${property._id}', 'rental')">
+                <i class="fas fa-calendar-alt"></i> Check Availability
+            </button>
+            <div class="details">
+                ${galleryHTML}
+                <p><strong>Location:</strong> ${property.location || 'Not specified'}</p>
+                <p><strong>Bedrooms:</strong> ${property.bedrooms || 'Not specified'}</p>
+                <p><strong>Bathrooms:</strong> ${property.bathrooms || 'Not specified'}</p>
+                <p><strong>Amenities:</strong> ${property.amenities ? property.amenities.join(', ') : 'Not specified'}</p>
+                <p>${property.description || 'Beautiful property with great amenities.'}</p>
+                
+                ${hasMultipleImages ? `
+                    <div style="margin-top: 15px; text-align: center;">
+                        <button onclick="openFullGallery('${property._id}', '${property.title}')" 
+                                style="background: #007bff; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">
+                            <i class="fas fa-expand"></i> View All ${propertyImages.length} Photos
+                        </button>
+                    </div>
+                ` : ''}
+            </div>
+        </div>
+    `;
+
+    return card;
+}
+
+// Fixed createSaleCard function with clean design
+function createSaleCard(property) {
+    const card = document.createElement('div');
+    card.className = 'sales-card';
+    
+    const formattedPrice = new Intl.NumberFormat('en-KE').format(property.price || 12500000);
+    
+    // Get all property images (main + gallery)
+    const propertyImages = generatePropertyImages(property, 5);
+    const hasMultipleImages = propertyImages.length > 1;
+    
+    // Create clean image gallery HTML - only show in details section
+    const galleryHTML = hasMultipleImages ? `
+        <div class="property-gallery" style="margin: 15px 0;">
+            <div class="gallery-container" style="position: relative; height: 200px; overflow: hidden; border-radius: 8px;">
+                ${propertyImages.map((img, index) => 
+                    `<img src="${img}" 
+                          alt="${property.title} - Image ${index + 1}" 
+                          style="display: ${index === 0 ? 'block' : 'none'}; width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0;"
+                          onerror="this.style.display='none';">`)
+                .join('')}
+                
+                <!-- Navigation arrows -->
+                <button onclick="navigateGallery(this, -1)" 
+                        style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.5); border: none; color: white; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center;">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <button onclick="navigateGallery(this, 1)" 
+                        style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.5); border: none; color: white; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center;">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+            
+            <!-- Clean dots indicator -->
+            <div class="gallery-indicator" style="display: flex; justify-content: center; gap: 8px; margin-top: 10px;">
+                ${propertyImages.map((_, index) => 
+                    `<span class="dot ${index === 0 ? 'active' : ''}" 
+                          onclick="showGalleryImage(this, ${index})"
+                          style="width: 8px; height: 8px; border-radius: 50%; background: ${index === 0 ? '#28a745' : '#ddd'}; cursor: pointer; transition: background 0.3s;"></span>`
+                ).join('')}
+            </div>
+        </div>
+    ` : '';
+    
+    card.innerHTML = `
+        <div class="property-label">For Sale</div>
+        <div style="position: relative;">
+            <img src="${getImageUrl(property.mainImage)}" 
+                 alt="${property.title}" 
+                 style="width: 100%; height: 200px; object-fit: cover;"
+                 onerror="this.src='assets/images/final.png'">
+            ${hasMultipleImages ? `
+                <div style="position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.7); color: white; padding: 4px 8px; border-radius: 12px; font-size: 0.8rem;">
+                    <i class="fas fa-images"></i> ${propertyImages.length}
+                </div>
+            ` : ''}
+        </div>
+        <div class="content">
+            <h3>${property.title || 'Elegant Villa'}</h3>
+            <p><i class="fas fa-tag"></i> Ksh ${formattedPrice}</p>
+            <div class="property-features">
+                <span class="feature"><i class="fas fa-bed"></i> ${property.bedrooms || '4'} BD</span>
+                <span class="feature"><i class="fas fa-bath"></i> ${property.bathrooms || '3'} BA</span>
+                <span class="feature"><i class="fas fa-map-marker-alt"></i> ${property.location || 'Mombasa'}</span>
+            </div>
+            <div class="buttons">
+                <button class="book-btn" onclick="openViewingForm('${property._id}')">Schedule Viewing</button>
+                <button class="view-btn" onclick="toggleDetails(this)"><i class="fas fa-chevron-down"></i> View More</button>
+            </div>
+            <button class="calendar-btn" onclick="openCalendarModal('${property._id}', 'sale')">
+                <i class="fas fa-calendar-alt"></i> Schedule Visit
+            </button>
+            <div class="details">
+                ${galleryHTML}
+                <p><strong>Location:</strong> ${property.location || 'Not specified'}</p>
+                <p><strong>Bedrooms:</strong> ${property.bedrooms || 'Not specified'}</p>
+                <p><strong>Bathrooms:</strong> ${property.bathrooms || 'Not specified'}</p>
+                <p><strong>Amenities:</strong> ${property.amenities ? property.amenities.join(', ') : 'Not specified'}</p>
+                <p>${property.description || 'Beautiful property with great amenities.'}</p>
+                
+                ${hasMultipleImages ? `
+                    <div style="margin-top: 15px; text-align: center;">
+                        <button onclick="openFullGallery('${property._id}', '${property.title}')" 
+                                style="background: #28a745; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">
+                            <i class="fas fa-expand"></i> View All ${propertyImages.length} Photos
+                        </button>
+                    </div>
+                ` : ''}
+            </div>
+        </div>
+    `;
+    
+    return card;
+}
+
+// Gallery navigation functions for property cards
+function navigateGallery(button, direction) {
+    const gallery = button.closest('.property-gallery');
+    const container = gallery.querySelector('.gallery-container');
+    const images = container.querySelectorAll('img');
+    const dots = gallery.querySelectorAll('.dot');
+    
+    // Find current active image
+    let currentIndex = 0;
+    images.forEach((img, index) => {
+        if (img.style.display === 'block') {
+            currentIndex = index;
+        }
+    });
+    
+    // Calculate new index
+    let newIndex = currentIndex + direction;
+    if (newIndex < 0) newIndex = images.length - 1;
+    if (newIndex >= images.length) newIndex = 0;
+    
+    // Hide current image and show new one
+    images[currentIndex].style.display = 'none';
+    images[newIndex].style.display = 'block';
+    
+    // Update dots - use appropriate colors
+    const isRental = gallery.closest('.rental-card');
+    const activeColor = isRental ? '#007bff' : '#28a745';
+    
+    dots[currentIndex].classList.remove('active');
+    dots[currentIndex].style.background = '#ddd';
+    dots[newIndex].classList.add('active');
+    dots[newIndex].style.background = activeColor;
+}
+
+function showGalleryImage(dot, index) {
+    const gallery = dot.closest('.property-gallery');
+    const container = gallery.querySelector('.gallery-container');
+    const images = container.querySelectorAll('img');
+    const dots = gallery.querySelectorAll('.dot');
+    
+    // Hide all images
+    images.forEach(img => img.style.display = 'none');
+    
+    // Show selected image
+    if (images[index]) {
+        images[index].style.display = 'block';
+    }
+    
+    // Update dots - use appropriate colors
+    const isRental = gallery.closest('.rental-card');
+    const activeColor = isRental ? '#007bff' : '#28a745';
+    
+    dots.forEach((d, i) => {
+        d.classList.toggle('active', i === index);
+        d.style.background = i === index ? activeColor : '#ddd';
+    });
+}
+
+// Full gallery modal function
+function openFullGallery(propertyId, propertyTitle) {
+    const property = allRentalProperties.find(p => p._id === propertyId) || 
+                    allSaleProperties.find(p => p._id === propertyId);
+    
+    if (!property) {
+        alert('Property not found');
+        return;
+    }
+    
+    const propertyImages = generatePropertyImages(property);
+    
+    // Create full gallery modal if it doesn't exist
+    if (!document.getElementById('fullGalleryModal')) {
+        const modalHTML = `
+            <div id="fullGalleryModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 2000; align-items: center; justify-content: center;">
+                <div style="max-width: 90%; max-height: 90%; position: relative;">
+                    <button onclick="closeFullGallery()" style="position: absolute; top: -50px; right: 0; background: rgba(255,255,255,0.2); border: none; color: white; font-size: 30px; cursor: pointer; padding: 10px; border-radius: 50%; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center;">&times;</button>
+                    <img id="fullGalleryImage" style="max-width: 100%; max-height: 80vh; object-fit: contain;" src="" alt="">
+                    <div style="text-align: center; color: white; margin-top: 20px;">
+                        <h3 id="fullGalleryTitle" style="margin: 0 0 10px 0;"></h3>
+                        <div id="fullGalleryCounter" style="margin-bottom: 15px;"></div>
+                        <div style="display: flex; justify-content: center; gap: 10px;">
+                            <button onclick="navigateFullGallery(-1)" style="background: rgba(255,255,255,0.2); border: none; color: white; padding: 10px 15px; cursor: pointer; border-radius: 5px;">Previous</button>
+                            <button onclick="navigateFullGallery(1)" style="background: rgba(255,255,255,0.2); border: none; color: white; padding: 10px 15px; cursor: pointer; border-radius: 5px;">Next</button>
+                        </div>
+                    </div>
                 </div>
             </div>
         `;
-        
-        return card;
+        document.body.insertAdjacentHTML('beforeend', modalHTML);
     }
+    
+    // Set up gallery data
+    window.currentFullGallery = {
+        images: propertyImages,
+        currentIndex: 0,
+        title: propertyTitle
+    };
+    
+    // Show modal
+    updateFullGallery();
+    document.getElementById('fullGalleryModal').style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+}
+
+function updateFullGallery() {
+    const gallery = window.currentFullGallery;
+    document.getElementById('fullGalleryImage').src = gallery.images[gallery.currentIndex];
+    document.getElementById('fullGalleryTitle').textContent = gallery.title;
+    document.getElementById('fullGalleryCounter').textContent = `${gallery.currentIndex + 1} of ${gallery.images.length}`;
+}
+
+function navigateFullGallery(direction) {
+    const gallery = window.currentFullGallery;
+    gallery.currentIndex += direction;
+    
+    if (gallery.currentIndex < 0) gallery.currentIndex = gallery.images.length - 1;
+    if (gallery.currentIndex >= gallery.images.length) gallery.currentIndex = 0;
+    
+    updateFullGallery();
+}
+
+function closeFullGallery() {
+    document.getElementById('fullGalleryModal').style.display = 'none';
+    document.body.style.overflow = 'auto';
+    window.currentFullGallery = null;
+}
+
 
     // Gallery navigation functions
     function prevImage(button) {

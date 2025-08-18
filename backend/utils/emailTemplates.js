@@ -23,11 +23,13 @@ const bookingConfirmationTemplate = (data) => {
             <p><strong>Reference:</strong> ${data.bookingReference}</p>
             <p><strong>Date Booked:</strong> ${data.bookingDate}</p>
             <p><strong>Property:</strong> ${data.propertyName}</p>
+            <p><strong>Type:</strong> ${data.propertyType}</p>
+            <p><strong>Address:</strong> ${data.propertyAddress}</p>
             <p><strong>Check-in:</strong> ${data.checkInDate}</p>
             <p><strong>Check-out:</strong> ${data.checkOutDate}</p>
             <p><strong>Duration:</strong> ${data.nights} night(s)</p>
             <p><strong>Guests:</strong> ${data.adults} adult(s)${data.children > 0 ? `, ${data.children} child(ren)` : ''}</p>
-            <p><strong>Total Price:</strong> Ksh ${data.totalPrice.toFixed(2)}</p>
+            <p><strong>Total Price:</strong> $${data.totalPrice.toFixed(2)}</p>
           </div>
   
           <p>We look forward to welcoming you. If you have any questions or need to make changes to your booking, please contact us.</p>
@@ -35,7 +37,7 @@ const bookingConfirmationTemplate = (data) => {
           <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee;">
             <p style="margin-bottom: 5px;"><strong>Werent Real Estate</strong></p>
             <p style="margin-top: 0; color: #666;">Email: werent@werentonline.com</p>
-            <p style="margin-top: 0; color: #666;">Phone: 0700034440</p>
+            <p style="margin-top: 0; color: #666;">Phone: (555) 123-4567</p>
             <p style="margin-top: 0; color: #666;">Website: www.werentonline.com</p>
           </div>
         </div>
